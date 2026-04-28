@@ -1,0 +1,32 @@
+﻿
+using ClinicProjectApplication.Patients.Command;
+using ClinicProjectApplication.Patients.Queries;
+using MediatR;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+
+namespace DefaultAuthenticationApi.Controllers
+{
+    [Route("api/[controller]")]
+    [ApiController]
+    public class PatientController : ControllerBase
+    {
+        private readonly IMediator _mediator;
+        public PatientController(IMediator mediator) { 
+         _mediator = mediator;
+        }
+        [HttpGet("{phone}")]
+        public async Task<IActionResult> GetPatient(string phone)
+        {
+           var patient= await _mediator.Send(new GetPatientByPhoneQuery(phone));
+            return Ok(patient);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> PostPatient([FromBody] CreatePatientCommand cmd , CancellationToken ct)
+        {
+            var  result= await _mediator.Send(cmd, ct);
+            return Ok(result);
+        }
+    }
+}

@@ -1,0 +1,19 @@
+﻿using FluentValidation;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace ClinicProjectApplication.MedicalRecord
+{
+    public class CreateMedicalRecordCommandValidator:AbstractValidator<CreateMedicalRecordCommand>
+    {
+        public CreateMedicalRecordCommandValidator()
+        {
+            RuleFor(x => x.AppointmentId).NotEmpty().WithMessage("AppointmentId is required.");
+            RuleFor(x => x.Diagnosis).NotEmpty().WithMessage("Diagnosis is required.").MaximumLength(100).WithMessage("Diagnosis cannot exceed 100 characters.");
+            RuleFor(x => x.Notes).NotEmpty().WithMessage("Notes are required.");
+        }
+    }
+}
