@@ -97,6 +97,7 @@ namespace ClinicProjectInfrastructure.Persistence
             {
                 p.HasKey(p => p.Id);
                 p.HasOne(p => p.Appointment).WithOne(p => p.Invoices).HasForeignKey<Invoices>(i => i.AppointmentId);
+                p.Property(p=>p.TotalAmount).IsRequired().HasColumnType("decimal(18,2)");
             });
             b.Entity<Payments>(p =>
                 {

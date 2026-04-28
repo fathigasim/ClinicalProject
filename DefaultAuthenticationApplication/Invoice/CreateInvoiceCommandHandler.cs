@@ -1,4 +1,6 @@
-﻿using ClinicProjectApplication.Common;
+﻿using AutoMapper;
+using ClinicProjectApplication.Common;
+using ClinicProjectApplication.Interfaces;
 using ClinicProjectDomain.Entities;
 using ClinicProjectDomain.Interfaces;
 using MediatR;
@@ -6,21 +8,32 @@ using MediatR;
 
 namespace ClinicProjectApplication.Invoice
 {
-    public class CreateInvoiceCommandHandler : IRequestHandler<CreateInvoiceCommand, Result<Unit>>
+    public class CreateInvoiceCommandHandler : IRequestHandler<CreateInvoiceCommand, Result<string>>
     {
         private readonly IInvoiceRepository _invoiceRepository;
-        public CreateInvoiceCommandHandler(IInvoiceRepository invoiceRepository)
+            private readonly ISequenceService _sequenceService;
+        private readonly IMapper _mapper;
+        public CreateInvoiceCommandHandler(IInvoiceRepository invoiceRepository,
+            ISequenceService sequenceService,
+            IMapper mapper)
         {
             _invoiceRepository = invoiceRepository;
+            _sequenceService = sequenceService;
+            _mapper = mapper;
         }
-        public Task<Result<Unit>> Handle(CreateInvoiceCommand request, CancellationToken cancellationToken)
+        public async Task<Result<string>> Handle(CreateInvoiceCommand request, CancellationToken cancellationToken)
         {
-            var invoice = new Invoices()
-            {
+            var sequence =await _sequenceService.GenerateInvoiceNumberAsync();
 
-
-            };
-            throw new NotImplementedException();
+            var invoice = _mapper.Map<Invoices>(request);
+            var isCashExceeded= invoice.CashLimitExceeded();//avoid wasting sequence
+            if (isCashExceeded) { 
+               return Result<string>.Failure("Total Amount exceeds the cash limit.");
+            }
+            invoice.InvoiceNo = sequence;
+         
+            await  _invoiceRepository.AddAsync(invoice);
+            return Result<string>.Success($"Invoice Created with Number: {invoice.InvoiceNo}");
         }
     }
 }
