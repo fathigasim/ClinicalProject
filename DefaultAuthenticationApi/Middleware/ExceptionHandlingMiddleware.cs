@@ -1,5 +1,6 @@
 ﻿
 using ClinicProjectApplication.Common.Exceptions;
+using ClinicProjectDomain.Exceptions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.WebUtilities;
@@ -151,13 +152,13 @@ namespace DefaultAuthenticationApi.Middleware
                 };
                 statusCode = StatusCodes.Status401Unauthorized;
             }
-            else if (exception is InvalidOperationException apiException)
+            else if (exception is CashLimitExceededException apiException)
             {
                 response = new ProblemDetails
                 {
                     Title = apiException.Message,
                     Status = StatusCodes.Status409Conflict,
-                    Detail=" Invalid Operation"// or 500
+                    Detail=" Invalid Operation"
                 };
            
                 

@@ -12,6 +12,7 @@ namespace ClinicProjectDomain.Entities
         public Guid AppointmentId { get; set; }
         public Appointment Appointment { get; set; }
         public string Diagnosis { get; set; }
+        public ICollection<Prescriptions> Prescriptions { get; set; } = new List<Prescriptions>();
         public string Notes { get; set; }
         public DateTime CreatedAt { get; set; }
         

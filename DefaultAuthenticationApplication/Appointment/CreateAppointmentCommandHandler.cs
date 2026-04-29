@@ -1,4 +1,5 @@
 ﻿
+using ClinicProjectApplication.Common;
 using ClinicProjectApplication.Interfaces;
 using ClinicProjectDomain.Entities;
 using ClinicProjectDomain.Interfaces;
@@ -11,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace ClinicProjectApplication.Appointments
 {
-    public class CreateAppointmentCommandHandler : IRequestHandler<CreateAppointmentCommand, Guid>
+    public class CreateAppointmentCommandHandler : IRequestHandler<CreateAppointmentCommand, Result<string>>
     {
         private readonly IAppointmentRepository _repository;
         private readonly ISequenceService _sequenceSerivce;
@@ -20,8 +21,15 @@ namespace ClinicProjectApplication.Appointments
             _repository = repository;
             _sequenceSerivce = sequenceSerivce;
         }
-        public async Task<Guid> Handle (CreateAppointmentCommand request, CancellationToken cancellationToken)
+        public async Task<Result<string>> Handle (CreateAppointmentCommand request, CancellationToken cancellationToken)
         {
+
+        var IsDoctorBusy=   await _repository.IsDoctorAppointmentsBusy(request.DoctorId, request.AppointmentDate);
+            if (IsDoctorBusy)
+            {
+                
+                    return Result<string>.Failure("Doctor is busy at the selected time.");
+            }
             var sequence =await _sequenceSerivce.GenerateOrderNumberAsync();
             var appointment = new Appointment
             {
@@ -33,7 +41,7 @@ namespace ClinicProjectApplication.Appointments
             };
             appointment.Schedule(request.AppointmentDate);
           await  _repository.AddAsync(appointment);
-            return appointment.Id;
+            return Result<string>.Success( $"Appointment Confirmed for {appointment.AppointmentNumber}");
         }
     }
 }

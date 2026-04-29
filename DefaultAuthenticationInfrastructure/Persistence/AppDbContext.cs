@@ -97,12 +97,20 @@ namespace ClinicProjectInfrastructure.Persistence
             {
                 p.HasKey(p => p.Id);
                 p.HasOne(p => p.Appointment).WithOne(p => p.Invoices).HasForeignKey<Invoices>(i => i.AppointmentId);
+                p.Property(p=>p.TotalAmount).IsRequired().HasColumnType("decimal(18,2)");
             });
             b.Entity<Payments>(p =>
                 {
                     p.HasKey(p => p.Id);
                     p.HasOne(p => p.Invoice).WithOne(i => i.Payments).HasForeignKey<Payments>(p => p.InvoiceId);
                 });
+
+            b.Entity<Prescriptions>(p =>
+            {
+                p.HasKey(p => p.Id);
+                p.HasOne(p => p.MedicalRecord).WithMany(m => m.Prescriptions).HasForeignKey(p => p.MedicalRecordId);
+                p.HasMany(p => p.PrescriptionItems).WithOne(i => i.Prescription).HasForeignKey(i => i.PrescriptionId);
+            });
         }
         public DbSet<ApplicationUser> users { get; set; }
         public DbSet<RefreshToken> refreshTokens { get; set; }
@@ -113,6 +121,9 @@ namespace ClinicProjectInfrastructure.Persistence
         public DbSet<Invoices> Invoices { get; set; }
 
         public DbSet<Payments> Payments { get; set; }
+        public DbSet<Prescriptions> Prescriptions { get; set; }
+
+        public DbSet<PrescriptionItems> PrescriptionItems { get; set; }
 
     }
 }

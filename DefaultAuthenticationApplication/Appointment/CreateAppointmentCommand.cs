@@ -1,4 +1,5 @@
 ﻿
+using ClinicProjectApplication.Common;
 using ClinicProjectApplication.Interfaces;
 using MediatR;
 using System;
@@ -10,7 +11,7 @@ using System.Threading.Tasks;
 namespace ClinicProjectApplication.Appointments
 {
     public record CreateAppointmentCommand
-        (Guid PatiendId,Guid DoctorId, DateTime AppointmentDate, string Notes) :IRequest<Guid>,ITransactionalRequest;
+        (Guid PatiendId,Guid DoctorId, DateTime AppointmentDate, string Notes) :IRequest<Result<string>>,ITransactionalRequest;
 
    
    

@@ -20,6 +20,8 @@ namespace ClinicProjectDomain.Entities
         public AppointmentStatus status { get; set; } = AppointmentStatus.Scheduled;
         public MedicalRecords MedicalRecord { get; set; }
         public Invoices Invoices { get; set; }
+
+
         public void Schedule(DateTime scheduleTime)
         {
             if (scheduleTime.Date >= DateTime.Now.Date)

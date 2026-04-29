@@ -9,6 +9,7 @@ namespace ClinicProjectDomain.Enums
     public enum InvoiceStatus
     {
         Pending, 
-        Paid
+        Paid,
+        Cancelled
     }
 }

@@ -6,6 +6,6 @@ using MediatR;
 
 namespace ClinicProjectApplication.Invoice
 {
-    public record CreateInvoiceCommand:IRequest<Result<Unit>>,ITransactionalRequest;
-   
+    public record CreateInvoiceCommand(Guid AppointmentId, decimal TotalAmount) :IRequest<Result<string>>,ITransactionalRequest;
+ 
 }
