@@ -11,6 +11,9 @@ namespace ClinicProjectDomain.Entities
         public Guid Id { get; set; }
         public Guid MedicalRecordId { get; set; }                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
         public DateTime CreatedAt { get; set; }
-        
+        public MedicalRecords MedicalRecord { get; set; }
+
+        public ICollection<PrescriptionItems> PrescriptionItems { get; set; } = new List<PrescriptionItems>();
+
     }
 }
