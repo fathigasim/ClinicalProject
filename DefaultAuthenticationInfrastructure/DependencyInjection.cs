@@ -124,7 +124,9 @@ namespace DefaultAuthenticationInfrastructure
             services.AddScoped<IPatientRepository, PatientRepository>();
             services.AddScoped<IAppointmentRepository,AppointmentRepository>();
             services.AddScoped<IMedicalRecordRepository, MedicalRecordRepository>();
+            services.AddScoped<IPrescriptionRepository, PrescriptionRepository>();
             services.AddScoped<IInvoiceRepository, InvoiceRepository>();    
+            services.AddScoped<IWeeklyScheduleRepository, WeeklyScheduleRepository>();
             services.AddScoped<ITokenService, TokenService>();
             services.AddScoped<ICurrentUserService, CurrentUserService>();
             services.AddScoped<TokenIssuer>();

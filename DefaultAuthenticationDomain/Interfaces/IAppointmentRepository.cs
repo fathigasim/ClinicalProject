@@ -11,5 +11,6 @@ namespace ClinicProjectDomain.Interfaces
     {
         Task<IReadOnlyList<Appointment>> GetAppointmentsByDoctorIdAsync(Guid doctorId, CancellationToken ct = default);
         Task<bool> IsDoctorAppointmentsBusy(Guid doctorId, DateTime appointmentDate, CancellationToken ct = default);
+        Task<bool> IsSlotOccupied(Guid doctorId, DateTime requestedDate, int durationMinutes, CancellationToken ct = default);
     }
 }

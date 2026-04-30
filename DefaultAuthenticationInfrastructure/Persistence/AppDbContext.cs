@@ -65,24 +65,25 @@ namespace ClinicProjectInfrastructure.Persistence
              rt.HasIndex(t => t.Token).IsUnique();
              rt.Property(t => t.Expires).IsRequired();
          });
-            b.Entity<Doctor>()
-             .HasKey(d => d.Id);
-            b.Entity<Doctor>()
-             .Property(d => d.FirstName).IsRequired().HasMaxLength(50);
-            b.Entity<Doctor>()
-             .Property(d => d.LastName).IsRequired().HasMaxLength(50);
-            b.Entity<Doctor>()
-             .Property(d => d.Specialization).IsRequired().HasMaxLength(100);
-            b.Entity<Doctor>()
-             .Property(d => d.Phone).IsRequired().HasMaxLength(20);
-            b.Entity<Doctor>()
-             .Property(d => d.Email).IsRequired().HasMaxLength(100);
+            b.Entity<Doctor>(d =>
+            {
+
+                d.HasKey(d => d.Id);
+
+                d.Property(d => d.FirstName).IsRequired().HasMaxLength(50);
+                d.Property(d => d.LastName).IsRequired().HasMaxLength(50);
+                d.Property(d => d.Specialization).IsRequired().HasMaxLength(100);
+                d.Property(d => d.Phone).IsRequired().HasMaxLength(20);
+                d.Property(d => d.Email).IsRequired().HasMaxLength(100);
+                d.HasMany(d => d.WeeklySchedules).WithOne(a => a.Doctor).HasForeignKey(a => a.DoctorId);
+            });
+            
             //appointment configuration
             
             b.Entity<Appointment>(p =>
             {
                 p.HasKey(p => p.Id);
-                p.HasOne(p => p.Patient).WithMany(p => p.Appointments).HasForeignKey(p => p.PatiendId);
+                p.HasOne(p => p.Patient).WithMany(p => p.Appointments).HasForeignKey(p => p.PatientId);
                 p.HasOne(p => p.Doctor).WithMany(p => p.Appointments).HasForeignKey(p => p.DoctorId);
             });
            
@@ -90,9 +91,10 @@ namespace ClinicProjectInfrastructure.Persistence
             b.Entity<MedicalRecords>(p =>
             {
                 p.HasKey(p => p.Id);
-                p.HasOne(p => p.Appointment).WithOne(p => p.MedicalRecord).HasForeignKey<MedicalRecords>(r=>r.AppointmentId);
-
+                p.HasOne(a => a.Appointment).WithOne(p => p.MedicalRecord).HasForeignKey<MedicalRecords>(r=>r.AppointmentId);
+            
             });
+
             b.Entity<Invoices>(p =>
             {
                 p.HasKey(p => p.Id);

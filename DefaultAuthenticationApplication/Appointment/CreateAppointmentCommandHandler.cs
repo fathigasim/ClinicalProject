@@ -24,17 +24,24 @@ namespace ClinicProjectApplication.Appointments
         public async Task<Result<string>> Handle (CreateAppointmentCommand request, CancellationToken cancellationToken)
         {
 
-        var IsDoctorBusy=   await _repository.IsDoctorAppointmentsBusy(request.DoctorId, request.AppointmentDate);
-            if (IsDoctorBusy)
-            {
+        //var IsDoctorBusy=   await _repository.IsDoctorAppointmentsBusy(request.DoctorId, request.AppointmentDate);
+              
+        //    if (IsDoctorBusy)
+        //    {
                 
-                    return Result<string>.Failure("Doctor is busy at the selected time.");
+        //            return Result<string>.Failure("Doctor is busy at the selected time.");
+        //    }
+       var isOccupiedAppointment=    await _repository.IsSlotOccupied(request.DoctorId, request.AppointmentDate,15);
+            if (isOccupiedAppointment)
+            {
+
+                return Result<string>.Failure("Appointment slot is already occupied.");
             }
             var sequence =await _sequenceSerivce.GenerateOrderNumberAsync();
             var appointment = new Appointment
             {
                 AppointmentNumber = sequence,
-                PatiendId = request.PatiendId,
+                PatientId = request.PatiendId,
                 DoctorId = request.DoctorId,
                 AppointmentDate = request.AppointmentDate,
                 Notes = request.Notes,

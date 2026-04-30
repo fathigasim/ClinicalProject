@@ -1,5 +1,5 @@
-﻿
-using ClinicProjectApplication.Doctors.Command;
+﻿using ClinicProjectApplication.Doctors.Command.DoctorCommand;
+using ClinicProjectApplication.Doctors.Command.DoctorWeeklySchedule;
 using ClinicProjectApplication.Doctors.Queries;
 using MediatR;
 
@@ -37,6 +37,16 @@ namespace DefaultAuthenticationApi.Controllers
 
             return Ok(doctorId);
             
+        }
+
+        [HttpPost("schedule")]
+
+        public async Task<IActionResult> CreateDoctorSchedule([FromBody] CreateWeeklyScheduleCommand command)
+        {
+            var doctorId = await _mediator.Send(command);
+
+            return Ok(doctorId);
+
         }
     }
 }

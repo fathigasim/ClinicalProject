@@ -1,4 +1,5 @@
 ﻿using ClinicProjectDomain.Enums;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,7 +12,7 @@ namespace ClinicProjectDomain.Entities
     {
         public Guid Id { get; set; }
         public string AppointmentNumber { get; set; } = default!;
-        public Guid PatiendId { get; set; }
+        public Guid PatientId { get; set; }
         public Patient Patient { get; set; }
         public Guid DoctorId { get; set; }
         public Doctor Doctor { get; set; }
@@ -21,7 +22,7 @@ namespace ClinicProjectDomain.Entities
         public MedicalRecords MedicalRecord { get; set; }
         public Invoices Invoices { get; set; }
 
-
+       
         public void Schedule(DateTime scheduleTime)
         {
             if (scheduleTime.Date >= DateTime.Now.Date)

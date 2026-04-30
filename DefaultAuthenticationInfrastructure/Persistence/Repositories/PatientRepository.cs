@@ -15,5 +15,8 @@ namespace ClinicProjectInfrastructure.Persistence.Repositories
         {
             throw new NotImplementedException();
         }
+
+
+      
     }
 }

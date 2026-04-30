@@ -1,9 +1,8 @@
-﻿
-using ClinicProjectDomain.Interfaces;
+﻿using ClinicProjectDomain.Interfaces;
 using MediatR;
 
 
-namespace ClinicProjectApplication.Doctors.Command
+namespace ClinicProjectApplication.Doctors.Command.DoctorCommand
 {
     public class CreateDoctorCommandHandler : IRequestHandler<CreateDoctorCommand, Guid>
     {
@@ -15,6 +14,7 @@ namespace ClinicProjectApplication.Doctors.Command
         }
         public async Task<Guid> Handle(CreateDoctorCommand request, CancellationToken cancellationToken)
         {
+
            var doctor = new ClinicProjectDomain.Entities.Doctor
             {
                 Id = Guid.NewGuid(),
