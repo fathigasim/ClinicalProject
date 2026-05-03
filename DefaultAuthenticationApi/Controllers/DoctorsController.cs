@@ -38,7 +38,15 @@ namespace DefaultAuthenticationApi.Controllers
             return Ok(doctorId);
             
         }
+        [HttpGet("available-slots")]
 
+        public async Task<IActionResult> DoctorAvailableSlots(Guid doctorId, DayOfWeek dayOfWeek)
+        {
+            var availableSlots = await _mediator.Send(new GetDoctorsAvailableSlotsQuery { DoctorId = doctorId, DayOfWeek = dayOfWeek });
+
+            return Ok(availableSlots);
+
+        }
         [HttpPost("schedule")]
 
         public async Task<IActionResult> CreateDoctorSchedule([FromBody] CreateWeeklyScheduleCommand command)

@@ -18,17 +18,33 @@ namespace ClinicProjectInfrastructure.Persistence.Repositories
         {
             _readDbContext = readDbContext;
         }
-        public async Task<bool> IsDoctoryScheduledToday(Guid doctorId,DayOfWeek dayofweek, CancellationToken ct)
+        public async Task<bool> IsDoctorScheduledToday(Guid doctorId,DayOfWeek dayofweek, CancellationToken ct)
         {
             // Khartoum is UTC+2
             var khartoumOffset = TimeSpan.FromHours(2);
             var khartoumTime = DateTimeOffset.UtcNow.ToOffset(khartoumOffset);
 
-            // Get the DayOfWeek specifically for that region
-         //   var dayOfWeek = khartoumTime.DayOfWeek;
 
             return await _readDbContext.ReadSet<WeeklySchedule>()
                 .AnyAsync(ws => ws.DoctorId == doctorId && ws.DayOfWeek == dayofweek, ct);
         }
+
+        public async Task<bool> HasOverlappingSchedule(
+    Guid doctorId,
+    DayOfWeek day,
+    TimeOnly start,
+    TimeOnly end,
+    CancellationToken ct)
+        {
+            return await _readDbContext.ReadSet<WeeklySchedule>()
+                .AnyAsync(ws =>
+                    ws.DoctorId == doctorId &&
+                    ws.DayOfWeek == day &&
+                    start < ws.EndTime &&
+                    ws.StartTime < end,
+                    ct);
+        }
+
+        
     }
 }

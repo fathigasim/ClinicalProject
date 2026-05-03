@@ -11,8 +11,8 @@ namespace ClinicProjectApplication.Doctors.Dto
         public Guid DoctorId { get; set; }
         public  string DoctorName { get; set; }
         public DayOfWeek DayOfWeek { get; set; }      // Monday, Tuesday, etc.
-        public TimeSpan StartTime { get; set; }
-        public TimeSpan EndTime { get; set; }
+        public TimeOnly StartTime { get; set; }
+        public TimeOnly EndTime { get; set; }
         public int SlotDurationMinutes { get; set; }=15;   // e.g., 15 or 30 minutes
         public bool IsActive { get; set; }
 

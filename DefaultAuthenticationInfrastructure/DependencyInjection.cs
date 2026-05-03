@@ -17,6 +17,7 @@ using DefaultAuthenticationInfrastructure.Services;
 using ClinicProjectInfrastructure.Persistence.Repositories;
 using ClinicProjectInfrastructure.Identity;
 using ClinicProjectApplication;
+using ClinicProjectDomain.Services;
 
 
 
@@ -133,6 +134,7 @@ namespace DefaultAuthenticationInfrastructure
             services.AddScoped<IUnitOfWork,UnitOfWork>();
             services.AddScoped<IReadDbContext>(sp => sp.GetRequiredService<AppDbContext>());
             services.AddScoped<ISequenceService,SequenceService>();
+            services.AddTransient<ScheduleService>();
             //services.AddScoped<IDbSeeder,DbSeeder>();
             services.AddHttpContextAccessor();
 

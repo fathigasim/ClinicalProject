@@ -10,45 +10,51 @@ namespace ClinicProjectDomain.Entities
     {
         public int Id { get; set; }
         public Guid DoctorId { get; set; }
-        public DayOfWeek DayOfWeek { get; set; }      // Monday, Tuesday, etc.
-        public TimeSpan StartTime { get; set; }
-        public TimeSpan EndTime { get; set; }
-        public int SlotDurationMinutes { get; set; }  // e.g., 15 or 30 minutes
+        public Doctor Doctor { get; set; }
+        public DayOfWeek DayOfWeek  { get; set; }
+
+        public TimeOnly StartTime { get; set; }
+        public TimeOnly EndTime { get; set; }
+
+        public int SlotDurationMinutes { get; set; }
         public bool IsActive { get; set; }
+
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
-        public Doctor Doctor { get; set; }
-         
-           public bool IsHoliday (DayOfWeek dayOfWeek)
+        public bool IsHoliday (DayOfWeek day)
         {
+            return  day == DayOfWeek.Friday;//day == DayOfWeek.Saturday ||
+        }
+        public bool IsValid()
+        {
+            return StartTime < EndTime &&
+                   SlotDurationMinutes > 0 &&
+                   (EndTime - StartTime).TotalMinutes % SlotDurationMinutes == 0;
+        }
 
-            if (dayOfWeek == DayOfWeek.Friday || dayOfWeek == DayOfWeek.Saturday)
+        public IEnumerable<TimeOnly> GenerateSlots()
+        {
+            var slots = new List<TimeOnly>();
+            var current = StartTime;
+
+            while (current.AddMinutes(SlotDurationMinutes) <= EndTime)
             {
-                return true;
+                slots.Add(current);
+                current = current.AddMinutes(SlotDurationMinutes);
             }
-            return false;   
+
+            return slots;
         }
-            public bool IsTimeSlotAvailable(DateTime appointmentDateTime)
-            {
-                if (!IsActive)
-                    return false;
-                if (appointmentDateTime.DayOfWeek != DayOfWeek)
-                    return false;
-                var appointmentTime = appointmentDateTime.TimeOfDay;
-                return appointmentTime >= StartTime && appointmentTime + TimeSpan.FromMinutes(SlotDurationMinutes) <= EndTime;
+
+        public bool IsTimeSlotValid(TimeOnly time)
+        {
+            return time >= StartTime &&
+                   time.AddMinutes(SlotDurationMinutes) <= EndTime;
         }
-        public IEnumerable<TimeSpan> GetAvailableTimeSlots()
-            {
-                var timeSlots = new List<TimeSpan>();
-                var currentTime = StartTime;
-    
-                while (currentTime + TimeSpan.FromMinutes(SlotDurationMinutes) <= EndTime)
-                {
-                    timeSlots.Add(currentTime);
-                    currentTime = currentTime.Add(TimeSpan.FromMinutes(SlotDurationMinutes));
-                }
-    
-                return timeSlots;
+
+        public bool IsOverlapping(TimeOnly start1, TimeOnly end1, TimeOnly start2, TimeOnly end2)
+        {
+            return start1 < end2 && start2 < end1;
         }
     }
 }

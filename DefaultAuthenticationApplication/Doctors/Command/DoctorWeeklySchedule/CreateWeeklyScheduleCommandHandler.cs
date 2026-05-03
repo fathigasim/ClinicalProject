@@ -25,26 +25,50 @@ namespace ClinicProjectApplication.Doctors.Command.DoctorWeeklySchedule
         }
         public async Task<Result<string>> Handle(CreateWeeklyScheduleCommand request, CancellationToken cancellationToken)
         {
-            // Implement your logic here
+            
             var doctor = await _doctorRepository.GetByIdAsync(request.DoctorId);
             if (doctor == null)
             {
                 return Result<string>.Failure("Doctor not found.");
             }
-             var weeklyScheduleDto= new WeeklyScheduleDto() { 
-                DoctorId = request.DoctorId,
-                DayOfWeek = request.DayOfWeek,
-                
-                 StartTime = request.StartTime.TimeOfDay,
-                EndTime = request.EndTime.TimeOfDay
-             };
+            // 1. Validate input
+            if (request.startTime >= request.endTime)
+                return Result<string>.Failure("Invalid time range");
+
+                var weeklyScheduleDto = new WeeklyScheduleDto()
+                {
+                    DoctorId = request.DoctorId,
+                    DoctorName = doctor.LastName + " " + doctor.FirstName,
+                    DayOfWeek = request.DayOfWeek,
+                    StartTime = request.startTime,
+                    EndTime = request.endTime,
+                    SlotDurationMinutes = 30, // Default slot duration
+                    IsActive = true
+                };
+            // 2. Holiday check
+            //if (weeklySchedule.IsHoliday(request.DayOfWeek))
+            //    return Result<string>.Failure("Cannot create schedule on a holiday.");
+
+            // 3. Overlap check
+            var hasOverlap = await _weeklyScheduleRepository.HasOverlappingSchedule(
+                request.DoctorId,
+                request.DayOfWeek,
+                request.startTime,
+                request.endTime,
+                cancellationToken);
+
+            if (hasOverlap)
+                return Result<string>.Failure("Doctor already has a conflicting schedule.");
+
+            // 4. Save
             var weeklySchedule = _mapper.Map<WeeklySchedule>(weeklyScheduleDto);
             var isHoliday = weeklySchedule.IsHoliday(weeklyScheduleDto.DayOfWeek);
             if(isHoliday)
             {
                 return Result<string>.Failure("Cannot create schedule on a holiday.");
             }
-            var isDoctorBookedToday=   await _weeklyScheduleRepository.IsDoctoryScheduledToday(weeklySchedule.DoctorId, weeklyScheduleDto.DayOfWeek, cancellationToken);
+          
+            var isDoctorBookedToday=   await _weeklyScheduleRepository.IsDoctorScheduledToday(weeklySchedule.DoctorId, weeklyScheduleDto.DayOfWeek, cancellationToken);
                 if(isDoctorBookedToday)
                 {
                     return Result<string>.Failure("Doctor is already scheduled for today.");

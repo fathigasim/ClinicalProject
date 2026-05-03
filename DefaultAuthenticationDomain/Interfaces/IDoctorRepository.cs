@@ -11,6 +11,6 @@ namespace ClinicProjectDomain.Interfaces
 {
     public interface IDoctorRepository: IRepository<Doctor>
     {
-        public Task<Doctor?> GetByEmailAsync(string email, CancellationToken ct);
+        Task <WeeklySchedule?> DoctorWeeklySchedule(Guid doctorId,DayOfWeek dayOfWeek,CancellationToken cancellationToken);
     }
 }
