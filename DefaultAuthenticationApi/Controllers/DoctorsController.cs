@@ -1,5 +1,5 @@
-﻿
-using ClinicProjectApplication.Doctors.Command;
+﻿using ClinicProjectApplication.Doctors.Command.DoctorCommand;
+using ClinicProjectApplication.Doctors.Command.DoctorWeeklySchedule;
 using ClinicProjectApplication.Doctors.Queries;
 using MediatR;
 
@@ -37,6 +37,24 @@ namespace DefaultAuthenticationApi.Controllers
 
             return Ok(doctorId);
             
+        }
+        [HttpGet("available-slots")]
+
+        public async Task<IActionResult> DoctorAvailableSlots(Guid doctorId, DayOfWeek dayOfWeek)
+        {
+            var availableSlots = await _mediator.Send(new GetDoctorsAvailableSlotsQuery { DoctorId = doctorId, DayOfWeek = dayOfWeek });
+
+            return Ok(availableSlots);
+
+        }
+        [HttpPost("schedule")]
+
+        public async Task<IActionResult> CreateDoctorSchedule([FromBody] CreateWeeklyScheduleCommand command)
+        {
+            var doctorId = await _mediator.Send(command);
+
+            return Ok(doctorId);
+
         }
     }
 }

@@ -1,5 +1,4 @@
-﻿
-using ClinicProjectApplication.Interfaces;
+﻿using ClinicProjectApplication.Interfaces;
 using MediatR;
 using System;
 using System.Collections.Generic;
@@ -7,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ClinicProjectApplication.Doctors.Command
+namespace ClinicProjectApplication.Doctors.Command.DoctorCommand
 {
     public record CreateDoctorCommand
         (string FirstName, string LastName, string Specialization, string Phone, string Email)

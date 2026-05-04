@@ -7,8 +7,7 @@ using System.Threading.Tasks;
 
 namespace ClinicProjectDomain.Interfaces
 {
-    public interface IMedicalRecordRepository : IRepository<MedicalRecords> 
+    public interface IPrescriptionRepository :IRepository<Prescriptions>
     {
-        Task<MedicalRecords?> PatientMedicalRecord(Guid patientId);
     }
 }

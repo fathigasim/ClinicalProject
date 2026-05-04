@@ -16,6 +16,7 @@ namespace ClinicProjectDomain.Entities
         public string Email { get; set; }=default!;
        public DateTime CreatedAt { get; set; }
         public ICollection<Appointment?> Appointments { get; set; }
+        public ICollection<WeeklySchedule> WeeklySchedules { get; set; }
 
     }
 }

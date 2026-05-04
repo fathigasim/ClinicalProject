@@ -1,19 +1,26 @@
 ﻿
+using ClinicProjectApplication.Interfaces;
 using ClinicProjectDomain.Entities;
 using ClinicProjectDomain.Interfaces;
 using ClinicProjectInfrastructure.Services;
+using Microsoft.EntityFrameworkCore;
+using System.Threading.Tasks;
 
 
 namespace ClinicProjectInfrastructure.Persistence.Repositories
 {
     public class DoctorRepository : Repository<Doctor>,IDoctorRepository
     {
-        public DoctorRepository(AppDbContext context) : base(context)
+        private readonly IReadDbContext _readDbContext;
+        public DoctorRepository(AppDbContext context, IReadDbContext readDbContext) : base(context)
         {
+            _readDbContext = readDbContext;
         }
-        public async Task<Doctor?> GetByEmailAsync(string email, CancellationToken ct)
+        public async Task<WeeklySchedule?> DoctorWeeklySchedule(Guid doctorId, DayOfWeek dayOfWeek , CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+               return await  _readDbContext.ReadSet<WeeklySchedule>()
+                .Where(ws => ws.DoctorId == doctorId && ws.DayOfWeek==dayOfWeek)
+                .FirstOrDefaultAsync(cancellationToken);
         }
     }
 }

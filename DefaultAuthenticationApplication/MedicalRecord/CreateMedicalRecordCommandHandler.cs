@@ -25,7 +25,7 @@ namespace DefaultAutheClinicProjectApplicationnticationApplication.MedicalRecord
 
             var medicalRecord = new MedicalRecords
             {
-                
+               
                 AppointmentId = request.AppointmentId,
                 Diagnosis = request.Diagnosis,
                 Notes = request.Notes,

@@ -17,6 +17,7 @@ using DefaultAuthenticationInfrastructure.Services;
 using ClinicProjectInfrastructure.Persistence.Repositories;
 using ClinicProjectInfrastructure.Identity;
 using ClinicProjectApplication;
+using ClinicProjectDomain.Services;
 
 
 
@@ -124,13 +125,16 @@ namespace DefaultAuthenticationInfrastructure
             services.AddScoped<IPatientRepository, PatientRepository>();
             services.AddScoped<IAppointmentRepository,AppointmentRepository>();
             services.AddScoped<IMedicalRecordRepository, MedicalRecordRepository>();
+            services.AddScoped<IPrescriptionRepository, PrescriptionRepository>();
             services.AddScoped<IInvoiceRepository, InvoiceRepository>();    
+            services.AddScoped<IWeeklyScheduleRepository, WeeklyScheduleRepository>();
             services.AddScoped<ITokenService, TokenService>();
             services.AddScoped<ICurrentUserService, CurrentUserService>();
             services.AddScoped<TokenIssuer>();
             services.AddScoped<IUnitOfWork,UnitOfWork>();
             services.AddScoped<IReadDbContext>(sp => sp.GetRequiredService<AppDbContext>());
             services.AddScoped<ISequenceService,SequenceService>();
+            services.AddTransient<ScheduleService>();
             //services.AddScoped<IDbSeeder,DbSeeder>();
             services.AddHttpContextAccessor();
 

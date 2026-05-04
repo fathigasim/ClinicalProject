@@ -1,8 +1,7 @@
-﻿using ClinicProjectApplication.Doctors.Command;
-using FluentValidation;
+﻿using FluentValidation;
 
 
-namespace ClinicProjectApplication.Doctor.Command
+namespace ClinicProjectApplication.Doctors.Command.DoctorCommand
 {
     public class CreateDoctorCommandValidator : AbstractValidator<CreateDoctorCommand>
     {
