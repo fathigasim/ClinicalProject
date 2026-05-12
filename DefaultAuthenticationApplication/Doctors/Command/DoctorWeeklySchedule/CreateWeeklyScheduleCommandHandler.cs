@@ -34,7 +34,7 @@ namespace ClinicProjectApplication.Doctors.Command.DoctorWeeklySchedule
             // 1. Validate input
             if (request.startTime >= request.endTime)
                 return Result<string>.Failure("Invalid time range");
-
+              
                 var weeklyScheduleDto = new WeeklyScheduleDto()
                 {
                     DoctorId = request.DoctorId,
@@ -67,7 +67,11 @@ namespace ClinicProjectApplication.Doctors.Command.DoctorWeeklySchedule
             {
                 return Result<string>.Failure("Cannot create schedule on a holiday.");
             }
-          
+            var isClinicOpened = weeklySchedule.IsClincOpened();
+            if (!isClinicOpened)
+            {
+                return Result<string>.Failure("Clinic is closed at this time");
+            }
             var isDoctorBookedToday=   await _weeklyScheduleRepository.IsDoctorScheduledToday(weeklySchedule.DoctorId, weeklyScheduleDto.DayOfWeek, cancellationToken);
                 if(isDoctorBookedToday)
                 {

@@ -32,13 +32,22 @@ namespace ClinicProjectInfrastructure.Persistence.Repositories
           
 
             return await _dbSet
-                .Where(a => a.AppointmentNumber == appointmentNo)
+                .Where(a => a.AppointmentNumber.Contains( appointmentNo))
                            // a.status != AppointmentStatus.Cancelled &&
                             
                 .FirstOrDefaultAsync(cancellationToken);
         }
+        //public async Task<Appointment?> GetByAppointmentPatientAsync(string patientName, CancellationToken cancellationToken)
+        //{
 
-      
+
+        //    return await _dbSet.Include(p=>p.Patient)
+        //        .Where(a => a.Patient.FirstName )
+        //        // a.status != AppointmentStatus.Cancelled &&
+
+        //        .FirstOrDefaultAsync(cancellationToken);
+        //}
+
         //public async Task<bool> IsDoctorAppointmentsBusy(Guid doctorId, DateTime appointmentDate, CancellationToken ct = default)
         //{
         //    return await _dbSet

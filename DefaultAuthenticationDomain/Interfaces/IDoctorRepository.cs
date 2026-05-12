@@ -12,5 +12,6 @@ namespace ClinicProjectDomain.Interfaces
     public interface IDoctorRepository: IRepository<Doctor>
     {
         Task <WeeklySchedule?> DoctorWeeklySchedule(Guid doctorId,DayOfWeek dayOfWeek,CancellationToken cancellationToken);
+        Task<List<Doctor>?> DoctorsTodaySchedule(CancellationToken cancellationToken);
     }
 }

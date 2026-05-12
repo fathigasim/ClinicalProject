@@ -15,6 +15,14 @@ namespace DefaultAuthenticationApi.Controllers
         public PatientController(IMediator mediator) { 
          _mediator = mediator;
         }
+        [HttpGet("TodaysPatients")]
+        public async Task<IActionResult> GetTodaysPatients()
+        {
+            var todaysPatients = await _mediator.Send(new GetTodaysPatientsQuery());
+            return Ok(todaysPatients);
+             
+        }
+
         [HttpGet("{phone}")]
         public async Task<IActionResult> GetPatient(string phone)
         {
@@ -23,10 +31,12 @@ namespace DefaultAuthenticationApi.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> PostPatient([FromBody] CreatePatientCommand cmd , CancellationToken ct)
+        public async Task<IActionResult> PostPatient( CreatePatientCommand cmd , CancellationToken ct)
         {
             var  result= await _mediator.Send(cmd, ct);
+
             return Ok(result);
+           
         }
     }
 }

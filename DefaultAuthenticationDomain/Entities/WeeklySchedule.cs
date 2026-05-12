@@ -20,7 +20,14 @@ namespace ClinicProjectDomain.Entities
         public bool IsActive { get; set; }
 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-
+        public bool IsClincOpened() { 
+            var clinic=new Clinic();
+           if(StartTime<clinic.OpenTime || EndTime > clinic.CloseTime)
+            {
+                return false;
+            }
+         return true;
+        }
         public bool IsHoliday (DayOfWeek day)
         {
             return  day == DayOfWeek.Friday;//day == DayOfWeek.Saturday ||

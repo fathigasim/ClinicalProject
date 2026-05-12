@@ -1,4 +1,5 @@
-﻿using ClinicProjectApplication.Interfaces;
+﻿using ClinicProjectApplication.Common;
+using ClinicProjectApplication.Interfaces;
 using MediatR;
 using System;
 using System.Collections.Generic;
@@ -9,7 +10,9 @@ using System.Threading.Tasks;
 namespace ClinicProjectApplication.Doctors.Command.DoctorCommand
 {
     public record CreateDoctorCommand
-        (string FirstName, string LastName, string Specialization, string Phone, string Email)
-        :IRequest<Guid>,ITransactionalRequest;
-   
+        (string FirstName, string LastName, string Specialization, string Gender, string Phone, string Email)
+        : IRequest<Result<string>>, ITransactionalRequest, ICacheInvalidatorCommand
+    {
+        public string[] CacheKeys => ["DoctorsList"];
+    }
 }

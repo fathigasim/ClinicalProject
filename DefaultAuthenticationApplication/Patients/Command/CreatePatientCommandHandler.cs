@@ -1,11 +1,12 @@
-﻿using ClinicProjectDomain.Entities;
+﻿using ClinicProjectApplication.Common;
+using ClinicProjectDomain.Entities;
 using ClinicProjectDomain.Interfaces;
 using MediatR;
 
 
 namespace ClinicProjectApplication.Patients.Command
 {
-    public class CreatePatientCommandHandler : IRequestHandler<CreatePatientCommand, Guid>
+    public class CreatePatientCommandHandler : IRequestHandler<CreatePatientCommand,Result< string>>
     {
        private readonly IPatientRepository _patientRepository;
         
@@ -13,11 +14,11 @@ namespace ClinicProjectApplication.Patients.Command
         {
             _patientRepository = patientRepository;
         }
-        public async Task<Guid> Handle(CreatePatientCommand request, CancellationToken cancellationToken)
+        public async Task<Result<string>> Handle(CreatePatientCommand request, CancellationToken cancellationToken)
         {
-           var patient = new Patient
+            var patient = new Patient
             {
-                
+
                 FirstName = request.FirstName,
                 LastName = request.LastName,
                 DOB = request.DOB,
@@ -25,8 +26,8 @@ namespace ClinicProjectApplication.Patients.Command
                 Phone = request.Phone,
                 CreatedAt = DateTime.UtcNow,
             };
-            await  _patientRepository.AddAsync(patient);
-            return patient.Id;
+            await _patientRepository.AddAsync(patient);
+            return Result<string>.Success($"patient {patient.FirstName} {patient.LastName} added successfully");
         }
 
     }

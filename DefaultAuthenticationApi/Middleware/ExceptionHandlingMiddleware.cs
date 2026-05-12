@@ -77,17 +77,16 @@ namespace DefaultAuthenticationApi.Middleware
     {
         private readonly RequestDelegate _next;
         private readonly ILogger<ExceptionHandlingMiddleware> _logger;
-        //private readonly IStringLocalizer<SharedResource> _localizer;
+      
         public ExceptionHandlingMiddleware(
             RequestDelegate next,
             ILogger<ExceptionHandlingMiddleware> logger
-            //,
-            //IStringLocalizer<SharedResource> localizer
+         
             )
         {
             _next = next;
             _logger = logger;
-            //_localizer = localizer;
+      
         }
 
         public async Task InvokeAsync(HttpContext context)
@@ -110,7 +109,7 @@ namespace DefaultAuthenticationApi.Middleware
             context.Response.ContentType = "application/json";
 
             object response;
-            int statusCode;
+            int statusCode = StatusCodes.Status500InternalServerError;
 
             //  Use fully qualified name to be 100% sure
             if (exception is FluentValidation.ValidationException validationException)
@@ -130,7 +129,8 @@ namespace DefaultAuthenticationApi.Middleware
                 {
                     Status = StatusCodes.Status400BadRequest,
                     Title = "ValidationError",//_localizer["ValidationError"],
-                    Type = "https://tools.ietf.org/html/rfc7231#section-6.5.1"
+                    Type = "https://tools.ietf.org/html/rfc7231#section-6.5.1",
+
                 };
                 statusCode = StatusCodes.Status400BadRequest;
             }
@@ -160,29 +160,11 @@ namespace DefaultAuthenticationApi.Middleware
                     Status = StatusCodes.Status409Conflict,
                     Detail=" Invalid Operation"
                 };
-           
+              
                 
-               // statusCode = StatusCodes.Status502BadGateway;
+                statusCode = StatusCodes.Status409Conflict;
             }
-            //else if (exception is ApiException apiException)
-            //{
-            //    response = new ProblemDetails
-            //    {
-            //        Title = apiException.Message,
-            //        Status = StatusCodes.Status502BadGateway // or 500
-            //    };
-            //    statusCode = StatusCodes.Status502BadGateway;
-            //}
-            //else if (exception is ApiTimeoutException timeoutException)
-            //{
-            //    response = new ProblemDetails
-            //    {
-            //        Title = timeoutException.Message,
-            //        Status = StatusCodes.Status504GatewayTimeout
-            //    };
-            //    statusCode = StatusCodes.Status504GatewayTimeout;
-            //}
-            // 1. Add using System.Net.Http; at the top of your file
+
             else if (exception is HttpRequestException httpException)
             {
                 bool isNetworkDown = httpException.InnerException is System.Net.Sockets.SocketException;
@@ -223,7 +205,7 @@ namespace DefaultAuthenticationApi.Middleware
                 statusCode = StatusCodes.Status500InternalServerError;
             }
 
-            //context.Response.StatusCode = statusCode;
+            context.Response.StatusCode = statusCode;
 
             var json = JsonSerializer.Serialize(response, new JsonSerializerOptions
             {

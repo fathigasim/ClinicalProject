@@ -54,7 +54,7 @@ namespace ClinicProjectApplication.Appointments.AppointmentCommand
             var appointment = new Appointment
             {
                 AppointmentNumber = sequence,
-                PatientId = request.PatiendId,
+                PatientId = request.PatientId,
                 DoctorId = request.DoctorId,
                 DayOfWeek = request.DayOfWeek,
                 StartTime = request.StartTime,
@@ -67,7 +67,7 @@ namespace ClinicProjectApplication.Appointments.AppointmentCommand
             //}
 
             //appointment.Schedule(request.AppointmentDate);
-            //await  _appointmentRepository.AddAsync(appointment);
+            await _appointmentRepository.AddAsync(appointment);
             return Result<string>.Success($"Appointment Confirmed for "+$"{appointment.AppointmentNumber}");
         }
     }

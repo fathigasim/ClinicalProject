@@ -26,10 +26,10 @@ namespace ClinicProjectApplication.Invoice
             var sequence =await _sequenceService.GenerateInvoiceNumberAsync();
 
             var invoice = _mapper.Map<Invoices>(request);
-            var isCashExceeded= invoice.CashLimitExceeded();//avoid wasting sequence
-            if (isCashExceeded) { 
-               return Result<string>.Failure("Total Amount exceeds the cash limit.");
-            }
+            //var isCashExceeded= invoice.CashLimitExceeded();//avoid wasting sequence
+            //if (isCashExceeded) { 
+            //   return Result<string>.Failure("Total Amount exceeds the cash limit.");
+            //}
             invoice.InvoiceNo = sequence;
          
             await  _invoiceRepository.AddAsync(invoice);

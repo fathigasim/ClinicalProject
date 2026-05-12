@@ -132,7 +132,7 @@ namespace DefaultAuthenticationApi.Controllers
             {
                 HttpOnly = true,
                 Secure = true,
-                SameSite = SameSiteMode.Strict,
+                SameSite = SameSiteMode.None,
                 Expires = expires,
                 Path = "/api/auth",   // scoped — not sent on every request
             });
@@ -142,7 +142,7 @@ namespace DefaultAuthenticationApi.Controllers
             {
                 HttpOnly = true,
                 Secure = true,
-                SameSite = SameSiteMode.Strict,
+                SameSite = SameSiteMode.None,
                 Path = "/api/auth",   // must match SetRefreshCookie path to actually delete
             });
     }

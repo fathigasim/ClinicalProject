@@ -2,13 +2,14 @@
 using ClinicProjectApplication.Doctors.Command.DoctorWeeklySchedule;
 using ClinicProjectApplication.Doctors.Queries;
 using MediatR;
-
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DefaultAuthenticationApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize (Policy = "AdminOnly")]
     public class DoctorsController : ControllerBase
     {
         private readonly ILogger<DoctorsController> _logger;
@@ -17,6 +18,27 @@ namespace DefaultAuthenticationApi.Controllers
         {
             _logger = logger;
             _mediator = mediator;
+        }
+
+
+        [HttpGet("Doctors-List")]
+        [AllowAnonymous]
+        public async Task<IActionResult> GetAllDoctors()
+        {
+            var doctors = await _mediator.Send(new GetAllDoctorQuery());
+
+            return Ok(doctors);
+
+        }
+
+        [HttpGet("Doctors-Shift")]
+        [AllowAnonymous]
+        public async Task<IActionResult> GetTodaysDoctorsShifts()
+        {
+            var doctors = await _mediator.Send(new GetTodaysDoctorShiftQuery());
+
+            return Ok(doctors);
+
         }
 
         [HttpGet("{email}")]
@@ -38,6 +60,7 @@ namespace DefaultAuthenticationApi.Controllers
             return Ok(doctorId);
             
         }
+        [AllowAnonymous]
         [HttpGet("available-slots")]
 
         public async Task<IActionResult> DoctorAvailableSlots(Guid doctorId, DayOfWeek dayOfWeek)

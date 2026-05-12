@@ -1,5 +1,4 @@
 ﻿using ClinicProjectDomain.Entities;
-
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,9 +7,7 @@ using System.Threading.Tasks;
 
 namespace ClinicProjectDomain.Interfaces
 {
-    public interface IPatientRepository:IRepository<Patient>
+    public interface IPaymentRepository :IRepository<Payments>
     {
-        Task<Patient?> GetByPhone(string phone, CancellationToken ct);
-        Task<List<Patient>> GetTodaysPatients(CancellationToken ct);
     }
 }

@@ -19,6 +19,8 @@ namespace ClinicProjectApplication.Appointments.AppointmentCommand
         public async Task <Result<string>>Handle(CancelAppointmentCommand request, CancellationToken cancellationToken)
         {
           var appointment= await _appointmentRepository.GetByAppointmentNumberAsync(request.AppointmentNo,cancellationToken);
+       
+            
             if (appointment != null)
             {
                 appointment.Cancel();

@@ -7,7 +7,13 @@ using System.Threading.Tasks;
 
 namespace ClinicProjectApplication.Doctors.Dto
 {
-    public record DoctorDto(string FirstName, string LastName, string Specialization, string Phone, string Email);
-
-   
+    public class DoctorDto 
+    {
+        public Guid DoctorId { get; set; }
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
+        public string Specialization { get; set; }
+        public string Phone { get; set; }
+        public string Email { get; set; }
+    }
 }

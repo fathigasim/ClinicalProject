@@ -34,13 +34,6 @@ namespace ClinicProjectDomain.Entities
             }
             status = InvoiceStatus.Cancelled;
         }
-        public bool CashLimitExceeded()
-        {
-            if (Payments.PaymentMethod == PaymentType.Cash && TotalAmount > 1000) // Example cash limit
-            {
-              return true;  // Cash limit exceeded
-            }
-            return false;
-        }
+      
     }
 }

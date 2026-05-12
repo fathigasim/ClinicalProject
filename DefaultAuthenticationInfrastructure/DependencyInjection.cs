@@ -43,7 +43,7 @@ namespace DefaultAuthenticationInfrastructure
                         
                         sql.MigrationsAssembly(typeof(AppDbContext).Assembly.FullName);
                     }));
-
+            services.AddMemoryCache();
             // ── Same scoped AppDbContext satisfies both IUnitOfWork and IReadDbContext
             services.AddScoped<IUnitOfWork, UnitOfWork>();
           //  services.AddScoped<IReadDbContext>(sp => sp.GetRequiredService<AppDbContext>());
@@ -126,7 +126,8 @@ namespace DefaultAuthenticationInfrastructure
             services.AddScoped<IAppointmentRepository,AppointmentRepository>();
             services.AddScoped<IMedicalRecordRepository, MedicalRecordRepository>();
             services.AddScoped<IPrescriptionRepository, PrescriptionRepository>();
-            services.AddScoped<IInvoiceRepository, InvoiceRepository>();    
+            services.AddScoped<IInvoiceRepository, InvoiceRepository>();
+            services.AddScoped<IPaymentRepository, PaymentRepository>();
             services.AddScoped<IWeeklyScheduleRepository, WeeklyScheduleRepository>();
             services.AddScoped<ITokenService, TokenService>();
             services.AddScoped<ICurrentUserService, CurrentUserService>();
