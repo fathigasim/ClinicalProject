@@ -9,11 +9,12 @@ namespace ClinicProjectDomain.Entities
     public class MedicalRecords
     {
         public Guid Id { get; set; }
+        public string MedicalRecordNumber { get; set; }
         public Guid AppointmentId { get; set; }
         public Appointment Appointment { get; set; } = default!;
         public string Diagnosis { get; set; } = default!;
         public ICollection<Prescriptions> Prescriptions{ get; set; } = new List<Prescriptions>();
-        public string Notes { get; set; }
+  
         public DateTime CreatedAt { get; set; } = DateTime.Now;
         
     }

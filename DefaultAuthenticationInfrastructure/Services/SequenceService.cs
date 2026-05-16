@@ -54,7 +54,25 @@ namespace ClinicProjectInfrastructure.Services
             return $"INV-NO-{year}-{nextNumber:D3}";
         }
 
+        public async Task<string> GenerateMedicalNumberAsync()
+        {
+            var outputParam = new Microsoft.Data.SqlClient.SqlParameter
+            {
+                ParameterName = "@nextNumber",
+                SqlDbType = System.Data.SqlDbType.Int,
+                Direction = System.Data.ParameterDirection.Output
+            };
 
+            // Execute the command directly
+            await _context.Database.ExecuteSqlRawAsync(
+                "SET @nextNumber = NEXT VALUE FOR SequenceMedicalNumber",
+                outputParam);
+
+            var nextNumber = (int)outputParam.Value;
+            var year = DateTime.UtcNow.Year;
+
+            return $"MRN-NO-{year}-{nextNumber:D3}";
+        }
     }
 
 }

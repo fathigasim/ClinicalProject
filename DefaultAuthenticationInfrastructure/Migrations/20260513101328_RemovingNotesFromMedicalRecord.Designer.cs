@@ -4,6 +4,7 @@ using ClinicProjectInfrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ClinicProjectInfrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260513101328_RemovingNotesFromMedicalRecord")]
+    partial class RemovingNotesFromMedicalRecord
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -176,12 +179,12 @@ namespace ClinicProjectInfrastructure.Migrations
                     b.Property<Guid>("AppointmentId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("InvoiceNo")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("IssueDate")
-                        .HasColumnType("datetime2");
 
                     b.Property<decimal>("TotalAmount")
                         .HasColumnType("decimal(18,2)");
@@ -210,10 +213,6 @@ namespace ClinicProjectInfrastructure.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Diagnosis")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("MedicalRecordNumber")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 

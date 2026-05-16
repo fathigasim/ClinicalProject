@@ -1,4 +1,8 @@
-﻿using ClinicProjectApplication.Invoice;
+﻿using ClinicProjectApplication.Invoice.Command;
+using ClinicProjectApplication.Invoice.Queries;
+using ClinicProjectApplication.Invoice.Queries.GetAllInvoices;
+using ClinicProjectApplication.Invoice.Queries.GetInvoiceById;
+using ClinicProjectApplication.Invoice.Queries.GetLatestInvoices;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -10,23 +14,46 @@ namespace ClinicProjectApi.Controllers
     [ApiController]
     public class InvoiceController : ControllerBase
     {
-        private readonly IMediator _mediator;   
+        private readonly IMediator _mediator;
         public InvoiceController(IMediator mediator)
         {
             _mediator = mediator;
         }
         // GET: api/<InvoiceController>
         [HttpGet]
-        public IEnumerable<string> Get()
+        public async Task<IActionResult> Get()
         {
-            return new string[] { "value1", "value2" };
+            var query = new GetAllInvoicesQuery();
+            var result = await _mediator.Send(query);
+            if (result.IsSuccess)
+            {
+                return Ok(result);
+            }
+            return BadRequest(result);
         }
 
-        // GET api/<InvoiceController>/5
-        [HttpGet("{id}")]
-        public string Get(int id)
+        [HttpGet("{invoiceNo}")]
+        public async Task<IActionResult> Get(string invoiceNo)
         {
-            return "value";
+            var query = new GetInvoiceByInvoiceNumberQuery(invoiceNo);
+            var result = await _mediator.Send(query);
+            if (result.IsSuccess)
+            {
+                return Ok(result);
+            }
+            return BadRequest(result);
+        }
+
+        [HttpGet("LatestInvoices")]
+        public async Task<IActionResult> GetLatestInvoices()
+        {
+            var query = new GetLatestInvoicesQuery();
+            var result = await _mediator.Send(query);
+            if (result.IsSuccess)
+            {
+                return Ok(result);
+            }
+            return BadRequest(result);
         }
 
         // POST api/<InvoiceController>

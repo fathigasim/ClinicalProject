@@ -10,5 +10,7 @@ namespace ClinicProjectApplication.Doctors.Queries
         public string CacheKey => "DoctorsList";
 
         public TimeSpan? Expiration => TimeSpan.FromMinutes(10);
+
+        public bool BypassCache => throw new NotImplementedException();
     }
 }

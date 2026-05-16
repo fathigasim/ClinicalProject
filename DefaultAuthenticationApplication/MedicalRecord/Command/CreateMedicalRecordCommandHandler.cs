@@ -1,7 +1,7 @@
 ﻿
 using AutoMapper;
 using ClinicProjectApplication.Common;
-using ClinicProjectApplication.MedicalRecord;
+using ClinicProjectApplication.Interfaces;
 using ClinicProjectApplication.MedicalRecord.Dtos;
 using ClinicProjectApplication.Prescription.Dtos;
 using ClinicProjectDomain.Entities;
@@ -14,20 +14,22 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DefaultAutheClinicProjectApplicationnticationApplication.MedicalRecord
+namespace ClinicProjectApplication.MedicalRecord.Command
 {
     public class CreateMedicalRecordCommandHandler:IRequestHandler<CreateMedicalRecordCommand, Result<string>>
     {
         private readonly IMedicalRecordRepository _repository;
+        private readonly ISequenceService _sequenceService;
         private readonly IAppointmentRepository _appointmentRepository;
         private readonly IMapper _mapper;
 
         public CreateMedicalRecordCommandHandler(IMedicalRecordRepository repository,
-            IAppointmentRepository appointmentRepository, IMapper mapper)
+            IAppointmentRepository appointmentRepository, IMapper mapper, ISequenceService sequenceService)
         {
             _repository = repository;
             _appointmentRepository = appointmentRepository;
             _mapper = mapper;
+            _sequenceService = sequenceService;
         }
 
         public async Task<Result<string>> Handle(CreateMedicalRecordCommand request, CancellationToken cancellationToken)
@@ -35,20 +37,21 @@ namespace DefaultAutheClinicProjectApplicationnticationApplication.MedicalRecord
         var appointment=   await _appointmentRepository.GetByAppointmentNumberAsync(request.AppointmentNumber, cancellationToken);
             if (appointment == null)
             {
-                return Result<string>.Failure("Appointment not available");
+                return Result<string>.Failure("Patient with this appointment number is not available");
             }
             var medicalRecord = new MedicalRecordDto
             {
 
                 AppointmentId = appointment.Id,
                 Diagnosis = request.Diagnosis,
-                Notes = request.Notes,
+                
                 CreatedAt = DateTime.UtcNow,
             
 
             };
             
             var medicalRecordEntity = _mapper.Map<MedicalRecords>(medicalRecord);
+            medicalRecordEntity.MedicalRecordNumber = await _sequenceService.GenerateMedicalNumberAsync();
             medicalRecordEntity.Prescriptions = new List<Prescriptions> {
                    new Prescriptions { MedicalRecordId=medicalRecordEntity.Id,
                    PrescriptionItems=new List<PrescriptionItems>

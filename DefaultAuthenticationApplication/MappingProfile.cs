@@ -1,12 +1,15 @@
 ﻿using AutoMapper;
 using ClinicProjectApplication.Doctors.Dto;
 using ClinicProjectApplication.Invoice;
+using ClinicProjectApplication.Invoice.Dtos;
 using ClinicProjectApplication.MedicalRecord.Dtos;
 using ClinicProjectApplication.Patients.Dto;
 using ClinicProjectApplication.Payment.Command;
+using ClinicProjectApplication.Payment.Dtos;
 using ClinicProjectApplication.Prescription.Dtos;
 using ClinicProjectApplication.PrescriptionsItems.Dtos;
 using ClinicProjectDomain.Entities;
+
 
 
 namespace ClinicProjectApplication
@@ -19,9 +22,10 @@ namespace ClinicProjectApplication
 
 
             // Order
-            CreateMap<Invoices, CreateInvoiceCommand>();
-            CreateMap<CreateInvoiceCommand, Invoices>();
-
+            //CreateMap<Invoices, CreatePaymentInvoiceCommand>();
+            //CreateMap<CreatePaymentInvoiceCommand, Invoices>();
+             CreateMap<Invoices, InvoicesDto>().ReverseMap();
+            CreateMap<Payments, PaymentDto>().ReverseMap();
             CreateMap<Prescriptions, PrescriptionsDto>().ReverseMap();
             CreateMap<PrescriptionItems, PrescriptionItemsDto>().ReverseMap();
 
@@ -39,7 +43,8 @@ namespace ClinicProjectApplication
                .ReverseMap();
 
             CreateMap<MedicalRecords, MedicalRecordDto>().ReverseMap();
-           
+          
+            CreateMap<PrescriptionItems, PrescriptionItemDto>();
             //CreateMap<OrderItem, OrderItemDto>()
             //    .ForMember(d => d.ProductName, opt => opt.MapFrom(s => s.Product.Name));
 

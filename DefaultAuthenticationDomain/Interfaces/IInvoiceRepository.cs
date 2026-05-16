@@ -10,5 +10,8 @@ namespace ClinicProjectDomain.Interfaces
 {
     public interface IInvoiceRepository:IRepository<Invoices>
     {
+        Task<List<Invoices>> GetAll(CancellationToken cancellationToken);
+        Task<Invoices?> GetInvoiceByInvoiceNumberAsync(string invoiceNumber, CancellationToken ct = default);
+
     }
 }

@@ -1,7 +1,8 @@
-﻿
-using ClinicProjectApplication.MedicalRecord;
+﻿using ClinicProjectApplication.MedicalRecord.Command;
+using ClinicProjectApplication.MedicalRecord.Queries;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -12,15 +13,24 @@ namespace DefaultAuthenticationApi.Controllers
     public class MedicalRecordsController : ControllerBase
     {
         private readonly IMediator _mediator;
+
         public MedicalRecordsController(IMediator mediator)
         {
             _mediator = mediator;
         }
         // GET: api/<MedicalRecordsController>
-        [HttpGet]
-        public IEnumerable<string> Get()
+        [HttpGet("PatientsInvioces")]
+        public async Task< IActionResult> Get()
         {
-            return new string[] { "value1", "value2" };
+            var invoices = await _mediator.Send( new GetMedicalRecordInvoiceQuery());
+            return Ok(invoices);
+        }
+
+        [HttpGet("PatientsInviocesByAppointmentNumber")]
+        public async Task<IActionResult> PatientsInviocesByAppiontment(string appointmentNo)
+        {
+            var invoices = await _mediator.Send(new GetMedicalRecordInvoiceByAppiontmentQuery(appointmentNo));
+            return Ok(invoices);
         }
 
         // GET api/<MedicalRecordsController>/5

@@ -31,8 +31,8 @@ namespace ClinicProjectInfrastructure.Persistence.Repositories
         {
           
 
-            return await _dbSet
-                .Where(a => a.AppointmentNumber.Contains( appointmentNo))
+            return await _dbSet.Include(p=>p.Patient)
+                .Where(a => a.AppointmentNumber.Contains(appointmentNo))
                            // a.status != AppointmentStatus.Cancelled &&
                             
                 .FirstOrDefaultAsync(cancellationToken);

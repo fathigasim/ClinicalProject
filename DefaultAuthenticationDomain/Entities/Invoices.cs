@@ -13,9 +13,9 @@ namespace ClinicProjectDomain.Entities
         public string InvoiceNo { get; set; }
         public Guid AppointmentId { get; set; }
         public Appointment Appointment { get; set; }
-        public decimal TotalAmount { get; set; }
+        public decimal TotalAmount  { get; set; }
         public InvoiceStatus status { get; set; }= InvoiceStatus.Pending;
-        public DateTime CreatedAt { get; set; }= DateTime.UtcNow;
+        public DateTime IssueDate { get; set; }= DateTime.UtcNow;
         public Payments Payments { get; set; }
 
         public void MarkAsPaid()

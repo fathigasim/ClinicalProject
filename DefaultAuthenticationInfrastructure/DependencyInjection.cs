@@ -135,7 +135,9 @@ namespace DefaultAuthenticationInfrastructure
             services.AddScoped<IUnitOfWork,UnitOfWork>();
             services.AddScoped<IReadDbContext>(sp => sp.GetRequiredService<AppDbContext>());
             services.AddScoped<ISequenceService,SequenceService>();
+            services.AddScoped<IInvoiceService, InvoiceService>();
             services.AddTransient<ScheduleService>();
+
             //services.AddScoped<IDbSeeder,DbSeeder>();
             services.AddHttpContextAccessor();
 

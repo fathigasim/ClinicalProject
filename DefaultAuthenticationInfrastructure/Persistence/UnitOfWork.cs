@@ -35,15 +35,18 @@ namespace ClinicProjectInfrastructure.Persistence
 
         public async Task CommitTransactionAsync(CancellationToken ct = default)
         {
+            if (_currentTransaction is null)
+                throw new InvalidOperationException("No active transaction to commit.");
+
             try
             {
                 await _db.SaveChangesAsync(ct);
-                await _currentTransaction!.CommitAsync(ct);
+                await _currentTransaction.CommitAsync(ct);
             }
             catch
             {
                 await RollbackTransactionAsync(ct);
-                throw;
+                throw; // rethrows original exception (DbUpdateException → 409)
             }
             finally
             {
@@ -51,11 +54,14 @@ namespace ClinicProjectInfrastructure.Persistence
             }
         }
 
+
         public async Task RollbackTransactionAsync(CancellationToken ct = default)
         {
+            if (_currentTransaction is null) return; // guard first
+
             try
             {
-                await _currentTransaction?.RollbackAsync(ct)!;
+                await _currentTransaction.RollbackAsync(ct);
             }
             finally
             {

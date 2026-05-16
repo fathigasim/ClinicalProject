@@ -11,5 +11,6 @@ namespace ClinicProjectApplication.Interfaces
     {
         Task<string> GenerateOrderNumberAsync();
         Task<string> GenerateInvoiceNumberAsync();
+        Task<string> GenerateMedicalNumberAsync();
     }
 }

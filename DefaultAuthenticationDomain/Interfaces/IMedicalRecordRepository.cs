@@ -1,14 +1,12 @@
 ﻿using ClinicProjectDomain.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
 
 namespace ClinicProjectDomain.Interfaces
 {
-    public interface IMedicalRecordRepository : IRepository<MedicalRecords> 
+    public interface IMedicalRecordRepository : IRepository<MedicalRecords>
     {
         Task<MedicalRecords?> PatientMedicalRecord(Guid patientId);
+
+        
     }
 }

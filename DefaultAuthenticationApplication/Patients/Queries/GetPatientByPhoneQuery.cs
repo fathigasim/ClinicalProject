@@ -15,5 +15,7 @@ namespace ClinicProjectApplication.Patients.Queries
         public string CacheKey => $"Patient{Phone}";
 
         public TimeSpan? Expiration => TimeSpan.FromMinutes(15);
+
+        public bool BypassCache => throw new NotImplementedException();
     }
 }

@@ -92,7 +92,7 @@ namespace ClinicProjectInfrastructure.Persistence
             {
                 p.HasKey(p => p.Id);
                 p.HasOne(a => a.Appointment).WithOne(p => p.MedicalRecord).HasForeignKey<MedicalRecords>(r=>r.AppointmentId);
-            
+                
             });
 
             b.Entity<Invoices>(p =>

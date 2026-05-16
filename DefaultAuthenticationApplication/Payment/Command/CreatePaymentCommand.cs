@@ -13,7 +13,7 @@ namespace ClinicProjectApplication.Payment.Command
 {
     public record CreatePaymentCommand :IRequest<Result<string>>,ITransactionalRequest
     {
-        public Guid InvoiceId { get; set; }
+        public string InvoiceNo { get; set; } = default!;
         public decimal Amount { get; set; }
         public PaymentType PaymentMethod { get; set; } = PaymentType.Cash;
     }

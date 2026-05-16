@@ -4,6 +4,8 @@ using ClinicProjectDomain.Exceptions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using System.Net;
 using System.Text.Json;
 
@@ -91,6 +93,7 @@ namespace DefaultAuthenticationApi.Middleware
 
         public async Task InvokeAsync(HttpContext context)
         {
+
             try
             {
                 await _next(context);
@@ -104,6 +107,10 @@ namespace DefaultAuthenticationApi.Middleware
 
         private async Task HandleExceptionAsync(HttpContext context, Exception exception)
         {
+            // ADD THIS - see exactly what type is coming in
+            Console.WriteLine($"Exception type: {exception.GetType().FullName}");
+            Console.WriteLine($"Inner exception type: {exception.InnerException?.GetType().FullName}");
+            Console.WriteLine($"Inner inner: {exception.InnerException?.InnerException?.GetType().FullName}");
             _logger.LogError(exception, "An error occurred: {Message}", exception.Message);
 
             context.Response.ContentType = "application/json";
@@ -142,6 +149,33 @@ namespace DefaultAuthenticationApi.Middleware
                     Status = StatusCodes.Status404NotFound
                 };
                 statusCode = StatusCodes.Status404NotFound;
+            }
+
+            else if (exception is DbUpdateException dbUpdateException &&
+          dbUpdateException.InnerException is SqlException sqlEx)
+            {
+                response = new ProblemDetails
+                {
+                    Title = "Database conflict",
+                    Status = StatusCodes.Status409Conflict,
+                    Detail = sqlEx.Number switch
+                    {
+                        2601 or 2627 => "Duplicate key — a record with this value already exists.",
+                        547 => "Foreign key violation — related record not found.",
+                        _ => sqlEx.Message
+                    }
+                };
+                statusCode = StatusCodes.Status409Conflict;
+            }
+            else if (exception is SqlException sqlException)  // keep this for direct SQL exceptions
+            {
+                response = new ProblemDetails
+                {
+                    Title = sqlException.Message,
+                    Status = StatusCodes.Status409Conflict,
+                    Detail = "Error duplicate key found"
+                };
+                statusCode = StatusCodes.Status409Conflict;
             }
             else if (exception is UnauthorizedAccessException)
             {
@@ -213,6 +247,17 @@ namespace DefaultAuthenticationApi.Middleware
             });
 
             await context.Response.WriteAsync(json);
+        }
+
+        private static T? GetInnerException<T>(Exception exception) where T : Exception
+        {
+            var current = exception;
+            while (current != null)
+            {
+                if (current is T match) return match;
+                current = current.InnerException;
+            }
+            return null;
         }
     }
 }

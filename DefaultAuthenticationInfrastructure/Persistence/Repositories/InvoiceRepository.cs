@@ -1,4 +1,5 @@
 ﻿
+using ClinicProjectApplication.Interfaces;
 using ClinicProjectDomain.Entities;
 using ClinicProjectDomain.Interfaces;
 using ClinicProjectInfrastructure.Services;
@@ -13,9 +14,10 @@ namespace ClinicProjectInfrastructure.Persistence.Repositories
 {
     public class InvoiceRepository: Repository<Invoices>, IInvoiceRepository
     {
-        public InvoiceRepository(AppDbContext context):base (context)
+        private readonly IReadDbContext _readDbContext;
+        public InvoiceRepository(AppDbContext context, IReadDbContext readDbContext):base (context)
         {
-            
+            _readDbContext = readDbContext;
         }
 
 
@@ -23,10 +25,15 @@ namespace ClinicProjectInfrastructure.Persistence.Repositories
         {
             return await _dbSet.Include(a=>a.Appointment).ThenInclude(p=>p.Patient).Where(i => i.Appointment.Patient.Id == patientId).ToListAsync(ct);
         }
+        public async Task<Invoices?> GetInvoiceByInvoiceNumberAsync(string invoiceNumber, CancellationToken ct = default)
+        {
+            return await _dbSet.Where(i => i.InvoiceNo == invoiceNumber).FirstOrDefaultAsync(ct);
+        }
 
-        //public async Task<bool> ISInvoiceIssued(Guid AppointmentId,CancellationToken ct = default)
-        //{
-        //    return await _dbSet.AnyAsync(i => i.AppointmentId == AppointmentId, ct);
-        //}
+        public Task<List<Invoices>> GetAll(CancellationToken cancellationToken)
+        {
+             return _readDbContext.ReadSet<Invoices>().Include(a => a.Payments)
+                .ToListAsync(cancellationToken);
+        }
     }
 }

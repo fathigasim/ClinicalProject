@@ -10,7 +10,7 @@ using Microsoft.OpenApi.Models;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddApplication();
+builder.Services.AddApplication(builder.Environment);
 builder.Services.AddInfrastructure(builder.Configuration);
 
 builder.Services.AddControllers();
@@ -22,9 +22,7 @@ builder.Services.AddCors(options =>
         {
             policy
                 .WithOrigins(
-                    "http://localhost:5173",
-                    "https://localhost:5173"
-                  
+                     builder.Configuration["Frontend:BaseUrl"]
                 )
                 .AllowAnyMethod()
                 .AllowAnyHeader()
