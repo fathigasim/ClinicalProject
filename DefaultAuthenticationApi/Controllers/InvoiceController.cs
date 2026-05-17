@@ -65,7 +65,7 @@ namespace ClinicProjectApi.Controllers
             {
                 return Ok(result);
             }
-            return BadRequest(result);
+            return BadRequest(result.ErrorMessage);
         }
 
         // PUT api/<InvoiceController>/5

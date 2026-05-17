@@ -9,9 +9,12 @@ namespace ClinicProjectDomain.Interfaces
 {
     public interface IAppointmentRepository:IRepository<Appointment>
     {
+
         Task<IReadOnlyList<Appointment>> GetAppointmentsByDoctorIdAsync(Guid doctorId, DayOfWeek dayOfWeek,CancellationToken cancellationToken);
         Task<Appointment?> GetByAppointmentNumberAsync(string appointmentNo, CancellationToken cancellationToken);
-      //  Task<bool> IsDoctorAppointmentsBusy(Guid doctorId, DateOnly appointmentDate, CancellationToken ct = default);
-      // Task<bool> IsSlotOccupied(Guid doctorId, DateTime requestedDate, int durationMinutes, CancellationToken ct = default);
+        Task<List<Appointment>?> GetListOfNotInvoicedAppointmentsAsync(CancellationToken cancellationToken);
+
+        //  Task<bool> IsDoctorAppointmentsBusy(Guid doctorId, DateOnly appointmentDate, CancellationToken ct = default);
+        // Task<bool> IsSlotOccupied(Guid doctorId, DateTime requestedDate, int durationMinutes, CancellationToken ct = default);
     }
 }

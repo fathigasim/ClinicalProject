@@ -1,12 +1,13 @@
 ﻿using AutoMapper;
 using ClinicProjectApplication.Common;
 using ClinicProjectApplication.Doctors.Dto;
+using ClinicProjectDomain.Common.Pagination;
 using ClinicProjectDomain.Interfaces;
 using MediatR;
 
 namespace ClinicProjectApplication.Doctors.Queries
 {
-    public class GetAllDoctorQueryHandler : IRequestHandler<GetAllDoctorQuery, Result<List<DoctorDto>>>
+    public class GetAllDoctorQueryHandler : IRequestHandler<GetAllDoctorQuery, Result<PagedResult<DoctorDto>>>
     {
         private readonly IDoctorRepository _doctorRepository;
         private readonly IMapper _mapper;
@@ -15,12 +16,19 @@ namespace ClinicProjectApplication.Doctors.Queries
             _doctorRepository = doctorRepository;
             _mapper = mapper;
         }
-        public async Task<Result<List<DoctorDto>>> Handle(GetAllDoctorQuery request, CancellationToken cancellationToken)
+        public async Task<Result<PagedResult<DoctorDto>>> Handle(GetAllDoctorQuery request, CancellationToken cancellationToken)
         {
-            var doctors=await _doctorRepository.GetAllAsync(cancellationToken);
-           var doctorsDto=   _mapper.Map<List<DoctorDto>>(doctors);
+            var doctors=await _doctorRepository.GetAllDoctorsAsync(request.page,request.pageSize,cancellationToken);
+          // var doctorsDto=   _mapper.Map<List<DoctorDto>>(doctors);
 
-            return  Result<List<DoctorDto>>.Success(doctorsDto);
+                    return Result<PagedResult<DoctorDto>>.Success(new PagedResult<DoctorDto>
+                    {
+                        Items = _mapper.Map<List<DoctorDto>>(doctors.Items),
+                        TotalCount=doctors.TotalCount,
+                        Page=doctors.Page,
+                        PageSize=doctors.PageSize,
+                    });
+         
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using ClinicProjectApplication.MedicalRecord.Command;
 using ClinicProjectApplication.MedicalRecord.Queries;
+using ClinicProjectApplication.MedicalRecord.Queries.GetAllMedicalRecords;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
@@ -19,6 +20,13 @@ namespace DefaultAuthenticationApi.Controllers
             _mediator = mediator;
         }
         // GET: api/<MedicalRecordsController>
+
+        [HttpGet("AllMedicalRecords")]
+        public async Task<IActionResult> GetPagedMedicalRecords(int page,int pageSize)
+        {
+            var medicalRecords = await _mediator.Send(new GetAllMedicalRecordsQuery(page,pageSize));
+            return Ok(medicalRecords);
+        }
         [HttpGet("PatientsInvioces")]
         public async Task< IActionResult> Get()
         {

@@ -9,7 +9,7 @@ namespace DefaultAuthenticationApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize (Policy = "AdminOnly")]
+    [Authorize(Policy = "AdminOnly")]
     public class DoctorsController : ControllerBase
     {
         private readonly ILogger<DoctorsController> _logger;
@@ -23,9 +23,9 @@ namespace DefaultAuthenticationApi.Controllers
 
         [HttpGet("Doctors-List")]
         [AllowAnonymous]
-        public async Task<IActionResult> GetAllDoctors()
+        public async Task<IActionResult> GetAllDoctors(int page, int pageSize,CancellationToken ct)
         {
-            var doctors = await _mediator.Send(new GetAllDoctorQuery());
+            var doctors = await _mediator.Send(new GetAllDoctorQuery(page,pageSize));
 
             return Ok(doctors);
 

@@ -1,4 +1,5 @@
 ﻿
+using ClinicProjectApplication.Common;
 using ClinicProjectDomain.Interfaces;
 using ClinicProjectInfrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
@@ -17,6 +18,8 @@ namespace ClinicProjectInfrastructure.Services
             _context = context;
             _dbSet = context.Set<T>();
         }
+
+       
 
         public async Task<T?> GetByIdAsync(Guid id, CancellationToken ct = default)
             => await _dbSet.FindAsync([id], ct);

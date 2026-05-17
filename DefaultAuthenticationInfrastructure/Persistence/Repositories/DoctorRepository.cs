@@ -1,8 +1,11 @@
 ﻿
+using ClinicProjectApplication.Common;
 using ClinicProjectApplication.Doctors.Dto;
 using ClinicProjectApplication.Interfaces;
+using ClinicProjectDomain.Common.Pagination;
 using ClinicProjectDomain.Entities;
 using ClinicProjectDomain.Interfaces;
+using ClinicProjectInfrastructure.Extensions;
 using ClinicProjectInfrastructure.Services;
 using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
@@ -17,6 +20,12 @@ namespace ClinicProjectInfrastructure.Persistence.Repositories
         {
             _readDbContext = readDbContext;
         }
+
+        public Task<PagedResult<Doctor>> GetAllDoctorsAsync(int page, int pageSize,CancellationToken ct) =>
+    _readDbContext.ReadSet<Doctor>()
+     
+      .OrderBy(c => c.CreatedAt)
+      .ToPagedAsync(page, pageSize,ct);
         public async Task<WeeklySchedule?> DoctorWeeklySchedule(Guid doctorId, DayOfWeek dayOfWeek , CancellationToken cancellationToken)
         {
                return await  _readDbContext.ReadSet<WeeklySchedule>()

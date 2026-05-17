@@ -37,6 +37,17 @@ namespace ClinicProjectInfrastructure.Persistence.Repositories
                             
                 .FirstOrDefaultAsync(cancellationToken);
         }
+
+        public async Task<List<Appointment>?> GetListOfNotInvoicedAppointmentsAsync(CancellationToken cancellationToken)
+        {
+
+
+            return await _dbSet.Include(p => p.Invoices)
+                .Where(a => a.Id!=a.Invoices.AppointmentId)
+                // a.status != AppointmentStatus.Cancelled &&
+
+                .ToListAsync(cancellationToken);
+        }
         //public async Task<Appointment?> GetByAppointmentPatientAsync(string patientName, CancellationToken cancellationToken)
         //{
 
