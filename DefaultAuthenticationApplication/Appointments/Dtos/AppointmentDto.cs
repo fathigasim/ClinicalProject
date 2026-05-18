@@ -18,7 +18,7 @@ namespace ClinicProjectApplication.Appointments.Dtos
         public Patient Patient { get; set; }
         public Guid DoctorId { get; set; }
         public Doctor Doctor { get; set; }
-        public DayOfWeek DayOfWeek { get; set; }
+        public string DayOfWeek { get; set; }
         public string Notes { get; set; }
         public AppointmentStatus status { get; set; } = AppointmentStatus.Scheduled;
     }

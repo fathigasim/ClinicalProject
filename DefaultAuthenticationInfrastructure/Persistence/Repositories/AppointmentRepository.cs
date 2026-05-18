@@ -1,9 +1,11 @@
 ﻿
 
 
+using ClinicProjectDomain.Common.Pagination;
 using ClinicProjectDomain.Entities;
 using ClinicProjectDomain.Enums;
 using ClinicProjectDomain.Interfaces;
+using ClinicProjectInfrastructure.Extensions;
 using ClinicProjectInfrastructure.Services;
 using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
@@ -15,6 +17,11 @@ namespace ClinicProjectInfrastructure.Persistence.Repositories
         public AppointmentRepository(AppDbContext context):base(context)
         {
             
+        }
+        public async Task<PagedResult<Appointment>> GetTodaysAppointmentsAsync(int page,int pageSize ,CancellationToken cancellationToken)
+        {
+            var dayOfWeek = DateTime.Now.DayOfWeek;
+            return await _dbSet.Where(p => p.DayOfWeek == dayOfWeek &&p.CreatedAt.Date>=DateTime.Now.Date).ToPagedAsync(page, pageSize, cancellationToken);
         }
 
         public async Task<IReadOnlyList<Appointment>> GetAppointmentsByDoctorIdAsync(Guid doctorId, DayOfWeek dayOfWeek, CancellationToken cancellationToken)
@@ -48,6 +55,8 @@ namespace ClinicProjectInfrastructure.Persistence.Repositories
 
                 .ToListAsync(cancellationToken);
         }
+
+    
         //public async Task<Appointment?> GetByAppointmentPatientAsync(string patientName, CancellationToken cancellationToken)
         //{
 

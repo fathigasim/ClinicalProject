@@ -25,7 +25,9 @@ namespace ClinicProjectApplication
             // Order
             //CreateMap<Invoices, CreatePaymentInvoiceCommand>();
             //CreateMap<CreatePaymentInvoiceCommand, Invoices>();
-            CreateMap<Appointment, AppointmentDto>().ReverseMap();
+            CreateMap<Appointment, AppointmentDto>()
+                .ForMember(dest=>dest.DayOfWeek,opt=>opt.MapFrom(str=>str.DayOfWeek.ToString()))
+                .ReverseMap();
             CreateMap<Invoices, InvoicesDto>().ReverseMap();
             CreateMap<Payments, PaymentDto>().ReverseMap();
             CreateMap<Invoices, InvoicesDto>().ReverseMap();

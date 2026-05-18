@@ -1,5 +1,6 @@
 ﻿using ClinicProjectApplication.Appointments.AppointmentCommand;
 using ClinicProjectApplication.Appointments.Queries;
+using ClinicProjectApplication.Appointments.Queries.GetTodayAppointments;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -14,6 +15,14 @@ namespace ClinicProjectApi.Controllers
         public AppointmentController(IMediator mediator)
         {
             _mediator  =mediator;
+        }
+
+        [HttpGet("TodaysAppointments")]
+        public async Task<IActionResult> GetTodaysAppoitmentsAsync(int page,int pageSize)
+        {
+            var result = await _mediator.Send(new GetTodaysAppointmentsQuery(page, pageSize));
+
+            return Ok(result);
         }
 
         [HttpGet("NotInvoicedAppointments")]

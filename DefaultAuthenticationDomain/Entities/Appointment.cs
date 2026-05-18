@@ -20,9 +20,11 @@ namespace ClinicProjectDomain.Entities
         public Doctor Doctor { get; set; }
         public DayOfWeek DayOfWeek { get; set; } 
         public  string Notes  { get; set; }
+        public DateTime CreatedAt { get; set; }=DateTime.Now;
         public AppointmentStatus status { get; set; } = AppointmentStatus.Scheduled;
         public MedicalRecords MedicalRecord { get; set; }
         public Invoices Invoices { get; set; }
+       
 
         public void Cancel()
         {
