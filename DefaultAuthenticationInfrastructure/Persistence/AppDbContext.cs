@@ -1,6 +1,7 @@
 ﻿
 using ClinicProjectApplication.Interfaces;
 using ClinicProjectDomain.Entities;
+using ClinicProjectDomain.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
@@ -13,6 +14,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
+using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using System.Transactions;
@@ -24,31 +26,33 @@ namespace ClinicProjectInfrastructure.Persistence
     : IdentityDbContext<ApplicationUser, IdentityRole, string>
     ,IReadDbContext
     {
-        public AppDbContext(DbContextOptions<AppDbContext> options
-          )  
+        private readonly IHttpContextAccessor? _httpContextAccessor;
+        public AppDbContext(DbContextOptions<AppDbContext> options,
+          IHttpContextAccessor? httpContextAccessor)  
            : base(options)
         {
+            _httpContextAccessor = httpContextAccessor;
         }
-        public class AppDbContextFactory
-       : IDesignTimeDbContextFactory<AppDbContext>
-        {
-            public AppDbContext CreateDbContext(string[] args)
-            {
-                var basePath = Directory.GetCurrentDirectory();
+       // public class AppDbContextFactory
+       //: IDesignTimeDbContextFactory<AppDbContext>
+       // {
+       //     public AppDbContext CreateDbContext(string[] args)
+       //     {
+       //         var basePath = Directory.GetCurrentDirectory();
 
-                var config = new ConfigurationBuilder()
-                    .SetBasePath(Path.Combine(Directory.GetCurrentDirectory(), "../DefaultAuthenticationApi"))
-                    .AddJsonFile("appsettings.json", optional: false)
-                    .Build();
+       //         var config = new ConfigurationBuilder()
+       //            //// .SetBasePath(Path.Combine(Directory.GetCurrentDirectory(), "../DefaultAuthenticationApi"))
+       //             .AddJsonFile("appsettings.json", optional: false)
+       //             .Build();
 
-                var connectionString = config.GetConnectionString("DefaultConnection");
+       //         var connectionString = config.GetConnectionString("DefaultConnection");
 
-                var optionsBuilder = new DbContextOptionsBuilder<AppDbContext>();
-                optionsBuilder.UseSqlServer(connectionString);
+       //         var optionsBuilder = new DbContextOptionsBuilder<AppDbContext>();
+       //         optionsBuilder.UseSqlServer(connectionString);
 
-                return new AppDbContext(optionsBuilder.Options);
-            }
-        }
+       //        // return new AppDbContext(optionsBuilder.Options,_httpContextAccessor);
+       //     }
+       // }
         public IQueryable<T> ReadSet<T>() where T : class
          => Set<T>().AsNoTracking();
 
@@ -56,15 +60,18 @@ namespace ClinicProjectInfrastructure.Persistence
     {
         base.OnModelCreating(b);
 
-        b.Entity<ApplicationUser>()
-         .OwnsMany(u => u.RefreshTokens, rt =>
-         {
-             rt.WithOwner().HasForeignKey(t => t.UserId);
-             rt.HasKey(t => t.Id);
-             rt.Property(t => t.Token).IsRequired().HasMaxLength(128);
-             rt.HasIndex(t => t.Token).IsUnique();
-             rt.Property(t => t.Expires).IsRequired();
-         });
+            b.Entity<ApplicationUser>()
+      .OwnsMany(u => u.RefreshTokens, rt =>
+      {
+          rt.WithOwner().HasForeignKey(t => t.UserId);
+          rt.HasKey(t => t.Id);                              // explicit PK
+          rt.Property(t => t.Id).ValueGeneratedNever();      // we set it in Create()
+          rt.Property(t => t.Token).IsRequired().HasMaxLength(128);
+          rt.HasIndex(t => t.Token).IsUnique();
+          rt.Property(t => t.Expires).IsRequired();
+          rt.Ignore(t => t.IsExpired);                       // computed, not mapped
+          rt.Ignore(t => t.IsActive);                        // computed, not mapped
+      });
             b.Entity<Doctor>(d =>
             {
 
@@ -127,5 +134,27 @@ namespace ClinicProjectInfrastructure.Persistence
 
         public DbSet<PrescriptionItems> PrescriptionItems { get; set; }
 
+
+        public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+        {
+            var userId = _httpContextAccessor?.HttpContext?.User?
+              .FindFirstValue(ClaimTypes.NameIdentifier);
+            foreach (var entry in ChangeTracker.Entries<IAuditableEntity>())
+            {
+                switch (entry.State)
+                {
+                    case EntityState.Added:
+                        entry.Entity.CreatedAt = DateTime.UtcNow;
+                        entry.Entity.CreatedBy = userId;
+                        break;
+                    case EntityState.Modified:
+                        entry.Entity.UpdatedAt = DateTime.UtcNow;
+                        entry.Entity.UpdatedBy = userId;
+                        break;
+                }
+            }
+
+            return base.SaveChangesAsync(cancellationToken);
+        }
     }
 }

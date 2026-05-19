@@ -14,5 +14,6 @@ namespace ClinicProjectApplication.Interfaces
         Task<bool> CheckPasswordAsync(ApplicationUser user, string password);
 
         Task<IList<string>> GetRolesAsync(ApplicationUser user);
+        Task DeleteUserAsync(ApplicationUser user);
     }
 }

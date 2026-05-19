@@ -16,29 +16,35 @@ namespace ClinicProjectApplication.RegisterUser
         public class RegisterUserHandler(
      UserManager<ApplicationUser> userManager,
      IUserRepository userRepository,
-     TokenIssuer tokenIssuer)
-     : IRequestHandler<RegisterUserCommand, AuthTokenPair>
+     TokenIssuer tokenIssuer,
+     IPublisher publisher)
+     : IRequestHandler<RegisterUserCommand, string>
         {
-            public async Task<AuthTokenPair> Handle(RegisterUserCommand req, CancellationToken ct)
-            {
-                if (await userManager.FindByEmailAsync(req.Email) != null)
-                    throw new ApiConflictException($"Email '{req.Email}' is already registered.");
 
-                var user = new ApplicationUser { Email = req.Email, UserName = req.Email };
+        public async Task<string> Handle(RegisterUserCommand req, CancellationToken ct)
+        {
+            if (await userManager.FindByEmailAsync(req.Email) != null)
+                throw new ApiConflictException($"Email '{req.Email}' is already registered.");
 
-                var result = await userManager.CreateAsync(user, req.Password);
-                if (!result.Succeeded)
-                    throw new ApiValidationException("Validation",
-                        result.Errors.ToDictionary(e => e.Code, e => new[] { e.Description }));
+            var user = new ApplicationUser { Email = req.Email, UserName = req.Email };
+            var result = await userManager.CreateAsync(user, req.Password);
 
-                await userManager.AddToRoleAsync(user, "User");
+            if (!result.Succeeded)
+                throw new ApiValidationException("Validation",
+                    result.Errors.ToDictionary(e => e.Code, e => new[] { e.Description }));
 
-                var tracked = await userRepository.GetByEmailAsync(req.Email, ct)
-                    ?? throw new NotFoundException(nameof(ApplicationUser), req.Email);
+            await userManager.AddToRoleAsync(user, "User");
 
-                return await tokenIssuer.IssueAsync(tracked, req.IpAddress, ct);
-            }
+            // Generate confirmation token
+            var confirmToken = await userManager.GenerateEmailConfirmationTokenAsync(user);
 
+            // Publish notification (your email handler picks this up)
+            await publisher.Publish(new RegisterNotification(req.Email, confirmToken), ct);
+
+            // Don't issue auth tokens yet — user must confirm email first
+            return "Registration successful. Please check your email to confirm your account.";
         }
+
+    }
     }
 

@@ -1,23 +1,25 @@
 ﻿
 
-using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.IdentityModel.Tokens;
-using Microsoft.AspNetCore.Http;
-using System.Text;
-using ClinicProjectInfrastructure.Persistence;
+using ClinicProjectApplication;
+using ClinicProjectApplication.Common;
 using ClinicProjectApplication.Interfaces;
 using ClinicProjectDomain.Entities;
-using ClinicProjectInfrastructure.Services;
 using ClinicProjectDomain.Interfaces;
-using DefaultAuthenticationInfrastructure.Services;
-using ClinicProjectInfrastructure.Persistence.Repositories;
-using ClinicProjectInfrastructure.Identity;
-using ClinicProjectApplication;
 using ClinicProjectDomain.Services;
+using ClinicProjectInfrastructure.Identity;
+using ClinicProjectInfrastructure.Persistence;
+using ClinicProjectInfrastructure.Persistence.Repositories;
+using ClinicProjectInfrastructure.Services;
+using DefaultAuthenticationInfrastructure.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 
 
@@ -33,7 +35,9 @@ namespace DefaultAuthenticationInfrastructure
      
     IConfiguration configuration)
         {
-          
+            services.Configure<SmtpSettings>(
+    configuration.GetSection("SmtpSettings"));
+
             // ── Single SQL Server connection for both reads and writes ─────────────
             services.AddDbContext<AppDbContext>(opts =>
                 opts.UseSqlServer(
@@ -56,8 +60,12 @@ namespace DefaultAuthenticationInfrastructure
                 opts.Password.RequireDigit = true;
                 opts.Password.RequireNonAlphanumeric = false;
                 opts.User.RequireUniqueEmail = true;
-                opts.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
+
+
                 opts.Lockout.MaxFailedAccessAttempts = 5;
+                opts.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(15);
+                opts.Lockout.AllowedForNewUsers = true;
+                opts.SignIn.RequireConfirmedEmail = true; // ties into point 1
             })
             .AddEntityFrameworkStores<AppDbContext>()
             .AddDefaultTokenProviders();
@@ -137,7 +145,7 @@ namespace DefaultAuthenticationInfrastructure
             services.AddScoped<ISequenceService,SequenceService>();
             services.AddScoped<IInvoiceService, InvoiceService>();
             services.AddTransient<ScheduleService>();
-
+            services.AddTransient<IEmailSender, EmailSender>();
             //services.AddScoped<IDbSeeder,DbSeeder>();
             services.AddHttpContextAccessor();
 

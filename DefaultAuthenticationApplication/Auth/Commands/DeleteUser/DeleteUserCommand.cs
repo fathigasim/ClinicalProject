@@ -1,4 +1,5 @@
 ﻿
+using ClinicProjectApplication.Common;
 using ClinicProjectApplication.Interfaces;
 using MediatR;
 using System;
@@ -10,8 +11,8 @@ using System.Threading.Tasks;
 namespace ClinicProjectApplication.Auth.Commands.DeleteUser
 {
     //  Admin-only command
-    public record DeleteUserCommand(string UserId)
-        : IRequest<Unit>, ITransactionalRequest
+    public record DeleteUserCommand(string Email)
+        : IRequest<Result<string>>
     {
        
     }

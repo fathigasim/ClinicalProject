@@ -37,10 +37,17 @@ namespace ClinicProjectApplication.Auth.Commands.RefreshTokens
 
             var existing = user.RefreshTokens.SingleOrDefault(t => t.Token == req.RefreshToken)
                 ?? throw new UnauthorizedException("Invalid refresh token.");
+            if (!existing.IsActive)
+            {
+                // Revoked token reuse = possible theft — nuke everything
+                foreach (var t in user.RefreshTokens.Where(t => t.IsActive).ToList())
+                    t.Revoke(req.IpAddress);
+                await userRepository.SaveAsync(ct);
+                throw new UnauthorizedException("Refresh token reuse detected. All sessions revoked.");
+            }
 
             if (!existing.IsActive)
                 throw new UnauthorizedException("Refresh token is expired or revoked.");
-
             // Rotate: revoke the specific token, issue fresh pair
             existing.Revoke(req.IpAddress);
 

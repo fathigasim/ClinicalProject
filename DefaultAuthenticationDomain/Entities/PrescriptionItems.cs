@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ClinicProjectDomain.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,9 +7,9 @@ using System.Threading.Tasks;
 
 namespace ClinicProjectDomain.Entities
 {
-    public class PrescriptionItems
+    public class PrescriptionItems :BaseEntity, IAuditableEntity
     {
-        public Guid Id { get; set; }
+       
         public Guid PrescriptionId { get; set; }
         public string MedicationName { get; set; }
         public string Dosage { get; set; }

@@ -15,5 +15,6 @@ namespace ClinicProjectDomain.Interfaces
         Task<ApplicationUser?> GetByRefreshTokenAsync(string token, CancellationToken ct);
         Task UpdateAsync(ApplicationUser user, CancellationToken ct);
         Task PurgeExpiredTokensAsync(CancellationToken ct);
+        Task SaveAsync(CancellationToken ct);
     }
 }

@@ -3,8 +3,9 @@ using ClinicProjectInfrastructure.Persistence;
 using DefaultAuthenticationApi.Middleware;
 using DefaultAuthenticationApplication;
 using DefaultAuthenticationInfrastructure;
-
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.OpenApi.Models;
+using System.Threading.RateLimiting;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -35,6 +36,15 @@ builder.Services.AddCors(options =>
                   .AllowAnyHeader()
                   .AllowCredentials();
         }
+    });
+});
+builder.Services.AddRateLimiter(options =>
+{
+    options.AddFixedWindowLimiter("auth", o =>
+    {
+        o.PermitLimit = 5;
+        o.Window = TimeSpan.FromMinutes(1);
+        o.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
     });
 });
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

@@ -1,5 +1,6 @@
 ﻿
 using ClinicProjectApi.Dtos;
+using ClinicProjectApplication.Auth.Commands.DeleteUser;
 using ClinicProjectApplication.Auth.Commands.LoginUser;
 using ClinicProjectApplication.Auth.Commands.RefreshTokens;
 using ClinicProjectApplication.Auth.Commands.RegisterUser;
@@ -16,6 +17,7 @@ using System.Security.Claims;
 
 namespace DefaultAuthenticationApi.Controllers
 {
+    
     [ApiController]
     [Route("api/auth")]
     public class AuthController(IMediator mediator, IHttpContextAccessor httpContext) : ControllerBase
@@ -40,12 +42,12 @@ namespace DefaultAuthenticationApi.Controllers
                     req.Email, req.Password,
                     IpAddress), ct);
 
-            SetRefreshCookie(result.newRefresh, result.Expires);
-            return CreatedAtAction(nameof(Register), new ClinicProjectApi.Dtos.AccessTokenResponseDto(result.accessToken));
+         //   SetRefreshCookie(result.newRefresh, result.Expires);
+            return CreatedAtAction(nameof(Register),"Please check your email for confirmation");
         }
 
         // ── POST api/auth/login ───────────────────────────────────────────────────
-
+     //   [RateLimiter("auth")]
         [HttpPost("login")]
         [ProducesResponseType(typeof(AccessTokenResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -124,7 +126,16 @@ namespace DefaultAuthenticationApi.Controllers
             ClearRefreshCookie();
             return NoContent();
         }
-
+        [Authorize]
+        [HttpDelete("delete")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task< IActionResult> Delete(string email)
+        {
+           var result=  await mediator.Send(new DeleteUserCommand(email));
+         return  result.IsSuccess ?  Ok(result) : BadRequest(result.ErrorMessage);
+           
+        }
         // ── Private helpers ───────────────────────────────────────────────────────
 
         private void SetRefreshCookie(string token, DateTime expires) =>

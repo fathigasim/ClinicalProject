@@ -19,7 +19,7 @@ namespace ClinicProjectApplication.Auth.Commands.RevokeTokens
             foreach (var token in user.RefreshTokens.Where(t => t.IsActive).ToList())
                 token.Revoke(req.IpAddress);
 
-            await userRepository.UpdateAsync(user, ct);
+            await userRepository.SaveAsync( ct);
         }
     }
 }

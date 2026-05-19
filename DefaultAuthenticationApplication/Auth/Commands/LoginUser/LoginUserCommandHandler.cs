@@ -27,7 +27,8 @@ namespace ClinicProjectApplication.Auth.Commands.LoginUser
         {
             var user = await userRepository.GetByEmailAsync(req.Email, ct)
                 ?? throw new UnauthorizedException("Invalid credentials.");
-
+            if (!user.EmailConfirmed)
+                throw new UnauthorizedException("Please confirm your email before logging in.");
             if (!await userManager.CheckPasswordAsync(user, req.Password))
                 throw new UnauthorizedException("Invalid credentials.");
 

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ClinicProjectDomain.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,9 +7,9 @@ using System.Threading.Tasks;
 
 namespace ClinicProjectDomain.Entities
 {
-    public class Doctor
+    public class Doctor :BaseEntity, IAuditableEntity
     {
-        public Guid Id { get; set; }
+     
         public string FirstName { get; set; }=default!;
         public string LastName { get; set; }=default!;
         public string Specialization { get; set; }=default!;

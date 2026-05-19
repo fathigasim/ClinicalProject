@@ -1,4 +1,5 @@
 ﻿using ClinicProjectDomain.Enums;
+using ClinicProjectDomain.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,9 +8,9 @@ using System.Threading.Tasks;
 
 namespace ClinicProjectDomain.Entities
 {
-    public class Payments
+    public class Payments :BaseEntity, IAuditableEntity
     {
-        public Guid Id  { get; set; }
+       
         public Guid InvoiceId { get; set; }
         public Invoices Invoice { get; set; }
         public decimal Amount { get; set; }

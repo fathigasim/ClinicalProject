@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ClinicProjectDomain.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,9 +7,9 @@ using System.Threading.Tasks;
 
 namespace ClinicProjectDomain.Entities
 {
-    public class RefreshToken
+    public class RefreshToken //: BaseEntity,IAuditableEntity
     {
-        public int Id { get; private set; }
+        public Guid Id { get; private set; } = Guid.NewGuid();
         public string UserId { get; private set; } = default!;
         public string Token { get; private set; } = default!;
         public DateTime Expires { get; private set; }

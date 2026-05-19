@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ClinicProjectDomain.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,9 +7,9 @@ using System.Threading.Tasks;
 
 namespace ClinicProjectDomain.Entities
 {
-    public class WeeklySchedule
+    public class WeeklySchedule :BaseEntity, IAuditableEntity
     {
-        public int Id { get; set; }
+       
         public Guid DoctorId { get; set; }
         public Doctor Doctor { get; set; }
         public DayOfWeek DayOfWeek  { get; set; }

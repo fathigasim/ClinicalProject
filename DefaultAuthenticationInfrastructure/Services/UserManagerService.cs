@@ -42,6 +42,10 @@ namespace DefaultAuthenticationInfrastructure.Services
             return roles;
         }
 
-        
+        public async Task DeleteUserAsync(ApplicationUser user)
+        {
+              await _userManager.DeleteAsync(user);
+           
+        }
     }
 }
