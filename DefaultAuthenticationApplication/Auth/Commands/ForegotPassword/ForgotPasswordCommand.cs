@@ -6,7 +6,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ClinicProjectApplication.Auth.Commands.RegisterUser
+namespace ClinicProjectApplication.Auth.Commands.ForegotPassword
 {
-    public record ConfirmEmailCommand(string Email, string Token) : IRequest<Result<string>>;
+    public record ForgotPasswordCommand(string email):IRequest<Result<string>>
+    {
+
+    }
 }

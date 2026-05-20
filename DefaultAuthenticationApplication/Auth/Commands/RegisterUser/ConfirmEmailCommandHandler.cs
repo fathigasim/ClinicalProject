@@ -1,4 +1,5 @@
-﻿using ClinicProjectApplication.Common.Exceptions;
+﻿using ClinicProjectApplication.Common;
+using ClinicProjectApplication.Common.Exceptions;
 using ClinicProjectApplication.Exceptions;
 using ClinicProjectDomain.Entities;
 using ClinicProjectDomain.Interfaces;
@@ -19,9 +20,9 @@ namespace ClinicProjectApplication.Auth.Commands.RegisterUser
         UserManager<ApplicationUser> userManager,
         IUserRepository userRepository,
         TokenIssuer tokenIssuer)
-        : IRequestHandler<ConfirmEmailCommand, AuthTokenPair>
+        : IRequestHandler<ConfirmEmailCommand, Result<string>>
     {
-        public async Task<AuthTokenPair> Handle(ConfirmEmailCommand req, CancellationToken ct)
+        public async Task<Result<string>> Handle(ConfirmEmailCommand req, CancellationToken ct)
         {
             var user = await userManager.FindByEmailAsync(req.Email)
                 ?? throw new NotFoundException(nameof(ApplicationUser), req.Email);
@@ -33,14 +34,17 @@ namespace ClinicProjectApplication.Auth.Commands.RegisterUser
             var result = await userManager.ConfirmEmailAsync(user, decodedToken);
 
             if (!result.Succeeded)
-                throw new ApiValidationException("Confirmation failed",
-                    result.Errors.ToDictionary(e => e.Code, e => new[] { e.Description }));
-
+            //throw new ApiValidationException("Confirmation failed",
+            //    result.Errors.ToDictionary(e => e.Code, e => new[] { e.Description }));
+            {
+                return Result<string>.Failure("Confirmation failed");
+            }
             // Email confirmed — now issue tokens and log them in
-            var tracked = await userRepository.GetByEmailAsync(req.Email, ct)
-                ?? throw new NotFoundException(nameof(ApplicationUser), req.Email);
+            //var tracked = await userRepository.GetByEmailAsync(req.Email, ct)
+            //    ?? throw new NotFoundException(nameof(ApplicationUser), req.Email);
 
-            return await tokenIssuer.IssueAsync(tracked, null, ct);
+            //return await tokenIssuer.IssueAsync(tracked, null, ct);
+            return Result<string>.Success("Email confirmed successfully");
         }
     }
 }

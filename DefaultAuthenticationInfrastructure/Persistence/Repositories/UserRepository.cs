@@ -32,4 +32,9 @@ public class UserRepository(AppDbContext db) : IUserRepository
     {
         throw new NotImplementedException();
     }
+
+    public Task<ApplicationUser?> ForgotPasswordAsync(string email, CancellationToken ct)
+      => db.users
+          .Include(u => u.RefreshTokens)
+          .FirstOrDefaultAsync(u => u.Email == email, ct);
 }

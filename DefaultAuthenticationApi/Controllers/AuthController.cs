@@ -1,10 +1,12 @@
 ﻿
 using ClinicProjectApi.Dtos;
 using ClinicProjectApplication.Auth.Commands.DeleteUser;
+using ClinicProjectApplication.Auth.Commands.ForegotPassword;
 using ClinicProjectApplication.Auth.Commands.LoginUser;
 using ClinicProjectApplication.Auth.Commands.RefreshTokens;
 using ClinicProjectApplication.Auth.Commands.RegisterUser;
 using ClinicProjectApplication.Auth.Commands.RevokeTokens;
+using ClinicProjectApplication.Auth.ResetPassword;
 using ClinicProjectApplication.Commands.RevokeTokens;
 using ClinicProjectApplication.Common.Exceptions;
 using MediatR;
@@ -136,6 +138,39 @@ namespace DefaultAuthenticationApi.Controllers
          return  result.IsSuccess ?  Ok(result) : BadRequest(result.ErrorMessage);
            
         }
+
+        [AllowAnonymous]
+        [HttpGet("confirm-email")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> ConfirmEmail([FromQuery]string email,string token)
+        {
+            var result = await mediator.Send(new ConfirmEmailCommand(email,token));
+            return result.IsSuccess ? Ok(result) : BadRequest(result.ErrorMessage);
+
+        }
+
+        [AllowAnonymous]
+        [HttpPost("foregot-password")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> ForegotPassword([FromBody] ForgotPasswordRequest request)
+        {
+            var result = await mediator.Send(new ForgotPasswordCommand(request.Email));
+            return result.IsSuccess ? Ok(result) : BadRequest(result.ErrorMessage);
+
+        }
+
+        [AllowAnonymous]
+        [HttpPost("reset-password")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordRequest request)
+        {
+            var result = await mediator.Send(new ResetPasswordCommand(request.Email,request.Token,request.NewPassword));
+            return result.IsSuccess ? Ok(result) : BadRequest(result.ErrorMessage);
+
+        }
         // ── Private helpers ───────────────────────────────────────────────────────
 
         private void SetRefreshCookie(string token, DateTime expires) =>
@@ -156,5 +191,8 @@ namespace DefaultAuthenticationApi.Controllers
                 SameSite = SameSiteMode.None,
                 Path = "/api/auth",   // must match SetRefreshCookie path to actually delete
             });
+
+        public record ResetPasswordRequest(string Email, string Token, string NewPassword);
+         public record ForgotPasswordRequest(string Email);
     }
 }

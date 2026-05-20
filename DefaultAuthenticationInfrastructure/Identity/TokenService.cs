@@ -29,6 +29,8 @@ namespace ClinicProjectInfrastructure.Identity
             new(JwtRegisteredClaimNames.Sub,   user.Id),
             new(JwtRegisteredClaimNames.Email, user.Email!),
             new(JwtRegisteredClaimNames.Jti,   Guid.NewGuid().ToString()),
+            // Add it in your backend claims
+new(JwtRegisteredClaimNames.Name, user.UserName!)
         };
             claims.AddRange(roles.Select(r => new Claim(ClaimTypes.Role, r)));
 
