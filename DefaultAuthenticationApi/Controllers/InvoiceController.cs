@@ -61,12 +61,11 @@ namespace ClinicProjectApi.Controllers
         public async Task<IActionResult> Post([FromBody] CreateInvoiceCommand command)
         {
             var result = await _mediator.Send(command);
-            if (result.IsSuccess)
-            {
+        
                 return Ok(result);
             }
-            return BadRequest(result.ErrorMessage);
-        }
+  
+        
 
         // PUT api/<InvoiceController>/5
         [HttpPut("{id}")]

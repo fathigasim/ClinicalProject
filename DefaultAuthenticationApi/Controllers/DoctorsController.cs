@@ -9,7 +9,7 @@ namespace DefaultAuthenticationApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize(Policy = "AdminOnly")]
+ //   [Authorize(Policy = "AdminOnly")]
     public class DoctorsController : ControllerBase
     {
         private readonly ILogger<DoctorsController> _logger;
@@ -63,7 +63,7 @@ namespace DefaultAuthenticationApi.Controllers
         [AllowAnonymous]
         [HttpGet("available-slots")]
 
-        public async Task<IActionResult> DoctorAvailableSlots(Guid doctorId, DayOfWeek dayOfWeek)
+        public async Task<IActionResult> DoctorAvailableSlots( Guid doctorId, DayOfWeek dayOfWeek)
         {
             var availableSlots = await _mediator.Send(new GetDoctorsAvailableSlotsQuery { DoctorId = doctorId, DayOfWeek = dayOfWeek });
 

@@ -25,7 +25,7 @@ namespace ClinicProjectInfrastructure.Services
 
             // Execute the command directly
             await _context.Database.ExecuteSqlRawAsync(
-                "SET @nextNumber = NEXT VALUE FOR SequenceNumbers",
+                "SET @nextNumber = NEXT VALUE FOR SequenceAppointmentNumbers",
                 outputParam);
 
             var nextNumber = (int)outputParam.Value;
