@@ -11,9 +11,11 @@ namespace ClinicProjectApi.Controllers
     public class PaymentsController : ControllerBase
     {
         private readonly ISender _sender; 
-        public PaymentsController(ISender sender)
+        private readonly IConfiguration _configuration;
+        public PaymentsController(ISender sender, IConfiguration configuration)
         {
             _sender = sender;
+            _configuration = configuration;
         }
         [HttpPost]
         public async Task<IActionResult> PostAsync(CreatePaymentCommand command)
@@ -37,7 +39,7 @@ namespace ClinicProjectApi.Controllers
         }
             };
 
-            var service = new PaymentIntentService();
+            var service = new PaymentIntentService(new StripeClient(_configuration["stripe:SecretKey"]));
             var intent = await service.CreateAsync(options);
 
             return Ok(new { clientSecret = intent.ClientSecret }); // ✅ send back to frontend

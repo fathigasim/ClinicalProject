@@ -15,5 +15,9 @@ namespace ClinicProjectApplication.Interfaces
         Task<List<MedicalInvoiceDto>> PatientMedicalRecordInvoicesByAppointmentNumber(string AppointmentNumber);
         Task<List<InvoicesDto>> GetAllInvoices(CancellationToken cancellationToken);
         Task<List<InvoicesDto>> GetLatestInvoices(CancellationToken cancellationToken);
+
+        Task<List<MonthlyInvoiceDto>> GetMonthlyInvoices(CancellationToken cancellationToken);
+        Task<List<WeeklyInvoiceDto>> GetWeeklyInvoices(CancellationToken cancellationToken);
+        Task<List<DailyInvoiceDto>> GetDailyInvoices(CancellationToken cancellationToken);
     }
 }

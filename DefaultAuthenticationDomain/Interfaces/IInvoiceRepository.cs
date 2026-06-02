@@ -12,6 +12,7 @@ namespace ClinicProjectDomain.Interfaces
     {
         Task<List<Invoices>> GetAll(CancellationToken cancellationToken);
         Task<Invoices?> GetInvoiceByInvoiceNumberAsync(string invoiceNumber, CancellationToken ct = default);
+        
 
     }
 }

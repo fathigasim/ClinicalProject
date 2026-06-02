@@ -35,5 +35,8 @@ namespace ClinicProjectInfrastructure.Persistence.Repositories
              return _readDbContext.ReadSet<Invoices>().Include(a => a.Payments)
                 .ToListAsync(cancellationToken);
         }
+  
+
+
     }
 }

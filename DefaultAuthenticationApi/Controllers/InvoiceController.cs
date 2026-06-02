@@ -1,8 +1,11 @@
 ﻿using ClinicProjectApplication.Invoice.Command;
 using ClinicProjectApplication.Invoice.Queries;
 using ClinicProjectApplication.Invoice.Queries.GetAllInvoices;
+using ClinicProjectApplication.Invoice.Queries.GetDailyInvioceReport;
 using ClinicProjectApplication.Invoice.Queries.GetInvoiceById;
 using ClinicProjectApplication.Invoice.Queries.GetLatestInvoices;
+using ClinicProjectApplication.Invoice.Queries.GetMonthlyInvioceReport;
+using ClinicProjectApplication.Invoice.Queries.GetWeeklyInvioceReport;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -56,6 +59,41 @@ namespace ClinicProjectApi.Controllers
             return BadRequest(result);
         }
 
+        [HttpGet("MonthlyInvoices")]
+        public async Task<IActionResult> GetMonthlyInvoices()
+        {
+            var query = new GetMonthlyInvoice();
+            var result = await _mediator.Send(query);
+            if (result.IsSuccess)
+            {
+                return Ok(result);
+            }
+            return BadRequest(result);
+        }
+
+        [HttpGet("WeeklyInvoices")]
+        public async Task<IActionResult> GetWeeklyInvoices()
+        {
+            var query = new GetWeeklyInvioce();
+            var result = await _mediator.Send(query);
+            if (result.IsSuccess)
+            {
+                return Ok(result);
+            }
+            return BadRequest(result);
+        }
+
+        [HttpGet("DailyInvoices")]
+        public async Task<IActionResult> GetDailyInvoices()
+        {
+            var query = new GetDailyInvoiceQuery();
+            var result = await _mediator.Send(query);
+            if (result.IsSuccess)
+            {
+                return Ok(result);
+            }
+            return BadRequest(result);
+        }
         // POST api/<InvoiceController>
         [HttpPost]
         public async Task<IActionResult> Post([FromBody] CreateInvoiceCommand command)

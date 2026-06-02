@@ -26,12 +26,12 @@ namespace ClinicProjectInfrastructure.Services
         public async Task<List<InvoicesDto>> GetAllInvoices(CancellationToken cancellationToken)
         {
             var invoices = await _invoiceRepository.GetAll(cancellationToken);
-              
+
 
             var invoicesDto = _mapper.Map<List<InvoicesDto>>(invoices);
             return invoicesDto;
         }
-        public async Task<InvoicesDto> GetByInvoiceNo(string invoiceNo,CancellationToken cancellationToken)
+        public async Task<InvoicesDto> GetByInvoiceNo(string invoiceNo, CancellationToken cancellationToken)
         {
             var invoices = await _readDbContext.ReadSet<Invoices>().Where(p => p.InvoiceNo.Equals(invoiceNo))
                            .FirstOrDefaultAsync();
@@ -43,9 +43,9 @@ namespace ClinicProjectInfrastructure.Services
         public async Task<List<InvoicesDto>> GetLatestInvoices(CancellationToken cancellationToken)
         {
             var invoices = await _readDbContext.ReadSet<Invoices>()
-                .Include(p=>p.Payments)
-                .Where(p=>p.status==InvoiceStatus.Pending)
-                .OrderByDescending(p=>p.IssueDate)
+                .Include(p => p.Payments)
+                .Where(p => p.status == InvoiceStatus.Pending)
+                .OrderByDescending(p => p.IssueDate)
                 .Take(5).ToListAsync(cancellationToken);
             var latestInvoicesDto = _mapper.Map<List<InvoicesDto>>(invoices);
             return latestInvoicesDto;
@@ -73,9 +73,9 @@ namespace ClinicProjectInfrastructure.Services
      .ToListAsync();
             return patientMedicalInvoices;
         }
-    
 
-       public async Task<List<MedicalInvoiceDto>> PatientMedicalRecordInvoicesByAppointmentNumber(string AppointmentNumber)
+
+        public async Task<List<MedicalInvoiceDto>> PatientMedicalRecordInvoicesByAppointmentNumber(string AppointmentNumber)
         {
             var patientMedicalInvoices = await _readDbContext.ReadSet<MedicalRecords>()
 
@@ -101,6 +101,36 @@ namespace ClinicProjectInfrastructure.Services
             return patientMedicalInvoices;
         }
 
-     
+        public async Task<List<MonthlyInvoiceDto>> GetMonthlyInvoices(CancellationToken cancellationToken)
+        {
+            var monthlyInvoice =
+                await _readDbContext.ReadSet<Invoices>()
+                .GroupBy(p => p.CreatedAt.Month.ToString())
+                .Select(g => new MonthlyInvoiceDto { InvoiceMonth = g.Key, InvoiceMonthTotal = g.Sum(p => p.TotalAmount) }).ToListAsync(cancellationToken);
+            return monthlyInvoice;
+
+            // .ToListAsync(cancellationToken);
+        }
+
+        public async Task<List<WeeklyInvoiceDto>> GetWeeklyInvoices(CancellationToken cancellationToken)
+        {
+            var invoices =
+                await _readDbContext.ReadSet<Invoices>()
+                .ToListAsync();
+            var weeklyInvoice = invoices.GroupBy(p => p.CreatedAt.DayOfWeek.ToString()).Select(g => new WeeklyInvoiceDto
+            { WeeklyInvoice = g.Key, WeeklyInvoiceTotal = g.Sum(p => p.TotalAmount) }).ToList();
+             
+            return weeklyInvoice;
+        }
+
+        public async Task<List<DailyInvoiceDto>> GetDailyInvoices(CancellationToken cancellationToken)
+        {
+            var dailyInvoice =
+                await _readDbContext.ReadSet<Invoices>()
+                .Where(p=>p.CreatedAt.Month == DateTime.Now.Month)
+                .GroupBy(p =>new { p.CreatedAt.Day,p.CreatedAt.Month })
+                .Select(g => new DailyInvoiceDto { DailyInvoiceDate = g.Key.Day.ToString("D2")+'-'+ g.Key.Month.ToString("D2"), DayOfMonth=g.Key.Month.ToString("D2"), DailyInvoiceDateTotal = g.Sum(p => p.TotalAmount) }).ToListAsync(cancellationToken);
+            return dailyInvoice;
+        }
     }
 }
