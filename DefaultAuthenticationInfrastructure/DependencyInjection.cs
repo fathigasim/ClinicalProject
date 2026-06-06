@@ -48,6 +48,7 @@ namespace DefaultAuthenticationInfrastructure
                         sql.MigrationsAssembly(typeof(AppDbContext).Assembly.FullName);
                     }));
             services.AddMemoryCache();
+            services.AddHttpContextAccessor();
             // ── Same scoped AppDbContext satisfies both IUnitOfWork and IReadDbContext
             services.AddScoped<IUnitOfWork, UnitOfWork>();
           //  services.AddScoped<IReadDbContext>(sp => sp.GetRequiredService<AppDbContext>());
@@ -138,6 +139,7 @@ namespace DefaultAuthenticationInfrastructure
             services.AddScoped<IPaymentRepository, PaymentRepository>();
             services.AddScoped<IWeeklyScheduleRepository, WeeklyScheduleRepository>();
             services.AddScoped<ITokenService, TokenService>();
+            services.AddScoped<IStripeService, StripeService>();
             services.AddScoped<ICurrentUserService, CurrentUserService>();
             services.AddScoped<TokenIssuer>();
             services.AddScoped<IUnitOfWork,UnitOfWork>();

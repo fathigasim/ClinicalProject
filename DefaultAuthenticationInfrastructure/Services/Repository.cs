@@ -32,8 +32,8 @@ namespace ClinicProjectInfrastructure.Services
             CancellationToken ct = default)
             => await _dbSet.Where(predicate).ToListAsync(ct);
 
-        public async Task AddAsync(T entity)
-            => await _dbSet.AddAsync(entity);
+        public async Task AddAsync(T entity, CancellationToken ct = default)
+            => await _dbSet.AddAsync(entity,ct);
 
         public void Update(T entity)
             => _dbSet.Update(entity);

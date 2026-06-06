@@ -21,8 +21,8 @@ namespace ClinicProjectDomain.Entities
         public bool IsActive { get; set; }
 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-        public bool IsClincOpened() { 
-            var clinic=new Clinic();
+        public bool IsClincOpened(Clinic clinic) { 
+         
            if(StartTime<clinic.OpenTime || EndTime > clinic.CloseTime)
             {
                 return false;

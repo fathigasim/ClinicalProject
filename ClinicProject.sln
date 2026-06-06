@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClinicProjectInfrastructure
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClinicProjectApi", "DefaultAuthenticationApi\ClinicProjectApi.csproj", "{95FDEBD3-31D5-4505-88F3-26045341665A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClinicProjectTest", "ClinicProjectTest\ClinicProjectTest.csproj", "{90358DDB-5CC8-40EE-8E5B-D37CCA954731}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -35,6 +37,10 @@ Global
 		{95FDEBD3-31D5-4505-88F3-26045341665A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{95FDEBD3-31D5-4505-88F3-26045341665A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{95FDEBD3-31D5-4505-88F3-26045341665A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{90358DDB-5CC8-40EE-8E5B-D37CCA954731}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{90358DDB-5CC8-40EE-8E5B-D37CCA954731}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{90358DDB-5CC8-40EE-8E5B-D37CCA954731}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{90358DDB-5CC8-40EE-8E5B-D37CCA954731}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -44,6 +50,7 @@ Global
 		{9F5E6654-107A-4021-AB89-9161BDB27FD0} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
 		{FE8DCBF8-9AAA-44FF-A11C-7E2EDEFDBD98} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
 		{95FDEBD3-31D5-4505-88F3-26045341665A} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
+		{90358DDB-5CC8-40EE-8E5B-D37CCA954731} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {48D2448A-10BF-49E0-9A32-C464BF31A207}

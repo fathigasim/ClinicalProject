@@ -14,6 +14,12 @@ namespace ClinicProjectDomain.Entities
         public Guid InvoiceId { get; set; }
         public Invoices Invoice { get; set; }
         public decimal Amount { get; set; }
+        public string? CustomerId { get; set; }
+
+        public string Currency  { get; set; }
+        public string PaymentId { get; set; }
+        public string Status { get; set; }
+    
         public PaymentType PaymentMethod { get; set; } = PaymentType.Cash;
         public DateTime PaidAt { get; set; }= DateTime.Now;
 

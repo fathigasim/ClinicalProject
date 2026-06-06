@@ -2,6 +2,7 @@
 using ClinicProjectApplication.Patients.Command;
 using ClinicProjectApplication.Patients.Queries;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -9,6 +10,7 @@ namespace DefaultAuthenticationApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(Policy = "AdminUser")]
     public class PatientController : ControllerBase
     {
         private readonly IMediator _mediator;
