@@ -1,4 +1,5 @@
-﻿using ClinicProjectDomain.Entities;
+﻿using ClinicProjectDomain.Common.Pagination;
+using ClinicProjectDomain.Entities;
 
 using System;
 using System.Collections.Generic;
@@ -10,7 +11,7 @@ namespace ClinicProjectDomain.Interfaces
 {
     public interface IPatientRepository:IRepository<Patient>
     {
-        Task<Patient?> GetByPhone(string phone, CancellationToken ct);
+        Task<PagedResult<Patient?>> GetByQuery(string q, int page, int pageSize, CancellationToken ct);
         Task<List<Patient>> GetTodaysPatients(CancellationToken ct);
     }
 }

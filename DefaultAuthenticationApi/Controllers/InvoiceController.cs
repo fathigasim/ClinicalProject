@@ -2,6 +2,7 @@
 using ClinicProjectApplication.Invoice.Queries;
 using ClinicProjectApplication.Invoice.Queries.GetAllInvoices;
 using ClinicProjectApplication.Invoice.Queries.GetDailyInvioceReport;
+using ClinicProjectApplication.Invoice.Queries.GetInvoiceByDate;
 using ClinicProjectApplication.Invoice.Queries.GetInvoiceById;
 using ClinicProjectApplication.Invoice.Queries.GetLatestInvoices;
 using ClinicProjectApplication.Invoice.Queries.GetMonthlyInvioceReport;
@@ -87,6 +88,18 @@ namespace ClinicProjectApi.Controllers
         public async Task<IActionResult> GetDailyInvoices()
         {
             var query = new GetDailyInvoiceQuery();
+            var result = await _mediator.Send(query);
+            if (result.IsSuccess)
+            {
+                return Ok(result);
+            }
+            return BadRequest(result);
+        }
+
+        [HttpGet("InvoicesByDate")]
+        public async Task<IActionResult> GetInvoicesByDate([FromQuery] DateTime date, [FromQuery] int page, [FromQuery] int pageSize)
+        {
+            var query = new GetInvoiceByDateQuery { date = date, Page = page, PageSize = pageSize };
             var result = await _mediator.Send(query);
             if (result.IsSuccess)
             {

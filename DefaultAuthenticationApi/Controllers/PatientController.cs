@@ -10,7 +10,8 @@ namespace DefaultAuthenticationApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize(Policy = "AdminUser")]
+    //  [Authorize(Roles = "Admin,User")]
+    [Authorize(Roles ="Admin")]
     public class PatientController : ControllerBase
     {
         private readonly IMediator _mediator;
@@ -25,10 +26,10 @@ namespace DefaultAuthenticationApi.Controllers
              
         }
 
-        [HttpGet("{phone}")]
-        public async Task<IActionResult> GetPatient(string phone)
+        [HttpGet]
+        public async Task<IActionResult> GetPatient([FromQuery]string? q, [FromQuery] int page, [FromQuery] int pageSize)
         {
-           var patient= await _mediator.Send(new GetPatientByPhoneQuery(phone));
+           var patient= await _mediator.Send(new GetPatientByNameQuery(q,page,pageSize));
             return Ok(patient);
         }
 

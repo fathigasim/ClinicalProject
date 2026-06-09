@@ -1,7 +1,9 @@
 ﻿
 using ClinicProjectApplication.Interfaces;
+using ClinicProjectDomain.Common.Pagination;
 using ClinicProjectDomain.Entities;
 using ClinicProjectDomain.Interfaces;
+using ClinicProjectInfrastructure.Extensions;
 using ClinicProjectInfrastructure.Services;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -30,13 +32,17 @@ namespace ClinicProjectInfrastructure.Persistence.Repositories
             return await _dbSet.Where(i => i.InvoiceNo == invoiceNumber).FirstOrDefaultAsync(ct);
         }
 
-        public Task<List<Invoices>> GetAll(CancellationToken cancellationToken)
+        public async Task<List<Invoices>> GetAll(CancellationToken cancellationToken)
         {
-             return _readDbContext.ReadSet<Invoices>().Include(a => a.Payments)
+             return await _readDbContext.ReadSet<Invoices>().Include(a => a.Payments)
                 .ToListAsync(cancellationToken);
         }
-  
 
-
+        public async Task<PagedResult<Invoices>> GetInvoiceByDate(int page,int pageSize,DateTime date, CancellationToken cancellationToken)
+        {
+            return await _readDbContext.ReadSet<Invoices>()
+                .Where(p => p.CreatedAt.Date.Equals(date))
+                .ToPagedAsync(page, pageSize, cancellationToken);
+        }
     }
 }

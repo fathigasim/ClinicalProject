@@ -1,5 +1,6 @@
 ﻿
 using ClinicProjectApplication.Common.Exceptions;
+using ClinicProjectApplication.Exceptions;
 using ClinicProjectDomain.Exceptions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
@@ -225,6 +226,17 @@ namespace DefaultAuthenticationApi.Middleware
                     Detail = "The request could not be completed due to an external connectivity issue."
                 };
                 _logger.LogError("Exception Middleware Error: {Message}", httpException.Message);
+            }
+            else if (exception is InvalidWebhookSignatureException webhookException)
+            {
+                response = new ProblemDetails
+                {
+                    Title = "Invalid Webhook Signature",
+                    Status = StatusCodes.Status400BadRequest,
+                    Detail = webhookException.Message
+                };
+                statusCode = StatusCodes.Status400BadRequest;
+                _logger.LogError("Exception Middleware Webhook Error: {Message}", webhookException.Message);
             }
             else
             {

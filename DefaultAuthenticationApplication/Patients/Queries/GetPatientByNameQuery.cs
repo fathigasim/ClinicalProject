@@ -1,5 +1,7 @@
 ﻿
+using ClinicProjectApplication.Common;
 using ClinicProjectApplication.Interfaces;
+using ClinicProjectDomain.Common.Pagination;
 using ClinicProjectDomain.Entities;
 using MediatR;
 using System;
@@ -10,9 +12,9 @@ using System.Threading.Tasks;
 
 namespace ClinicProjectApplication.Patients.Queries
 {
-    public record GetPatientByPhoneQuery(string Phone) : IRequest<Patient>, ICacheableQuery
+    public record GetPatientByNameQuery(string? q,int page,int pageSize) : IRequest<Result<PagedResult<Patient?>>>, ICacheableQuery
     {
-        public string CacheKey => $"Patient{Phone}";
+        public string CacheKey => $"Patient{q}-{page}-{pageSize}";
 
         public TimeSpan? Expiration => TimeSpan.FromMinutes(15);
 

@@ -1,4 +1,5 @@
-﻿using ClinicProjectApplication.Interfaces;
+﻿using ClinicProjectApplication.Exceptions;
+using ClinicProjectApplication.Interfaces;
 using ClinicProjectDomain.Entities;
 using ClinicProjectDomain.Interfaces;
 using MediatR;
@@ -27,28 +28,27 @@ namespace ClinicProjectApplication.Payment.Command
         }
         public async Task<Unit> Handle(WebhookCommand request, CancellationToken cancellationToken)
         {
-            try
-            {
-                var paymentResult = await _stripeService.WebHook(request.RawBody,request.Signature);
+           
+                var paymentResult = await _stripeService.WebHook(request.RawBody, request.Signature);
                 if (paymentResult != null)
                 {
                     var payment = new Payments()
                     {
                         Amount = paymentResult.amount,
                         Status = paymentResult.status,
-                        //CustomerId = paymentResult.customerId,
                         InvoiceId = Guid.Parse(paymentResult.InvoiceId),
                         PaymentId = paymentResult.intentId,
                         Currency = paymentResult.currency,
                     };
-                    await _paymentRepository.AddAsync(payment,cancellationToken);
+                    await _paymentRepository.AddAsync(payment, cancellationToken);
                 }
-            }
-            catch (Exception ex)
-            {
-                _logger.LogWarning("webhook handler error {error}", ex.Message);
-                throw new Exception(ex.Message);
-            }
+            
+         
+            //catch (Exception ex)
+            //{
+            //    // Business logic error — log and return 200 to prevent Stripe retries
+            //    _logger.LogError(ex, "Webhook processing failed: {error}", ex.Message);
+            //}
 
             return Unit.Value;
         }

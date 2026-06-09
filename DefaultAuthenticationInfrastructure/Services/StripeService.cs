@@ -1,4 +1,5 @@
-﻿using ClinicProjectApplication.Interfaces;
+﻿using ClinicProjectApplication.Exceptions;
+using ClinicProjectApplication.Interfaces;
 using ClinicProjectApplication.Payment.Command;
 using ClinicProjectApplication.Payment.Dtos;
 using Microsoft.AspNetCore.Http;
@@ -113,10 +114,10 @@ namespace ClinicProjectInfrastructure.Services
 
              
             }
-            catch (Exception ex)
+            catch (StripeException ex)
             {
                 //_logger.LogWarning("web secert error message {error message}", ex.Message);
-              throw new Exception(ex.Message, ex);
+                throw new InvalidWebhookSignatureException(ex.Message);
             }
             return null;
         }
