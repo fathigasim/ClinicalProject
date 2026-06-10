@@ -151,7 +151,16 @@ namespace DefaultAuthenticationApi.Middleware
                 };
                 statusCode = StatusCodes.Status404NotFound;
             }
-
+            
+                 else if (exception is KeyNotFoundException keyNotFoundException)
+            {
+                response = new ProblemDetails
+                {
+                    Title = keyNotFoundException.Message,
+                    Status = StatusCodes.Status404NotFound
+                };
+                statusCode = StatusCodes.Status404NotFound;
+            }
             else if (exception is DbUpdateException dbUpdateException &&
           dbUpdateException.InnerException is SqlException sqlEx)
             {
@@ -167,6 +176,7 @@ namespace DefaultAuthenticationApi.Middleware
                     }
                 };
                 statusCode = StatusCodes.Status409Conflict;
+                _logger.LogError("SQL Conflict Exception error {Error}", sqlEx.Message);
             }
             else if (exception is SqlException sqlException)  // keep this for direct SQL exceptions
             {
@@ -198,6 +208,7 @@ namespace DefaultAuthenticationApi.Middleware
               
                 
                 statusCode = StatusCodes.Status409Conflict;
+                _logger.LogError("Conflict Exception error {Error}", apiException.Message);
             }
 
             else if (exception is HttpRequestException httpException)

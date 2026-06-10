@@ -74,10 +74,11 @@ namespace DefaultAuthenticationApi.Controllers
 
         public async Task<IActionResult> CreateDoctorSchedule([FromBody] CreateWeeklyScheduleCommand command)
         {
-            var doctorId = await _mediator.Send(command);
-
-            return Ok(doctorId);
-
+            var result = await _mediator.Send(command);
+            if (result.IsSuccess) { 
+            return Ok(result);
+            }
+            return BadRequest(result.ErrorMessage);
         }
     }
 }

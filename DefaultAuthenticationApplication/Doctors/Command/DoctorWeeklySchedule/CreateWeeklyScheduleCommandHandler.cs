@@ -39,7 +39,7 @@ namespace ClinicProjectApplication.Doctors.Command.DoctorWeeklySchedule
                 {
                     DoctorId = request.DoctorId,
                     DoctorName = doctor.LastName + " " + doctor.FirstName,
-                    DayOfWeek = request.DayOfWeek,
+                    DayOfWeek = request.scheduleDate.DayOfWeek,
                     StartTime = request.startTime,
                     EndTime = request.endTime,
                     SlotDurationMinutes = 30, // Default slot duration
@@ -52,7 +52,7 @@ namespace ClinicProjectApplication.Doctors.Command.DoctorWeeklySchedule
             // 3. Overlap check
             var hasOverlap = await _weeklyScheduleRepository.HasOverlappingSchedule(
                 request.DoctorId,
-                request.DayOfWeek,
+                request.scheduleDate.DayOfWeek,
                 request.startTime,
                 request.endTime,
                 cancellationToken);
@@ -67,6 +67,7 @@ namespace ClinicProjectApplication.Doctors.Command.DoctorWeeklySchedule
             {
                 return Result<string>.Failure("Cannot create schedule on a holiday.");
             }
+           
             //var isClinicOpened = weeklySchedule.IsClincOpened();
             //if (!isClinicOpened)
             //{

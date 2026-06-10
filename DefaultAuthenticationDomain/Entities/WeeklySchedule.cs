@@ -20,7 +20,7 @@ namespace ClinicProjectDomain.Entities
         public int SlotDurationMinutes { get; set; }
         public bool IsActive { get; set; }
 
-        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        public DateTime ScheduledTime { get; set; }
         public bool IsClincOpened(Clinic clinic) { 
          
            if(StartTime<clinic.OpenTime || EndTime > clinic.CloseTime)
@@ -39,12 +39,41 @@ namespace ClinicProjectDomain.Entities
                    SlotDurationMinutes > 0 &&
                    (EndTime - StartTime).TotalMinutes % SlotDurationMinutes == 0;
         }
+        public bool EnsureTimeIsValid()
+        {
+             var current = StartTime;
+            var todaysDate = DateTime.Now;
+            if (TimeOnly.FromDateTime(todaysDate) < current)
+            {
+                return true;
+            }
 
+            return false;
+        }
+        public static bool IsTimeSlotValid(DateTime scheduleDate,TimeOnly startTime)
+        {
+
+            var now = DateTime.Now;
+            if (scheduleDate.Date < now.Date)
+            {
+                return false;
+            }
+            if (scheduleDate.Date == now.Date )
+            {
+
+                return startTime > TimeOnly.FromDateTime(now);
+            }
+        
+         
+
+            return true;
+        }
         public IEnumerable<TimeOnly> GenerateSlots()
         {
             var slots = new List<TimeOnly>();
             var current = StartTime;
-
+            var todaysDate = DateTime.Now;
+           
             while (current.AddMinutes(SlotDurationMinutes) <= EndTime)
             {
                 slots.Add(current);

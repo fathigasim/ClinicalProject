@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace ClinicProjectApplication.Doctors.Command.DoctorWeeklySchedule
 {
-    public record CreateWeeklyScheduleCommand (Guid DoctorId,DayOfWeek DayOfWeek, TimeOnly startTime, TimeOnly endTime) 
+    public record CreateWeeklyScheduleCommand (Guid DoctorId,DateTime scheduleDate, TimeOnly startTime, TimeOnly endTime) 
         :IRequest<Result<string>>, ITransactionalRequest
     {
     }
