@@ -16,6 +16,10 @@ namespace ClinicProjectApplication.Doctors.Dto
         public int SlotDurationMinutes { get; set; }=15;   // e.g., 15 or 30 minutes
         public bool IsActive { get; set; }
 
-        
+
+
+      //  public Dictionary<DayOfWeek, List<DaySchedule>> Schedule { get; set; }
     }
+ 
+
 }

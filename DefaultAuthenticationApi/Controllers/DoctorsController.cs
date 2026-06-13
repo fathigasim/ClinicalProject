@@ -78,7 +78,18 @@ namespace DefaultAuthenticationApi.Controllers
             if (result.IsSuccess) { 
             return Ok(result);
             }
-            return BadRequest(result.ErrorMessage);
+            return BadRequest(new { message = result.ErrorMessage });
+        }
+
+        [HttpGet("doctorsSchedule")]
+
+        public async Task<IActionResult> CreateDoctorSchedule( )
+        {
+            var result = await _mediator.Send(new GetWeeklyScheduleQuery());
+           
+                return Ok(result);
+           
+      
         }
     }
 }

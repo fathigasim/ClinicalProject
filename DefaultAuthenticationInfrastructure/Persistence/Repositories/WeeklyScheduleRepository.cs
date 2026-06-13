@@ -18,6 +18,13 @@ namespace ClinicProjectInfrastructure.Persistence.Repositories
         {
             _readDbContext = readDbContext;
         }
+        public async Task<List<WeeklySchedule>> DoctorsScheduleDays( CancellationToken ct)
+        {
+     
+
+            return await _readDbContext.ReadSet<WeeklySchedule>().Include(p=>p.Doctor)
+                  .OrderBy(w=>w.DayOfWeek).ToListAsync(ct);
+        }
         public async Task<bool> IsDoctorScheduledToday(Guid doctorId,DayOfWeek dayofweek, CancellationToken ct)
         {
             // Khartoum is UTC+2

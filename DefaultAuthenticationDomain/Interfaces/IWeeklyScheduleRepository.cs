@@ -16,5 +16,8 @@ namespace ClinicProjectDomain.Interfaces
     TimeOnly start,
     TimeOnly end,
     CancellationToken ct);
+        Task<List<WeeklySchedule>> DoctorsScheduleDays(CancellationToken ct);
     }
+
+    
 }
