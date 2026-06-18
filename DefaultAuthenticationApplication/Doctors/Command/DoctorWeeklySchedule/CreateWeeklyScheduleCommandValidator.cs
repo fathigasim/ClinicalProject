@@ -13,8 +13,21 @@ namespace ClinicProjectApplication.Doctors.Command.DoctorWeeklySchedule
     {
         public CreateWeeklyScheduleCommandValidator()
         {
-             RuleFor(p=>p).Must(cmd => WeeklySchedule.IsTimeSlotValid(cmd.scheduleDate, cmd.startTime))
-    .WithMessage("The selected time slot is in the past.");
+            RuleFor(p => p).Must(cmd => WeeklySchedule.IsTimeSlotValid(cmd.ScheduleDate,cmd.StartTime))
+                 .WithMessage("The selected time slot is in the past."); ;
+            RuleFor(x => x.DoctorId)
+           .NotNull().WithMessage("Doctor is required.")
+           .NotEqual(Guid.Empty).WithMessage("Please select a valid doctor.");
+
+            RuleFor(x => x.ScheduleDate)
+                .NotEqual(default(DateOnly)).WithMessage("Schedule date is required.");
+
+            RuleFor(x => x.StartTime)
+                .NotEqual(default(TimeOnly)).WithMessage("Start time is required.");
+
+            RuleFor(x => x.EndTime)
+                .NotEqual(default(TimeOnly)).WithMessage("End time is required.")
+                .GreaterThan(x => x.StartTime).WithMessage("End time must be after start time.");
         }
 
         

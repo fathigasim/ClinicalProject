@@ -31,6 +31,15 @@ namespace ClinicProjectInfrastructure.Services
             var invoicesDto = _mapper.Map<List<InvoicesDto>>(invoices);
             return invoicesDto;
         }
+        public async Task<InvoicesDto> GetPatientInfoByInvoiceId(Guid invoiceId, CancellationToken cancellationToken)
+        {
+            var invoice = await _readDbContext.ReadSet<Invoices>()
+                .Include(p=>p.Appointment).ThenInclude(p=>p.Patient)
+                .Where(p => p.Id.Equals(invoiceId))
+                
+                           .FirstOrDefaultAsync(cancellationToken);
+         return    _mapper.Map<InvoicesDto>(invoice);
+        }
         public async Task<InvoicesDto> GetByInvoiceNo(string invoiceNo, CancellationToken cancellationToken)
         {
             var invoices = await _readDbContext.ReadSet<Invoices>().Where(p => p.InvoiceNo.Equals(invoiceNo))

@@ -15,10 +15,13 @@ namespace ClinicProjectApplication.Invoice.Notifications
     {
          private readonly IRepository<Invoices> _repository;
         private readonly ILogger<InvoicePaidNotificationHandler> _logger;
-        public InvoicePaidNotificationHandler(IRepository<Invoices> repository, ILogger<InvoicePaidNotificationHandler> logger)
+        private readonly IEmailSender _emailSender;
+        public InvoicePaidNotificationHandler(IRepository<Invoices> repository, ILogger<InvoicePaidNotificationHandler> logger,
+            IEmailSender emailSender)
         {
             _repository = repository;
             _logger = logger;
+            _emailSender = emailSender;
         }
         public async Task Handle(InvoicePaidNotification notification, CancellationToken cancellationToken)
         {
@@ -30,7 +33,8 @@ namespace ClinicProjectApplication.Invoice.Notifications
             }
             invoice.status = InvoiceStatus.Paid;
             _repository.Update(invoice);
-            _logger.LogInformation("Invoice {InvoiceId} marked as paid", notification.InvoiceId);
+            _logger.LogInformation("Invoice {InvoiceId} marked as paid and Email{Emaiil}", notification.InvoiceId,notification.Email);
+            await _emailSender.SendEmailAsync(notification.Email, "Invoice Paid Successfully", $"Dear Customer {notification.Email} your bill has been paid successfully best regards", cancellationToken);
         }
     }
 }

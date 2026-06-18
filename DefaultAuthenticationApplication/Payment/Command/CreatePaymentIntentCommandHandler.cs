@@ -18,7 +18,7 @@ namespace ClinicProjectApplication.Payment.Command
         }
         public async Task<string> Handle(CreatePaymentIntentCommand request, CancellationToken cancellationToken)
         {
-          var clientSecret=   await _stripeService.PaymentIntent(request.InvoiceId, request.TotalAmount);
+          var clientSecret=   await _stripeService.PaymentIntent(request.InvoiceId, request.TotalAmount,cancellationToken);
             if (string.IsNullOrEmpty(clientSecret))
             {
                   throw new KeyNotFoundException(nameof(clientSecret));

@@ -21,6 +21,7 @@ namespace ClinicProjectApplication.Patients.Command
 
                 FirstName = request.FirstName,
                 LastName = request.LastName,
+                Email = request.Email,
                 DOB = request.DOB,
                 Gender = request.Gender,
                 Phone = request.Phone,

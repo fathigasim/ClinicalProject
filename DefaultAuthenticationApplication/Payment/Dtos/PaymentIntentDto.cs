@@ -14,7 +14,9 @@ namespace ClinicProjectApplication.Payment.Dtos
         public decimal amount { get; set; }
         public string currency { get; set; }
         public string customerId { get; set; }
-        public string InvoiceId { get; set; }
+        public string invoiceId { get; set; }
+        public string patientEmail { get; set; }
+        
 
     }
 }

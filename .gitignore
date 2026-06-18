@@ -69,6 +69,7 @@ artifacts/
 .env
 .env.*
 appsettings.Development.json
+appsettings.Production.json
 appsettings.*.json
 
 # Optional: keep base config tracked but ignore overrides

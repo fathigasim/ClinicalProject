@@ -78,7 +78,7 @@ namespace DefaultAuthenticationApi.Controllers
             if (result.IsSuccess) { 
             return Ok(result);
             }
-            return BadRequest(new { message = result.ErrorMessage });
+            return UnprocessableEntity(new { message = result.ErrorMessage });
         }
 
         [HttpGet("doctorsSchedule")]

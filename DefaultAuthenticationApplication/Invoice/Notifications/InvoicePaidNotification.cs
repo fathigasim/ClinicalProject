@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace ClinicProjectApplication.Invoice.Notifications
 {
-    public record InvoicePaidNotification(Guid InvoiceId):INotification,ITransactionalRequest
+    public record InvoicePaidNotification(Guid InvoiceId,string? Email=null):INotification,ITransactionalRequest
     {
     }
     

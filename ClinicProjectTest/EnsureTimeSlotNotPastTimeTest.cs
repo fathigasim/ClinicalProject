@@ -15,7 +15,7 @@ namespace ClinicProjectTest
 
         public void Validate_TimeSlotValid(string scheduledDate,string startTime,bool expected)
         {
-           var result=    WeeklySchedule.IsTimeSlotValid(DateTime.Parse(scheduledDate),TimeOnly.Parse(startTime));
+           var result=    WeeklySchedule.IsTimeSlotValid(DateOnly.Parse(scheduledDate),TimeOnly.Parse(startTime));
           
               result.Should().Be(expected);
         

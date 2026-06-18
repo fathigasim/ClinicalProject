@@ -11,7 +11,7 @@ namespace ClinicProjectDomain.Interfaces
     {
         //Task AddDoctoryWeeklyScheduleAsync(WeeklySchedule weeklySchedule, CancellationToken ct);
         Task<bool> IsDoctorScheduledToday(Guid doctorId, DayOfWeek dayofweek, CancellationToken ct);
-        Task<bool> HasOverlappingSchedule(Guid doctorId,
+        Task<bool> HasOverlappingSchedule(Guid? doctorId,
     DayOfWeek day,
     TimeOnly start,
     TimeOnly end,

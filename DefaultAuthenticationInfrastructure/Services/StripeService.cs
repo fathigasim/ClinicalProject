@@ -2,8 +2,10 @@
 using ClinicProjectApplication.Interfaces;
 using ClinicProjectApplication.Payment.Command;
 using ClinicProjectApplication.Payment.Dtos;
+using ClinicProjectDomain.Entities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using Org.BouncyCastle.Ocsp;
 using Stripe;
 using System;
@@ -18,21 +20,28 @@ namespace ClinicProjectInfrastructure.Services
         private readonly IHttpContextAccessor _httpContext;
         private readonly PaymentIntentService _paymentIntentService;
         private readonly IConfiguration _configuration;
-        public StripeService(IConfiguration configuration, IHttpContextAccessor httpContext)
+        private readonly IInvoiceService _invoiceService;
+        private readonly ILogger<StripeService> _logger;
+        public StripeService(IConfiguration configuration, IHttpContextAccessor httpContext,
+             IInvoiceService invoiceService,
+              ILogger<StripeService> logger
+            )
         {
            _configuration = configuration;
             _httpContext = httpContext;
-         
+            _invoiceService = invoiceService;
+            _logger = logger;
         }
-        public async Task<string> PaymentIntent(string InvoiceId, decimal TotalAmount) {
-
+        public async Task<string> PaymentIntent(string InvoiceId, decimal TotalAmount,CancellationToken cancellationToken) {
+            var patientInfo = await _invoiceService.GetPatientInfoByInvoiceId(Guid.Parse(InvoiceId),cancellationToken);
             var options = new PaymentIntentCreateOptions
             {
                 Amount = (long)(TotalAmount * 100), //  always in cents
                 Currency = "sar",
                 Metadata = new Dictionary<string, string>
         {
-            { "invoiceId", InvoiceId } //  attach your business data here
+            { "invoiceId", InvoiceId }, //  attach your business data here
+            {"patientEmail",patientInfo.Appointment.Patient.Email }
         }
             };
             var client = new StripeClient(_configuration["Stripe:SecretKey"]);
@@ -45,12 +54,13 @@ namespace ClinicProjectInfrastructure.Services
 
         public async Task<PaymentIntentDto?> ConfirmPayment(string PaymentIntentId)
         {
-
+         
             var service = new PaymentIntentService();
             var intent = await service.GetAsync(PaymentIntentId);
-        
+
             //intent.Metadata.TryGetValue("InvoiceId", out var invoiceId)
             //var invoiceId = intent.Metadata["InvoiceId"];
+            _logger.LogInformation("Stripe Service Checking both values  invoiceId {invoiceId} and patientEmail {patientEmail}", intent.Metadata["invoiceId"], intent.Metadata["patientEmail"]);
             if (intent.Status != "succeeded")
             { // always verify on backend, never trust frontend
                 return new PaymentIntentDto()
@@ -60,7 +70,8 @@ namespace ClinicProjectInfrastructure.Services
                     currency = intent.Currency,
                     intentId = intent.Id,
                     status = intent.Status,
-                    InvoiceId = intent.Metadata["InvoiceId"]
+                    invoiceId = intent.Metadata["invoiceId"],
+                    patientEmail = intent.Metadata["patientEmail"]
                 };
             }
             return null;
@@ -105,7 +116,8 @@ namespace ClinicProjectInfrastructure.Services
                             currency = intent.Currency,
                             intentId = intent.Id,
                             status = intent.Status,
-                            InvoiceId = intent.Metadata["invoiceId"]
+                            invoiceId = intent.Metadata["invoiceId"],
+                            patientEmail = intent.Metadata["patientEmail"]
                         };
                   
                     //         await _paymentService.SavePayment(intent); // safe to save now

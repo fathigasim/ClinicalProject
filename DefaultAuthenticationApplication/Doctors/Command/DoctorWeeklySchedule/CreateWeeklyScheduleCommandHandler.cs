@@ -26,22 +26,22 @@ namespace ClinicProjectApplication.Doctors.Command.DoctorWeeklySchedule
         public async Task<Result<string>> Handle(CreateWeeklyScheduleCommand request, CancellationToken cancellationToken)
         {
             
-            var doctor = await _doctorRepository.GetByIdAsync(request.DoctorId);
+            var doctor = await _doctorRepository.GetByIdAsync(request.DoctorId.Value);
             if (doctor == null)
             {
                 return Result<string>.Failure("Doctor not found.");
             }
             // 1. Validate input
-            if (request.startTime >= request.endTime)
+            if (request.StartTime >=request.EndTime)
                 return Result<string>.Failure("Invalid time range");
               
                 var weeklyScheduleDto = new WeeklyScheduleDto()
                 {
-                    DoctorId = request.DoctorId,
+                    DoctorId = request.DoctorId.Value,
                     DoctorName = doctor.LastName + " " + doctor.FirstName,
-                    DayOfWeek = request.scheduleDate.DayOfWeek,
-                    StartTime = request.startTime,
-                    EndTime = request.endTime,
+                    DayOfWeek = request.ScheduleDate.DayOfWeek,
+                    StartTime = request.StartTime,
+                    EndTime = request.EndTime,
                     SlotDurationMinutes = 30, // Default slot duration
                     IsActive = true
                 };
@@ -52,9 +52,9 @@ namespace ClinicProjectApplication.Doctors.Command.DoctorWeeklySchedule
             // 3. Overlap check
             var hasOverlap = await _weeklyScheduleRepository.HasOverlappingSchedule(
                 request.DoctorId,
-                request.scheduleDate.DayOfWeek,
-                request.startTime,
-                request.endTime,
+                request.ScheduleDate.DayOfWeek,
+               request.StartTime,
+              request.EndTime,
                 cancellationToken);
 
             if (hasOverlap)

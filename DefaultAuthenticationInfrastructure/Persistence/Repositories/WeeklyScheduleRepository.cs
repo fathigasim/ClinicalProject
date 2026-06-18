@@ -37,7 +37,7 @@ namespace ClinicProjectInfrastructure.Persistence.Repositories
         }
 
         public async Task<bool> HasOverlappingSchedule(
-    Guid doctorId,
+    Guid? doctorId,
     DayOfWeek day,
     TimeOnly start,
     TimeOnly end,

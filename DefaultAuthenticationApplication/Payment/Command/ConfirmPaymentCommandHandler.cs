@@ -29,7 +29,7 @@ namespace ClinicProjectApplication.Payment.Command
             {
                 var payment = new Payments
                 {
-                    InvoiceId = Guid.Parse(confirmPayment.InvoiceId),
+                    InvoiceId = Guid.Parse(confirmPayment.invoiceId),
                      Amount=confirmPayment.amount,
                      Status=confirmPayment.status,
                      PaymentId=confirmPayment.intentId,

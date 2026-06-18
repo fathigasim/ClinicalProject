@@ -11,6 +11,7 @@ namespace ClinicProjectApplication.Interfaces
 {
     public interface IInvoiceService
     {
+        Task<InvoicesDto> GetPatientInfoByInvoiceId(Guid invoiceId, CancellationToken cancellationToken);
         Task<List<MedicalInvoiceDto>> PatientsMedicalRecordInvoices();
         Task<List<MedicalInvoiceDto>> PatientMedicalRecordInvoicesByAppointmentNumber(string AppointmentNumber);
         Task<List<InvoicesDto>> GetAllInvoices(CancellationToken cancellationToken);

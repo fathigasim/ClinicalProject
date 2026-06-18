@@ -21,7 +21,9 @@ namespace ClinicProjectInfrastructure.Persistence.Repositories
         public async Task<PagedResult<Appointment>> GetTodaysAppointmentsAsync(int page,int pageSize ,CancellationToken cancellationToken)
         {
             var dayOfWeek = DateTime.Now.DayOfWeek;
-            return await _dbSet.Where(p => p.DayOfWeek == dayOfWeek &&p.CreatedAt.Date>=DateTime.Now.Date).ToPagedAsync(page, pageSize, cancellationToken);
+            return await _dbSet.Where(p => p.DayOfWeek == dayOfWeek &&p.CreatedAt.Date>=DateTime.Now.Date)
+                .OrderByDescending(p=>p.AppointmentNumber)
+                .ToPagedAsync(page, pageSize, cancellationToken);
         }
 
         public async Task<IReadOnlyList<Appointment>> GetAppointmentsByDoctorIdAsync(Guid doctorId, DayOfWeek dayOfWeek, CancellationToken cancellationToken)

@@ -1,3 +1,4 @@
+using ClinicProjectApi;
 using ClinicProjectApplication;
 using ClinicProjectInfrastructure.Persistence;
 using DefaultAuthenticationApi.Middleware;
@@ -14,28 +15,38 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddApplication(builder.Environment);
 builder.Services.AddInfrastructure(builder.Configuration);
 
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.Converters.Add(new DateOnlyJsonConverter());
+        options.JsonSerializerOptions.Converters.Add(new TimeOnlyJsonConverter());
+    });
+//builder.Services.AddControllers()
+//    .AddJsonOptions(options =>
+//    {
+//        options.JsonSerializerOptions.Converters.Add(new TimeOnlyJsonConverter());
+//    });
+// CORRECT — both policies registered at the top level
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("DevCors", policy =>
     {
-        if (builder.Environment.IsDevelopment())
-        {
-            policy
-                .WithOrigins(
-                     builder.Configuration["Frontend:BaseUrl"]
-                )
-                .AllowAnyMethod()
-                .AllowAnyHeader()
-                .AllowCredentials();
-        }
-        else
-        {
-            policy.WithOrigins("https://yourdomain.com")
-                  .AllowAnyMethod()
-                  .AllowAnyHeader()
-                  .AllowCredentials();
-        }
+        policy.WithOrigins(builder.Configuration["Frontend:BaseUrl"]!)
+              .AllowAnyMethod()
+              .AllowAnyHeader()
+              .AllowCredentials();
+    });
+
+    options.AddPolicy("ProductionPolicy", policy =>
+    {
+        var origins = builder.Configuration
+            .GetSection("AllowedOrigins")
+            .Get<string[]>()!;
+
+        policy.WithOrigins(origins)
+              .AllowAnyMethod()
+              .AllowAnyHeader()
+              .AllowCredentials();
     });
 });
 builder.Services.AddRateLimiter(options =>
@@ -88,14 +99,21 @@ builder.Services.AddAuthorization(options =>
 });
 
 var app = builder.Build();
+var logger = app.Services.GetRequiredService<ILogger<Program>>();
+logger.LogInformation($"Environment: {app.Environment.EnvironmentName}");
+logger.LogInformation($"AllowedOrigins: {string.Join(",", builder.Configuration.GetSection("AllowedOrigins").Get<string[]>() ?? Array.Empty<string>())}");
+Console.WriteLine($"Environment: {app.Environment.EnvironmentName}");
+Console.WriteLine($"AllowedOrigins: {string.Join(",", builder.Configuration.GetSection("AllowedOrigins").Get<string[]>() ?? Array.Empty<string>())}");
 await app.SeedAsync();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+    //app.UseCors("DevCors");
 }
-app.UseCors("DevCors");
+// One UseCors call, picks policy based on environment
+app.UseCors(app.Environment.IsDevelopment() ? "DevCors" : "ProductionPolicy");
 
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 app.UseHttpsRedirection();

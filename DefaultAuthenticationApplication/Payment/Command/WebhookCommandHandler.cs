@@ -1,6 +1,8 @@
 ﻿using ClinicProjectApplication.Exceptions;
 using ClinicProjectApplication.Interfaces;
+using ClinicProjectApplication.Invoice.Notifications;
 using ClinicProjectDomain.Entities;
+using ClinicProjectDomain.Enums;
 using ClinicProjectDomain.Interfaces;
 using MediatR;
 using Microsoft.Extensions.Logging;
@@ -16,32 +18,43 @@ namespace ClinicProjectApplication.Payment.Command
     {
         private readonly IStripeService _stripeService;
         private readonly IPaymentRepository _paymentRepository;
+        private readonly IInvoiceRepository _invoiceRepository;
+        private readonly IPublisher _publisher;
         private readonly ILogger<WebhookCommandHandler> _logger;
         public WebhookCommandHandler(IStripeService stripeService,
             IPaymentRepository paymentRepository,
-
+            IInvoiceRepository invoiceRepository,
+            IPublisher publisher,
             ILogger<WebhookCommandHandler> logger)
         {
             _stripeService = stripeService;
             _paymentRepository = paymentRepository;
+            _invoiceRepository = invoiceRepository;
+            _publisher = publisher;
             _logger = logger;   
         }
         public async Task<Unit> Handle(WebhookCommand request, CancellationToken cancellationToken)
         {
            
                 var paymentResult = await _stripeService.WebHook(request.RawBody, request.Signature);
+
                 if (paymentResult != null)
                 {
                     var payment = new Payments()
                     {
                         Amount = paymentResult.amount,
                         Status = paymentResult.status,
-                        InvoiceId = Guid.Parse(paymentResult.InvoiceId),
+                        
+                        InvoiceId = Guid.Parse(paymentResult.invoiceId),
                         PaymentId = paymentResult.intentId,
                         Currency = paymentResult.currency,
+                        //paymentResult.patientEmail
                     };
-                    await _paymentRepository.AddAsync(payment, cancellationToken);
-                }
+                    await _paymentRepository.AddAsync(payment, cancellationToken);                    
+               await _publisher.Publish(new InvoicePaidNotification(Guid.Parse(paymentResult.invoiceId), paymentResult.patientEmail));
+               
+              
+            }
             
          
             //catch (Exception ex)

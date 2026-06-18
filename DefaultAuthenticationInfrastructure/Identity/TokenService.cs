@@ -54,7 +54,8 @@ new(JwtRegisteredClaimNames.Name, user.UserName!)
             return RefreshToken.Create(
                 userId,
                 Convert.ToBase64String(bytes),
-                DateTime.UtcNow.AddDays(double.Parse(_configuration["JwtSettings:RefreshTokenExpiryDays"])),
+                //remebert to set back as days
+                DateTime.UtcNow.AddMinutes(double.Parse(_configuration["JwtSettings:RefreshTokenExpiryDays"])),
                 ip);
         }
 

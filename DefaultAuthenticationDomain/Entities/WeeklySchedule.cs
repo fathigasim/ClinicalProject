@@ -50,15 +50,15 @@ namespace ClinicProjectDomain.Entities
 
             return false;
         }
-        public static bool IsTimeSlotValid(DateTime scheduleDate,TimeOnly startTime)
+        public static bool IsTimeSlotValid(DateOnly scheduleDate,TimeOnly startTime)
         {
 
             var now = DateTime.Now;
-            if (scheduleDate.Date < now.Date)
+            if (scheduleDate < DateOnly.FromDateTime(now.Date))
             {
                 return false;
             }
-            if (scheduleDate.Date == now.Date )
+            if (scheduleDate == DateOnly.FromDateTime(now.Date ))
             {
 
                 return startTime > TimeOnly.FromDateTime(now);
