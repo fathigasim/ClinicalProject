@@ -1,4 +1,5 @@
 ﻿using ClinicProjectApplication.Payment.Command;
+using ClinicProjectApplication.Payment.PaymentReports;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -18,6 +19,22 @@ namespace ClinicProjectApi.Controllers
             _sender = sender;
             _configuration = configuration;
             _logger = logger;
+        }
+
+        [HttpGet("MonthlyReport")]
+        public async Task<IActionResult> GetAsync()
+        {
+            var query = new MonthlyPaymentReportQuery();
+            var result = await _sender.Send(query);
+            return Ok(result);
+        }
+
+        [HttpGet("DailyReport")]
+        public async Task<IActionResult> GetDailyAsync()
+        {
+            var query = new DailyPaymentReportQuery();
+            var result = await _sender.Send(query);
+            return Ok(result);
         }
         [HttpPost]
         public async Task<IActionResult> PostAsync(CreatePaymentCommand command)

@@ -24,8 +24,14 @@ this IServiceCollection services, IHostEnvironment env)
                 cfg.AddMaps(assembly);
             }, assembly);
             // MediatR pipeline (order is significant)
-            services.AddMediatR(cfg =>
-                cfg.RegisterServicesFromAssembly(typeof(RegisterUserCommand).Assembly));
+            //services.AddMediatR(
+            //    cfg =>
+            //    cfg.RegisterServicesFromAssembly(typeof(RegisterUserCommand).Assembly)
+            //    );
+            services.AddMediatR(
+    cfg =>
+    cfg.RegisterServicesFromAssembly(typeof(DependencyInjection).Assembly)
+    );
             services.AddValidatorsFromAssembly(assembly);
 
             services.AddTransient(typeof(IPipelineBehavior<,>), typeof(LoggingBehavior<,>));

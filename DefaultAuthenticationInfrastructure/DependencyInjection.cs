@@ -10,6 +10,7 @@ using ClinicProjectInfrastructure.Identity;
 using ClinicProjectInfrastructure.Persistence;
 using ClinicProjectInfrastructure.Persistence.Repositories;
 using ClinicProjectInfrastructure.Services;
+using ClinicProjectInfrastructure.Services.ClinicProjectApplication.Auth.Services;
 using DefaultAuthenticationInfrastructure.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Http;
@@ -90,6 +91,7 @@ namespace DefaultAuthenticationInfrastructure
                 })
                 .AddJwtBearer(opts =>
                 {
+                    opts.MapInboundClaims = false;   // ← add this
                     opts.TokenValidationParameters = new()
                     {
                         ValidateIssuerSigningKey = true,
@@ -127,6 +129,8 @@ namespace DefaultAuthenticationInfrastructure
                 options.AddPolicy("UserOnly", policy => policy.RequireRole("User"));
             });
             // ── Repositories & services ───────────────────────────────────────────
+            services.AddMemoryCache();
+            services.AddSingleton<IMfaAttemptLimiter, MfaAttemptLimiter>();
             services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
             services.AddScoped<IUserManagerService, UserManagerService>();
             services.AddScoped<IUserRepository, UserRepository>();
@@ -146,8 +150,11 @@ namespace DefaultAuthenticationInfrastructure
             services.AddScoped<IReadDbContext>(sp => sp.GetRequiredService<AppDbContext>());
             services.AddScoped<ISequenceService,SequenceService>();
             services.AddScoped<IInvoiceService, InvoiceService>();
+            services.AddScoped<IPaymentReportService, PaymentReportService>();
+            services.AddSingleton<IMfaChallengeTokenService, MfaChallengeTokenService>();
             services.AddTransient<ScheduleService>();
             services.AddTransient<IEmailSender, EmailSender>();
+
             //services.AddScoped<IDbSeeder,DbSeeder>();
             services.AddHttpContextAccessor();
 

@@ -22,17 +22,19 @@ namespace ClinicProjectInfrastructure.Identity
         {
             _configuration = configuration;
         }
-        public string GenerateAccessToken(ApplicationUser user, IList<string> roles)
+        public string GenerateAccessToken(ApplicationUser user, IList<string> roles,string amr)
         {
             var claims = new List<Claim>
         {
             new(JwtRegisteredClaimNames.Sub,   user.Id),
             new(JwtRegisteredClaimNames.Email, user.Email!),
             new(JwtRegisteredClaimNames.Jti,   Guid.NewGuid().ToString()),
+                 new("amr", amr),
             // Add it in your backend claims
 new(JwtRegisteredClaimNames.Name, user.UserName!)
         };
             claims.AddRange(roles.Select(r => new Claim(ClaimTypes.Role, r)));
+     
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JwtSettings:SecretKey"]))
                 ??  throw new InvalidOperationException("JwtSettings:SecretKey is not configured.");
@@ -74,5 +76,33 @@ new(JwtRegisteredClaimNames.Name, user.UserName!)
             try { return new JwtSecurityTokenHandler().ValidateToken(token, p, out _); }
             catch { return null; }
         }
+
+//      public  string GenerateAccessToken(ApplicationUser user, IList<string> roles, string amr)
+//        {
+//            var claims = new List<Claim>
+//        {
+//            new(JwtRegisteredClaimNames.Sub,   user.Id),
+//            new(JwtRegisteredClaimNames.Email, user.Email!),
+//            new(JwtRegisteredClaimNames.Jti,   Guid.NewGuid().ToString()),
+//             new("amr", amr), 
+//            // Add it in your backend claims
+//new(JwtRegisteredClaimNames.Name, user.UserName!)
+//        };
+//            claims.AddRange(roles.Select(r => new Claim(ClaimTypes.Role, r)));
+
+
+//            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JwtSettings:SecretKey"]))
+//                ?? throw new InvalidOperationException("JwtSettings:SecretKey is not configured.");
+//            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
+//            var token = new JwtSecurityToken(
+//                issuer: _configuration["JwtSettings:Issuer"],
+//                audience: _configuration["JwtSettings:Audience"],
+//                claims: claims,
+//                expires: DateTime.UtcNow.AddMinutes(double.Parse(_configuration["JwtSettings:AccessTokenExpiryMinutes"])),
+//                signingCredentials: creds);
+
+//            return new JwtSecurityTokenHandler().WriteToken(token);
+//        }
     }
 }

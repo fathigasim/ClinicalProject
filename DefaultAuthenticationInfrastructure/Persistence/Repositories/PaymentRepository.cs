@@ -1,6 +1,8 @@
-﻿using ClinicProjectDomain.Entities;
+﻿using ClinicProjectApplication.Interfaces;
+using ClinicProjectDomain.Entities;
 using ClinicProjectDomain.Interfaces;
 using ClinicProjectInfrastructure.Services;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,11 +13,13 @@ namespace ClinicProjectInfrastructure.Persistence.Repositories
 {
     public class PaymentRepository :Repository<Payments>,IPaymentRepository
     {
-        public PaymentRepository(AppDbContext context):base(context)
+        private readonly IReadDbContext _readDbContext;
+        public PaymentRepository(AppDbContext context,IReadDbContext readDbContext):base(context)
         {
-            
+            _readDbContext = readDbContext;
         }
 
+      
 
     }
 }

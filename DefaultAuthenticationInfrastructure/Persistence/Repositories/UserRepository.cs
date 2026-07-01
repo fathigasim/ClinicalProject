@@ -1,9 +1,10 @@
 ﻿using ClinicProjectDomain.Entities;
 using ClinicProjectDomain.Interfaces;
 using ClinicProjectInfrastructure.Persistence;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
-public class UserRepository(AppDbContext db) : IUserRepository
+public class UserRepository(AppDbContext db,UserManager<ApplicationUser> userManager) : IUserRepository
 {
     public async Task<ApplicationUser?> GetByIdAsync(string userId, CancellationToken ct)
         => await db.users
@@ -37,4 +38,10 @@ public class UserRepository(AppDbContext db) : IUserRepository
       => db.users
           .Include(u => u.RefreshTokens)
           .FirstOrDefaultAsync(u => u.Email == email, ct);
+
+    public Task<IdentityResult> RedeemTwoFactorRecoveryCodeAsync(ApplicationUser user, string code)
+    {
+        return userManager.RedeemTwoFactorRecoveryCodeAsync(user, code);
+    }
+
 }

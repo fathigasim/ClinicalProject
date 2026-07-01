@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace ClinicProjectApplication.Auth.Commands.RefreshTokens
 {
     public record RefreshTokenCommand(
-   string AccessToken, string RefreshToken,
+  string RefreshToken,
    string? IpAddress) : IRequest<AuthTokenPair>;
 
 }

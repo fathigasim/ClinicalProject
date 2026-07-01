@@ -6,10 +6,11 @@ using System.Threading.Tasks;
 
 namespace ClinicProjectApplication
 {
-    public record AuthTokenPair(string accessToken,
-           string newRefresh,
-            DateTime Expires,
-             DateTime DateTime);
-    
-    }
+    public record AuthTokenPair(
+      string AccessToken,
+      string RefreshToken,
+      DateTime RefreshTokenExpires,
+      DateTime AccessTokenExpires);
+
+}
 

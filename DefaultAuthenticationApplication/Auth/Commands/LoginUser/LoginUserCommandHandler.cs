@@ -1,5 +1,7 @@
 ﻿
+using ClinicProjectApplication.Common;
 using ClinicProjectApplication.Common.Exceptions;
+using ClinicProjectApplication.Interfaces;
 using ClinicProjectDomain.Entities;
 using ClinicProjectDomain.Interfaces;
 using MediatR;
@@ -12,27 +14,41 @@ using System.Threading.Tasks;
 
 namespace ClinicProjectApplication.Auth.Commands.LoginUser
 {
-    // Application/Auth/Commands/LoginUser/LoginUserCommandHandler.cs
-
-
-  
-
     public class LoginUserCommandHandler(
-        UserManager<ApplicationUser> userManager,
-        IUserRepository userRepository,
-        TokenIssuer tokenIssuer)
-        : IRequestHandler<LoginUserCommand, AuthTokenPair>
+    UserManager<ApplicationUser> userManager,
+    SignInManager<ApplicationUser> signInManager,
+    IUserRepository userRepository,
+    TokenIssuer tokenIssuer,
+    IMfaChallengeTokenService mfaChallengeTokenService)
+    : IRequestHandler<LoginUserCommand, Result<LoginResponse>>
     {
-        public async Task<AuthTokenPair> Handle(LoginUserCommand req, CancellationToken ct)
+        public async Task<Result<LoginResponse>> Handle(LoginUserCommand req, CancellationToken ct)
         {
-            var user = await userRepository.GetByEmailAsync(req.Email, ct)
-                ?? throw new UnauthorizedException("Invalid credentials.");
-            if (!user.EmailConfirmed)
-                throw new UnauthorizedException("Please confirm your email before logging in.");
-            if (!await userManager.CheckPasswordAsync(user, req.Password))
-                throw new UnauthorizedException("Invalid credentials.");
+            var user = await userRepository.GetByEmailAsync(req.Email, ct);
+            if (user is null)
+                return Result<LoginResponse>.Failure("Invalid credentials.");
 
-            return await tokenIssuer.IssueAsync(user, req.IpAddress, ct);
+            var signInResult = await signInManager.CheckPasswordSignInAsync(user, req.Password, lockoutOnFailure: true);
+
+            if (!signInResult.Succeeded)
+            {
+                if (signInResult.IsLockedOut)
+                    return Result<LoginResponse>.Failure("Account locked due to too many failed attempts. Try again later.");
+
+                if (signInResult.IsNotAllowed)
+                    return Result<LoginResponse>.Failure("Please confirm your email before logging in.");
+
+                return Result<LoginResponse>.Failure("Invalid credentials.");
+            }
+
+            if (user.TwoFactorEnabled)
+            {
+                var mfaToken = mfaChallengeTokenService.GenerateChallengeToken(user.Id);
+                return Result<LoginResponse>.Success(new LoginResponse(true, mfaToken, null));
+            }
+
+            var tokens = await tokenIssuer.IssueAsync(user, req.IpAddress, ct, amr: "pwd");
+            return Result<LoginResponse>.Success(new LoginResponse(false, null, tokens));
         }
     }
 }

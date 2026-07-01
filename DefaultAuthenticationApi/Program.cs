@@ -6,6 +6,7 @@ using DefaultAuthenticationApplication;
 using DefaultAuthenticationInfrastructure;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.OpenApi.Models;
+using OtpNet;
 using System.Threading.RateLimiting;
 
 
@@ -29,9 +30,12 @@ builder.Services.AddControllers()
 // CORRECT — both policies registered at the top level
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("DevCors", policy =>
+    var origins = builder.Configuration
+         .GetSection("AllowedOrigins")
+         .Get<string[]>()!;
+    options.AddPolicy("DevelopmentPolicy", policy =>
     {
-        policy.WithOrigins(builder.Configuration["Frontend:BaseUrl"]!)
+        policy.WithOrigins(origins)
               .AllowAnyMethod()
               .AllowAnyHeader()
               .AllowCredentials();
@@ -39,9 +43,7 @@ builder.Services.AddCors(options =>
 
     options.AddPolicy("ProductionPolicy", policy =>
     {
-        var origins = builder.Configuration
-            .GetSection("AllowedOrigins")
-            .Get<string[]>()!;
+     
 
         policy.WithOrigins(origins)
               .AllowAnyMethod()
@@ -100,10 +102,16 @@ builder.Services.AddAuthorization(options =>
 
 var app = builder.Build();
 var logger = app.Services.GetRequiredService<ILogger<Program>>();
+
 logger.LogInformation($"Environment: {app.Environment.EnvironmentName}");
 logger.LogInformation($"AllowedOrigins: {string.Join(",", builder.Configuration.GetSection("AllowedOrigins").Get<string[]>() ?? Array.Empty<string>())}");
 Console.WriteLine($"Environment: {app.Environment.EnvironmentName}");
 Console.WriteLine($"AllowedOrigins: {string.Join(",", builder.Configuration.GetSection("AllowedOrigins").Get<string[]>() ?? Array.Empty<string>())}");
+//var sharedKey = Console.ReadLine()!;
+//var key = Base32Encoding.ToBytes(sharedKey); // the SharedKey from step 3
+//var totp = new Totp(key);
+//var code = totp.ComputeTotp(); // current 6-digit code, valid ~30s
+//Console.WriteLine(code);
 await app.SeedAsync();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -113,7 +121,7 @@ if (app.Environment.IsDevelopment())
     //app.UseCors("DevCors");
 }
 // One UseCors call, picks policy based on environment
-app.UseCors(app.Environment.IsDevelopment() ? "DevCors" : "ProductionPolicy");
+app.UseCors(app.Environment.IsDevelopment() ? "DevelopmentPolicy" : "ProductionPolicy");
 
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 app.UseHttpsRedirection();

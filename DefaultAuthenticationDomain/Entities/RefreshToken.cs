@@ -23,7 +23,7 @@ namespace ClinicProjectDomain.Entities
         private RefreshToken() { }
 
         public static RefreshToken Create(string userId, string token,
-            DateTime expires, string? ip) => new()
+            DateTime expires, string? ip) => new ()
             {
                 UserId = userId,
                 Token = token,

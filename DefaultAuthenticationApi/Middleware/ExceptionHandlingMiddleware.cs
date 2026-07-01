@@ -142,6 +142,24 @@ namespace DefaultAuthenticationApi.Middleware
                 };
                 statusCode = StatusCodes.Status400BadRequest;
             }
+            else if (exception is UnauthorizedException unauthorizedException)
+            {
+                response = new ProblemDetails
+                {
+                    Title = unauthorizedException.Message,
+                    Status = StatusCodes.Status401Unauthorized
+                };
+                statusCode = StatusCodes.Status401Unauthorized;
+            }
+            else if (exception is UnauthorizedAccessException)
+            {
+                response = new ProblemDetails
+                {
+                    Title = exception.Message,
+                    Status = StatusCodes.Status401Unauthorized
+                };
+                statusCode = StatusCodes.Status401Unauthorized;
+            }
             else if (exception is NotFoundException notFoundException)
             {
                 response = new ProblemDetails

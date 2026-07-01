@@ -1,5 +1,6 @@
 ﻿
 using ClinicProjectDomain.Entities;
+using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,5 +17,6 @@ namespace ClinicProjectDomain.Interfaces
         Task UpdateAsync(ApplicationUser user, CancellationToken ct);
         Task PurgeExpiredTokensAsync(CancellationToken ct);
         Task SaveAsync(CancellationToken ct);
+        Task<IdentityResult> RedeemTwoFactorRecoveryCodeAsync(ApplicationUser user, string code);
     }
 }
