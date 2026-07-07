@@ -1,5 +1,6 @@
 ﻿using ClinicProjectApplication.Auth.Commands.LoginUser;
 using ClinicProjectApplication.Auth.Commands.Mfa;
+using ClinicProjectApplication.Auth.Commands.Mfa.Commands;
 using MediatR;
 using OtpNet;
 using System;

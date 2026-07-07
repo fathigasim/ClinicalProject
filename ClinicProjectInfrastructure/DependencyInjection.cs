@@ -154,7 +154,7 @@ namespace DefaultAuthenticationInfrastructure
             services.AddSingleton<IMfaChallengeTokenService, MfaChallengeTokenService>();
             services.AddTransient<ScheduleService>();
             services.AddTransient<IEmailSender, EmailSender>();
-
+            services.AddHostedService<TokenCleanupService>();
             //services.AddScoped<IDbSeeder,DbSeeder>();
             services.AddHttpContextAccessor();
 

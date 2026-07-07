@@ -20,8 +20,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\DefaultAuthenticationApplication\ClinicProjectApplication.csproj" />
-    <ProjectReference Include="..\DefaultAuthenticationDomain\ClinicProjectDomain.csproj" />
+    <ProjectReference Include="..\ClinicProjectApplication\ClinicProjectApplication.csproj" />
+    <ProjectReference Include="..\ClinicProjectDomain\ClinicProjectDomain.csproj" />
   </ItemGroup>
 
   <ItemGroup>

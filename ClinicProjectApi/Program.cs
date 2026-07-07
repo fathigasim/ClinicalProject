@@ -6,14 +6,31 @@ using DefaultAuthenticationApplication;
 using DefaultAuthenticationInfrastructure;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.OpenApi.Models;
-using OtpNet;
+using Serilog;
 using System.Threading.RateLimiting;
 
 
 var builder = WebApplication.CreateBuilder(args);
+Log.Logger = new LoggerConfiguration()
+    .WriteTo.Console()
+    .CreateBootstrapLogger();
+try
+{
+    Log.Information("Starting up");
 
-// Add services to the container.
-builder.Services.AddApplication(builder.Environment);
+   
+
+    builder.Host.UseSerilog((context, services, loggerConfig) => loggerConfig
+        .ReadFrom.Configuration(context.Configuration)
+        .ReadFrom.Services(services)
+        .Enrich.FromLogContext()
+        .Enrich.WithMachineName()
+        .Enrich.WithThreadId()
+        .WriteTo.Console()
+        .WriteTo.File("logs/log-.txt", rollingInterval: RollingInterval.Day));
+
+    // Add services to the container.
+    builder.Services.AddApplication(builder.Environment);
 builder.Services.AddInfrastructure(builder.Configuration);
 
 builder.Services.AddControllers()
@@ -101,6 +118,7 @@ builder.Services.AddAuthorization(options =>
 });
 
 var app = builder.Build();
+
 var logger = app.Services.GetRequiredService<ILogger<Program>>();
 
 logger.LogInformation($"Environment: {app.Environment.EnvironmentName}");
@@ -131,3 +149,12 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+}
+catch (Exception ex)
+{
+    Log.Fatal(ex, "Application terminated unexpectedly");
+}
+finally
+{
+    Log.CloseAndFlush();
+}

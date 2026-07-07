@@ -1,4 +1,5 @@
 ﻿
+using ClinicProjectApplication.Auth.Vm;
 using ClinicProjectApplication.Common;
 using ClinicProjectApplication.Common.Exceptions;
 using ClinicProjectApplication.Interfaces;
@@ -6,6 +7,7 @@ using ClinicProjectDomain.Entities;
 using ClinicProjectDomain.Interfaces;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,6 +19,7 @@ namespace ClinicProjectApplication.Auth.Commands.LoginUser
     public class LoginUserCommandHandler(
     UserManager<ApplicationUser> userManager,
     SignInManager<ApplicationUser> signInManager,
+    ILogger<LoginUserCommandHandler> logger,
     IUserRepository userRepository,
     TokenIssuer tokenIssuer,
     IMfaChallengeTokenService mfaChallengeTokenService)
@@ -24,6 +27,9 @@ namespace ClinicProjectApplication.Auth.Commands.LoginUser
     {
         public async Task<Result<LoginResponse>> Handle(LoginUserCommand req, CancellationToken ct)
         {
+            logger.LogWarning(
+               "Checking user request input with serilog {req}",
+               req);
             var user = await userRepository.GetByEmailAsync(req.Email, ct);
             if (user is null)
                 return Result<LoginResponse>.Failure("Invalid credentials.");
