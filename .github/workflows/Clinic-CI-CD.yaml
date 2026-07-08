@@ -1,0 +1,35 @@
+name: Clinic Project CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repo
+      uses: actions/checkout@v4
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '8.0.x'
+
+    - name: Restore
+      run: dotnet restore ClinicProjectApi/ClinicProjectApi.csproj
+
+    - name: Build
+      run: dotnet build ClinicProjectApi/ClinicProjectApi.csproj --configuration Release --no-restore
+
+    - name: Test
+      run: echo "Add tests later"
+
+    - name: Publish (CD simulation)
+      run: dotnet publish ClinicProjectApi/ClinicProjectApi.csproj -c Release -o ./publish
+
+    - name: Verify publish output
+      run: ls -la ./publish
