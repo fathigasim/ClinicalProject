@@ -19,17 +19,27 @@ jobs:
       with:
         dotnet-version: '8.0.x'
 
-    - name: Restore
+    - name: Restore dependencies
       run: dotnet restore ClinicProjectApi/ClinicProjectApi.csproj
 
-    - name: Build
+    - name: Build project
       run: dotnet build ClinicProjectApi/ClinicProjectApi.csproj --configuration Release --no-restore
 
-    - name: Test
-      run: echo "Add tests later"
+    # Swap this run command with your actual test project when ready
+    - name: Run Tests
+      run: |
+        echo "Placeholder: Running tests..."
+        # dotnet test ClinicProjectTest/ClinicProjectTest.csproj --no-build --configuration Release
 
-    - name: Publish (CD simulation)
-      run: dotnet publish ClinicProjectApi/ClinicProjectApi.csproj -c Release -o ./publish
+    - name: Publish API
+      run: dotnet publish ClinicProjectApi/ClinicProjectApi.csproj --configuration Release -o ./publish --no-build
 
     - name: Verify publish output
       run: ls -la ./publish
+
+    # Essential for CD: Saves the output so a deployment job can use it
+    - name: Upload Build Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: clinic-api-publish
+        path: ./publish
