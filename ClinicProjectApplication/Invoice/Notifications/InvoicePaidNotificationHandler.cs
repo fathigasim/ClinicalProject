@@ -1,4 +1,5 @@
-﻿using ClinicProjectDomain.Entities;
+﻿using ClinicProjectApplication.Interfaces;
+using ClinicProjectDomain.Entities;
 using ClinicProjectDomain.Enums;
 using ClinicProjectDomain.Interfaces;
 using MediatR;
@@ -34,7 +35,7 @@ namespace ClinicProjectApplication.Invoice.Notifications
             invoice.status = InvoiceStatus.Paid;
             _repository.Update(invoice);
             _logger.LogInformation("Invoice {InvoiceId} marked as paid and Email{Emaiil}", notification.InvoiceId,notification.Email);
-            await _emailSender.SendEmailAsync(notification.Email, "Invoice Paid Successfully", $"Dear Customer {notification.Email} your bill has been paid successfully best regards", cancellationToken);
+            await _emailSender.SendEmailAsync(notification.Email, "Invoice Paid Successfully", $"Dear Customer {notification.Email} your bill has been paid successfully best regards", true,cancellationToken);
         }
     }
 }

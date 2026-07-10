@@ -11,7 +11,7 @@ namespace DefaultAuthenticationApi.Controllers
     [Route("api/[controller]")]
     [ApiController]
     //  [Authorize(Roles = "Admin,User")]
-    [Authorize(Roles ="Admin")]
+    [Authorize(Policy = "UserOnly")]
     public class PatientController : ControllerBase
     {
         private readonly IMediator _mediator;

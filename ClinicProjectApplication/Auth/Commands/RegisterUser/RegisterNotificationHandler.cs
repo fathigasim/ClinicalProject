@@ -1,4 +1,5 @@
-﻿using ClinicProjectDomain.Interfaces;
+﻿using ClinicProjectApplication.Interfaces;
+using ClinicProjectDomain.Interfaces;
 using MediatR;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Configuration;

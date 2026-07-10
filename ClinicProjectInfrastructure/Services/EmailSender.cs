@@ -1,4 +1,5 @@
 ﻿using ClinicProjectApplication.Common;
+using ClinicProjectApplication.Interfaces;
 using ClinicProjectDomain.Interfaces;
 using MailKit.Security;
 using Microsoft.Extensions.Logging;
@@ -28,7 +29,11 @@ namespace ClinicProjectInfrastructure.Services
         public async Task SendEmailAsync(
             string toEmail,
             string subject,
-            string htmlMessage)
+      
+            string htmlMessage,
+                  bool isHtml = true,
+             CancellationToken cancellationToken = default
+            )
         {
             await SendEmailAsync(toEmail, subject, htmlMessage, CancellationToken.None);
         }
@@ -137,5 +142,8 @@ namespace ClinicProjectInfrastructure.Services
 
             return plainText.Trim();
         }
+
+      
+       
     }
 }

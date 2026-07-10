@@ -20,6 +20,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using Polly;
+using Polly.Extensions.Http;
+using System.Net;
 using System.Text;
 
 
@@ -125,9 +128,18 @@ namespace DefaultAuthenticationInfrastructure
                 });
             services.AddAuthorization(options =>
             {
-                options.AddPolicy("AdminOnly", policy => policy.RequireRole("Admin"));
-                options.AddPolicy("UserOnly", policy => policy.RequireRole("User"));
+                options.AddPolicy("AdminOnly", policy => policy.RequireRole(AppUserRoles.Admin));
+                options.AddPolicy("UserOnly", policy => policy.RequireRole(AppUserRoles.Admin, AppUserRoles.User));
             });
+            //Brevo Email Configurations
+            services.Configure<BrevoSettings>(configuration.GetSection("Brevo"));
+            services.AddHttpClient<IEmailSender, BrevoEmailService>(client =>
+            {
+                client.BaseAddress = new Uri("https://api.brevo.com/v3/");
+            }).AddPolicyHandler(GetRetryPolicy())
+            .AddPolicyHandler(GetCircuitBreakerPolicy());
+            ;
+           
             // ── Repositories & services ───────────────────────────────────────────
             services.AddMemoryCache();
             services.AddSingleton<IMfaAttemptLimiter, MfaAttemptLimiter>();
@@ -153,13 +165,26 @@ namespace DefaultAuthenticationInfrastructure
             services.AddScoped<IPaymentReportService, PaymentReportService>();
             services.AddSingleton<IMfaChallengeTokenService, MfaChallengeTokenService>();
             services.AddTransient<ScheduleService>();
-            services.AddTransient<IEmailSender, EmailSender>();
+            //services.AddTransient<IEmailSender, EmailSender>();
             services.AddHostedService<TokenCleanupService>();
             //services.AddScoped<IDbSeeder,DbSeeder>();
             services.AddHttpContextAccessor();
 
             return services;
         }
+        static IAsyncPolicy<HttpResponseMessage> GetRetryPolicy() =>
+HttpPolicyExtensions
+.HandleTransientHttpError() // 5xx, 408, network failures
+.OrResult(msg => msg.StatusCode ==
+HttpStatusCode.TooManyRequests)
+.WaitAndRetryAsync(3, retryAttempt =>
+TimeSpan.FromSeconds(Math.Pow(2, retryAttempt))); //
+                                                  //      exponential backoff
+        static IAsyncPolicy<HttpResponseMessage> GetCircuitBreakerPolicy()
+        =>
+        HttpPolicyExtensions
+        .HandleTransientHttpError()
+        .CircuitBreakerAsync(5, TimeSpan.FromSeconds(30));
     }
     }
 

@@ -1,4 +1,5 @@
-﻿using ClinicProjectDomain.Entities;
+﻿using ClinicProjectApplication.Interfaces;
+using ClinicProjectDomain.Entities;
 using ClinicProjectDomain.Interfaces;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
@@ -30,7 +31,7 @@ namespace ClinicProjectApplication.Auth.Commands.ForegotPassword
         {
             try
             {
-                await _emailSender.SendEmailAsync(notification.email, notification.subject, notification.message, cancellationToken);
+                await _emailSender.SendEmailAsync(notification.email, notification.subject, notification.message, true,cancellationToken);
             }
             catch (Exception ex)
             {

@@ -1,4 +1,5 @@
 ﻿using ClinicProjectApplication.Auth.Commands.Mfa.Commands;
+using ClinicProjectApplication.Interfaces;
 using ClinicProjectDomain.Interfaces;
 using MediatR;
 using System;
@@ -17,7 +18,7 @@ namespace ClinicProjectApplication.Auth.Commands.Mfa.Events
             await emailSender.SendEmailAsync(
                 notification.Email,
                 subject: "A recovery code was used to sign in to your account",
-                htmlMessage: $"A recovery code was used to access your account at {notification.UsedAtUtc:u} UTC. " +
+                body: $"A recovery code was used to access your account at {notification.UsedAtUtc:u} UTC. " +
                       "If this wasn't you, change your password immediately and review your account security.");
         }
     }

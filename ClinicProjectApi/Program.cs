@@ -1,6 +1,9 @@
 using ClinicProjectApi;
 using ClinicProjectApplication;
+using ClinicProjectApplication.Interfaces;
+using ClinicProjectDomain.Interfaces;
 using ClinicProjectInfrastructure.Persistence;
+using ClinicProjectInfrastructure.Services;
 using DefaultAuthenticationApi.Middleware;
 using DefaultAuthenticationApplication;
 using DefaultAuthenticationInfrastructure;
@@ -39,13 +42,14 @@ builder.Services.AddControllers()
         options.JsonSerializerOptions.Converters.Add(new DateOnlyJsonConverter());
         options.JsonSerializerOptions.Converters.Add(new TimeOnlyJsonConverter());
     });
-//builder.Services.AddControllers()
-//    .AddJsonOptions(options =>
-//    {
-//        options.JsonSerializerOptions.Converters.Add(new TimeOnlyJsonConverter());
-//    });
-// CORRECT — both policies registered at the top level
-builder.Services.AddCors(options =>
+    builder.Services.AddControllers()
+        .AddJsonOptions(options =>
+        {
+            options.JsonSerializerOptions.Converters.Add(new TimeOnlyJsonConverter());
+        });
+  
+
+    builder.Services.AddCors(options =>
 {
     var origins = builder.Configuration
          .GetSection("AllowedOrigins")
