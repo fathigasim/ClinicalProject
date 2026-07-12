@@ -23,7 +23,7 @@ namespace ClinicProjectApplication.Appointments.AppointmentCommand
         {
 
             var schedule = await _doctorRepository
-                  .DoctorWeeklySchedule(request.DoctorId,request.DayOfWeek ,cancellationToken);
+                  .DoctorSchedule(request.DoctorId,request.AppointmentDate ,cancellationToken);
                  // .FirstOrDefaultAsync(s => s.DayOfWeek == request.DayOfWeek );
 
             if (schedule == null)
@@ -37,7 +37,7 @@ namespace ClinicProjectApplication.Appointments.AppointmentCommand
 
             //  Validate slot is still available
             var existingAppointments = await _appointmentRepository
-                .GetAppointmentsByDoctorIdAsync(request.DoctorId, request.DayOfWeek, cancellationToken);
+                .GetAppointmentsByDoctorIdAsync(request.DoctorId, request.AppointmentDate, cancellationToken);
 
             var isSlotTaken = existingAppointments
             .Where(a => a.status != AppointmentStatus.Cancelled)
@@ -56,17 +56,12 @@ namespace ClinicProjectApplication.Appointments.AppointmentCommand
                 AppointmentNumber = sequence,
                 PatientId = request.PatientId,
                 DoctorId = request.DoctorId,
-                DayOfWeek = request.DayOfWeek,
+                AppointmentDate = request.AppointmentDate,
                 StartTime = request.StartTime,
                 Notes = request.Notes,
             };
 
-            //if (!appointment.IsValidAppointment())
-            //{
-            //    return Result<string>.Failure("Invalid appointment date.");
-            //}
-
-            //appointment.Schedule(request.AppointmentDate);
+           
             await _appointmentRepository.AddAsync(appointment);
             return Result<string>.Success($"Appointment Confirmed for "+$"{appointment.AppointmentNumber}");
         }

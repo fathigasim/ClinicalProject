@@ -28,7 +28,7 @@ namespace ClinicProjectApplication.Appointments.AppointmentCommand
                 return Result<string>.Failure("No such appointment number");
             }
             var schedule = await _doctorRepository
-                 .DoctorWeeklySchedule(appointment.DoctorId, request.DayOfWeek, cancellationToken);
+                 .DoctorSchedule(appointment.DoctorId, request.AppointmentDate, cancellationToken);
             if (schedule == null) {
                 return Result<string>.Failure("Doctor is not available on this day");
             }
@@ -41,7 +41,7 @@ namespace ClinicProjectApplication.Appointments.AppointmentCommand
 
             //  Validate slot is still available
             var existingAppointments = await _appointmentsRepository
-                .GetAppointmentsByDoctorIdAsync(appointment.DoctorId, request.DayOfWeek, cancellationToken);
+                .GetAppointmentsByDoctorIdAsync(appointment.DoctorId, request.AppointmentDate, cancellationToken);
 
             var isSlotTaken = existingAppointments
             .Where(a => a.status != AppointmentStatus.Cancelled)

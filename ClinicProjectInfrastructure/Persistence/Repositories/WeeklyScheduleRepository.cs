@@ -25,7 +25,7 @@ namespace ClinicProjectInfrastructure.Persistence.Repositories
             return await _readDbContext.ReadSet<WeeklySchedule>().Include(p=>p.Doctor)
                   .OrderBy(w=>w.DayOfWeek).ToListAsync(ct);
         }
-        public async Task<bool> IsDoctorScheduledToday(Guid doctorId,DayOfWeek dayofweek, CancellationToken ct)
+        public async Task<bool> IsDoctorScheduledToday(Guid doctorId,DateOnly scheduleDate,DayOfWeek dayofweek, CancellationToken ct)
         {
             // Khartoum is UTC+2
             var khartoumOffset = TimeSpan.FromHours(2);
@@ -33,12 +33,16 @@ namespace ClinicProjectInfrastructure.Persistence.Repositories
 
 
             return await _readDbContext.ReadSet<WeeklySchedule>()
-                .AnyAsync(ws => ws.DoctorId == doctorId && ws.DayOfWeek == dayofweek, ct);
+                 .AnyAsync(ws => ws.DoctorId == doctorId &&
+              ws.ScheduledDate == scheduleDate
+                && ws.DayOfWeek == dayofweek, ct);
         }
 
         public async Task<bool> HasOverlappingSchedule(
     Guid? doctorId,
+     DateOnly scheduleDate,
     DayOfWeek day,
+   
     TimeOnly start,
     TimeOnly end,
     CancellationToken ct)
@@ -46,6 +50,7 @@ namespace ClinicProjectInfrastructure.Persistence.Repositories
             return await _readDbContext.ReadSet<WeeklySchedule>()
                 .AnyAsync(ws =>
                     ws.DoctorId == doctorId &&
+                    ws.ScheduledDate == scheduleDate &&
                     ws.DayOfWeek == day &&
                     start < ws.EndTime &&
                     ws.StartTime < end,

@@ -20,7 +20,12 @@ namespace DefaultAuthenticationApi.Controllers
             _mediator = mediator;
         }
 
-
+        [HttpGet]
+        public async Task<IActionResult> Get(CancellationToken ct)
+        {
+          var listedDoctors=  await _mediator.Send(new GetListedDoctorQuery());
+            return Ok(listedDoctors);
+        }
         [HttpGet("Doctors-List")]
         [AllowAnonymous]
         public async Task<IActionResult> GetAllDoctors(int page, int pageSize,CancellationToken ct)
@@ -34,6 +39,16 @@ namespace DefaultAuthenticationApi.Controllers
         [HttpGet("Doctors-Shift")]
         [AllowAnonymous]
         public async Task<IActionResult> GetTodaysDoctorsShifts()
+        {
+            var doctors = await _mediator.Send(new GetTodaysDoctorShiftQuery());
+
+            return Ok(doctors);
+
+        }
+
+        [HttpGet("Doctors-Shift-By-Date")]
+        [AllowAnonymous]
+        public async Task<IActionResult> GetDoctorsShiftsByDate()
         {
             var doctors = await _mediator.Send(new GetTodaysDoctorShiftQuery());
 
@@ -63,9 +78,18 @@ namespace DefaultAuthenticationApi.Controllers
         [AllowAnonymous]
         [HttpGet("available-slots")]
 
-        public async Task<IActionResult> DoctorAvailableSlots( Guid doctorId, DayOfWeek dayOfWeek)
+        public async Task<IActionResult> DoctorAvailableSlots( Guid doctorId, DateOnly appointmentDate)
         {
-            var availableSlots = await _mediator.Send(new GetDoctorsAvailableSlotsQuery { DoctorId = doctorId, DayOfWeek = dayOfWeek });
+            var availableSlots = await _mediator.Send(new GetDoctorsAvailableSlotsQuery { DoctorId = doctorId, AppointmentDate = appointmentDate });
+
+            return Ok(availableSlots);
+
+        }
+        [AllowAnonymous]
+        [HttpGet("available-slots-by-date")]
+        public async Task<IActionResult> DoctorAvailableSlotsByDate(Guid doctorId, DateOnly date)
+        {
+            var availableSlots = await _mediator.Send(new GetDoctorsAvailableSlotsByDateQuery ( doctorId, date ));
 
             return Ok(availableSlots);
 
@@ -76,7 +100,7 @@ namespace DefaultAuthenticationApi.Controllers
         {
             var result = await _mediator.Send(command);
             if (result.IsSuccess) { 
-            return Ok(result);
+            return Ok(result.Data);
             }
             return UnprocessableEntity(new { message = result.ErrorMessage });
         }
@@ -91,5 +115,6 @@ namespace DefaultAuthenticationApi.Controllers
            
       
         }
+
     }
 }

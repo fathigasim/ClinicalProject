@@ -12,6 +12,7 @@ namespace ClinicProjectApplication.Doctors.Queries
     {
        
         public Guid DoctorId { get; set; }
-        public DayOfWeek DayOfWeek { get; set; }
+        //public DayOfWeek DayOfWeek { get; set; }
+        public DateOnly AppointmentDate { get; set; }
     }
 }

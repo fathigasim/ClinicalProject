@@ -1,6 +1,7 @@
 ﻿
 
 
+using ClinicProjectApplication.Interfaces;
 using ClinicProjectDomain.Common.Pagination;
 using ClinicProjectDomain.Entities;
 using ClinicProjectDomain.Enums;
@@ -14,25 +15,36 @@ namespace ClinicProjectInfrastructure.Persistence.Repositories
 {
     public class AppointmentRepository :Repository<Appointment> ,IAppointmentRepository
     {
-        public AppointmentRepository(AppDbContext context):base(context)
+        private readonly IReadDbContext _readDbContext;
+        public AppointmentRepository(AppDbContext context, IReadDbContext readDbContext) :base(context)
         {
-            
+            _readDbContext = readDbContext;
         }
         public async Task<PagedResult<Appointment>> GetTodaysAppointmentsAsync(int page,int pageSize ,CancellationToken cancellationToken)
         {
             var dayOfWeek = DateTime.Now.DayOfWeek;
-            return await _dbSet.Where(p => p.DayOfWeek == dayOfWeek &&p.CreatedAt.Date>=DateTime.Now.Date)
+            return await _readDbContext.ReadSet<Appointment>().Where(p => p.DayOfWeek == dayOfWeek &&p.CreatedAt.Date>=DateTime.Now.Date)
                 .OrderByDescending(p=>p.AppointmentNumber)
                 .ToPagedAsync(page, pageSize, cancellationToken);
         }
 
-        public async Task<IReadOnlyList<Appointment>> GetAppointmentsByDoctorIdAsync(Guid doctorId, DayOfWeek dayOfWeek, CancellationToken cancellationToken)
+        public async Task<IReadOnlyList<Appointment>> GetAppointmentsByDoctorIdAsync(Guid doctorId, DateOnly appointmentDate, CancellationToken cancellationToken)
         {
            
-            return await  _dbSet
+            return await  _readDbContext.ReadSet<Appointment>()
                 .Where(a => a.DoctorId == doctorId &&
                             a.status != AppointmentStatus.Cancelled &&
-                            a.DayOfWeek == dayOfWeek) 
+                            a.AppointmentDate == appointmentDate) 
+                .ToListAsync(cancellationToken);
+        }
+
+        public async Task<IReadOnlyList<Appointment>> GetDatedAppointmentsByDoctorIdAsync(Guid doctorId, DateOnly date, CancellationToken cancellationToken)
+        {
+
+            return await _readDbContext.ReadSet<Appointment>()
+                .Where(a => a.DoctorId == doctorId &&
+                            a.status != AppointmentStatus.Cancelled &&
+                          DateOnly.FromDateTime(  a.CreatedAt) == date)
                 .ToListAsync(cancellationToken);
         }
 
@@ -40,7 +52,7 @@ namespace ClinicProjectInfrastructure.Persistence.Repositories
         {
           
 
-            return await _dbSet.Include(p=>p.Patient)
+            return await _readDbContext.ReadSet<Appointment>().Include(p=>p.Patient)
                 .Where(a => a.AppointmentNumber.Contains(appointmentNo))
                            // a.status != AppointmentStatus.Cancelled &&
                             
@@ -54,7 +66,6 @@ namespace ClinicProjectInfrastructure.Persistence.Repositories
             return await _dbSet.Include(p => p.Invoices)
                 .Where(a => a.Id!=a.Invoices.AppointmentId)
                 // a.status != AppointmentStatus.Cancelled &&
-
                 .ToListAsync(cancellationToken);
         }
 

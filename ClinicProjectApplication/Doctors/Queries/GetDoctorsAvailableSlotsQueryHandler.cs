@@ -27,7 +27,7 @@ namespace ClinicProjectApplication.Doctors.Queries
      CancellationToken cancellationToken)
         {
             var doctorWeeklySchedule = await _doctorRepository
-                .DoctorWeeklySchedule(request.DoctorId, request.DayOfWeek, cancellationToken);
+                .DoctorSchedule(request.DoctorId, request.AppointmentDate, cancellationToken);
                 
 
             if (doctorWeeklySchedule == null || !doctorWeeklySchedule.IsActive)
@@ -35,7 +35,7 @@ namespace ClinicProjectApplication.Doctors.Queries
 
             // ✅ Await if this is actually async
             var doctorAppointments = await _appointmentRepository
-                .GetAppointmentsByDoctorIdAsync(request.DoctorId, request.DayOfWeek,cancellationToken);
+                .GetAppointmentsByDoctorIdAsync(request.DoctorId, request.AppointmentDate,cancellationToken);
 
             var availableSlots = _scheduleService.GetAvailableSlots(
                 doctorWeeklySchedule, doctorAppointments);

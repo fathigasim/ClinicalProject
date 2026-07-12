@@ -17,7 +17,9 @@ namespace ClinicProjectApplication.Appointments.AppointmentCommand
             RuleFor(x => x.Notes).NotEmpty().WithMessage("Notes Cannot be empty").
             MaximumLength(50).WithMessage("Take only short notes with maximum 50 characters");
             RuleFor(x => x.StartTime).NotEmpty().WithMessage("StartTime Cannot be empty");
-            RuleFor(x => x.DayOfWeek).IsInEnum().WithMessage("DayOfWeek must be a valid enum value");
+            RuleFor(x => x.AppointmentDate).NotEmpty().WithMessage("Date Required")
+                ;
+         //   RuleFor(x => x.DayOfWeek).IsInEnum().WithMessage("DayOfWeek must be a valid enum value");
 
 
 

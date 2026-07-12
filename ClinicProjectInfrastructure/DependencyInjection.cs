@@ -131,7 +131,7 @@ namespace DefaultAuthenticationInfrastructure
                 options.AddPolicy("AdminOnly", policy => policy.RequireRole(AppUserRoles.Admin));
                 options.AddPolicy("UserOnly", policy => policy.RequireRole(AppUserRoles.Admin, AppUserRoles.User));
             });
-            //Brevo Email Configurations
+            //Brevo Email Configurations Typed Client
             services.Configure<BrevoSettings>(configuration.GetSection("Brevo"));
             services.AddHttpClient<IEmailSender, BrevoEmailService>(client =>
             {

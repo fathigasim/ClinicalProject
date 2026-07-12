@@ -14,6 +14,7 @@ namespace ClinicProjectDomain.Entities
    
         public string AppointmentNumber { get; set; } = default!;
         public int DurationMinutes { get; set; } = 30;
+        public DateOnly AppointmentDate { get; set; }
         public TimeOnly StartTime { get; set; }
         public Guid PatientId { get; set; }
         public Patient Patient { get; set; }

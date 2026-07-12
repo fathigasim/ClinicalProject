@@ -10,12 +10,13 @@ namespace ClinicProjectDomain.Interfaces
     public interface IWeeklyScheduleRepository :IRepository<WeeklySchedule>
     {
         //Task AddDoctoryWeeklyScheduleAsync(WeeklySchedule weeklySchedule, CancellationToken ct);
-        Task<bool> IsDoctorScheduledToday(Guid doctorId, DayOfWeek dayofweek, CancellationToken ct);
+        Task<bool> IsDoctorScheduledToday(Guid doctorId, DateOnly scheduleDate, DayOfWeek dayofweek, CancellationToken ct);
         Task<bool> HasOverlappingSchedule(Guid? doctorId,
-    DayOfWeek day,
-    TimeOnly start,
-    TimeOnly end,
-    CancellationToken ct);
+        DateOnly scheduleTime,
+        DayOfWeek day,
+        TimeOnly start,
+        TimeOnly end,
+        CancellationToken ct);
         Task<List<WeeklySchedule>> DoctorsScheduleDays(CancellationToken ct);
     }
 

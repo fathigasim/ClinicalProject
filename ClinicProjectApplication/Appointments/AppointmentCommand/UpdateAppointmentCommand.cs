@@ -14,7 +14,7 @@ namespace ClinicProjectApplication.Appointments.AppointmentCommand
         public string  AppointmentNo { get; set; }
         
         public TimeOnly StartTime { get; set; }
-        public DayOfWeek DayOfWeek { get; set; }
+        public DateOnly AppointmentDate  { get; set; }
 
       
     }

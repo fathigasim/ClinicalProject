@@ -13,8 +13,12 @@ namespace ClinicProjectDomain.Interfaces
 {
     public interface IDoctorRepository: IRepository<Doctor>
     {
+        Task<List<Doctor>> GetListedDoctorsAsync( CancellationToken ct);
         Task<PagedResult<Doctor>> GetAllDoctorsAsync(int page, int pageSize,CancellationToken ct);
-        Task <WeeklySchedule?> DoctorWeeklySchedule(Guid doctorId,DayOfWeek dayOfWeek,CancellationToken cancellationToken);
+        Task <WeeklySchedule?> DoctorWeeklySchedule(Guid doctorId,DayOfWeek dayofWeek,CancellationToken cancellationToken);
+        Task<WeeklySchedule?> DoctorSchedule(Guid doctorId, DateOnly sheduleDate, CancellationToken cancellationToken);
+       
         Task<List<Doctor>?> DoctorsTodaySchedule(CancellationToken cancellationToken);
+        Task<WeeklySchedule?> DoctorScheduleDate(Guid doctorId, DateOnly date, CancellationToken cancellationToken);
     }
 }

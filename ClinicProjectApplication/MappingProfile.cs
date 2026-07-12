@@ -40,6 +40,7 @@ namespace ClinicProjectApplication
 
             CreateMap<WeeklySchedule, WeeklyScheduleDto>()
                 .ForMember(dest => dest.DoctorName, opt => opt.MapFrom(src =>  $"{src.Doctor.FirstName} {src.Doctor.LastName}"))
+                .ForMember(dest=>dest.ScheduleDate,opt=>opt.MapFrom(src=> src.ScheduledDate))
                 .ReverseMap();
 
             CreateMap<Payments,CreatePaymentCommand>().ReverseMap();

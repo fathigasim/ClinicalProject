@@ -10,6 +10,7 @@ namespace ClinicProjectApplication.Doctors.Dto
     {
         public Guid DoctorId { get; set; }
         public  string DoctorName { get; set; }
+        public DateOnly ScheduleDate { get; set; }
         public DayOfWeek DayOfWeek { get; set; }      // Monday, Tuesday, etc.
         public TimeOnly StartTime { get; set; }
         public TimeOnly EndTime { get; set; }

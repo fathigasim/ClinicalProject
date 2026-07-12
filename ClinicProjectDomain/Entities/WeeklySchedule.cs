@@ -12,6 +12,7 @@ namespace ClinicProjectDomain.Entities
        
         public Guid DoctorId { get; set; }
         public Doctor Doctor { get; set; }
+
         public DayOfWeek DayOfWeek  { get; set; }
 
         public TimeOnly StartTime { get; set; }
@@ -20,7 +21,7 @@ namespace ClinicProjectDomain.Entities
         public int SlotDurationMinutes { get; set; }
         public bool IsActive { get; set; }
 
-        public DateTime ScheduledTime { get; set; }
+        public DateOnly ScheduledDate { get; set; }
         public bool IsClincOpened(Clinic clinic) { 
          
            if(StartTime<clinic.OpenTime || EndTime > clinic.CloseTime)

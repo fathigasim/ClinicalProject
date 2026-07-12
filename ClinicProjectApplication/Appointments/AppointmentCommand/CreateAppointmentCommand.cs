@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 namespace ClinicProjectApplication.Appointments.AppointmentCommand
 {
     public record CreateAppointmentCommand
-        (Guid PatientId,Guid DoctorId, DayOfWeek DayOfWeek,TimeOnly StartTime, string Notes) :IRequest<Result<string>>,ITransactionalRequest;
+        (Guid PatientId,Guid DoctorId, DateOnly AppointmentDate ,TimeOnly StartTime, string Notes) :IRequest<Result<string>>,ITransactionalRequest;
 
    
    

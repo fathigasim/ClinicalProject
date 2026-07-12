@@ -41,6 +41,7 @@ namespace ClinicProjectApplication.Doctors.Command.DoctorWeeklySchedule
                     DoctorName = doctor.LastName + " " + doctor.FirstName,
                     DayOfWeek = request.ScheduleDate.DayOfWeek,
                     StartTime = request.StartTime,
+                    ScheduleDate=request.ScheduleDate,
                     EndTime = request.EndTime,
                     SlotDurationMinutes = 30, // Default slot duration
                     IsActive = true
@@ -52,9 +53,10 @@ namespace ClinicProjectApplication.Doctors.Command.DoctorWeeklySchedule
             // 3. Overlap check
             var hasOverlap = await _weeklyScheduleRepository.HasOverlappingSchedule(
                 request.DoctorId,
+                request.ScheduleDate,
                 request.ScheduleDate.DayOfWeek,
-               request.StartTime,
-              request.EndTime,
+                request.StartTime,
+                request.EndTime,
                 cancellationToken);
 
             if (hasOverlap)
@@ -73,10 +75,10 @@ namespace ClinicProjectApplication.Doctors.Command.DoctorWeeklySchedule
             //{
             //    return Result<string>.Failure("Clinic is closed at this time");
             //}
-            var isDoctorBookedToday=   await _weeklyScheduleRepository.IsDoctorScheduledToday(weeklySchedule.DoctorId, weeklyScheduleDto.DayOfWeek, cancellationToken);
-                if(isDoctorBookedToday)
+            var doctorhasalreadybooked=   await _weeklyScheduleRepository.IsDoctorScheduledToday(weeklySchedule.DoctorId, weeklySchedule.ScheduledDate, weeklyScheduleDto.DayOfWeek, cancellationToken);
+                if(doctorhasalreadybooked)
                 {
-                    return Result<string>.Failure("Doctor is already scheduled for today.");
+                    return Result<string>.Failure($"Doctor is already scheduled for {weeklyScheduleDto.ScheduleDate}.");
             }
 
             await  _weeklyScheduleRepository.AddAsync(weeklySchedule);
