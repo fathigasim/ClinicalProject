@@ -36,7 +36,8 @@ namespace ClinicProjectDomain.Services
             // Only block slots for active/scheduled appointments
             var activeAppointments = appointments
                 .Where(a => a.DayOfWeek == schedule.DayOfWeek
-                         && a.status != AppointmentStatus.Cancelled)
+                         && a.status != AppointmentStatus.Cancelled
+                         && a.status !=AppointmentStatus.Scheduled)
                 .ToList();
 
             return slots.Where(slot =>

@@ -9,14 +9,40 @@ namespace ClinicProjectDomain.Entities
 {
     public class MedicalRecords :BaseEntity, IAuditableEntity
     {
-       
-        public string MedicalRecordNumber { get; set; }
-        public Guid AppointmentId { get; set; }
-        public Appointment Appointment { get; set; } = default!;
-        public string Diagnosis { get; set; } = default!;
-        public ICollection<Prescriptions> Prescriptions{ get; set; } = new List<Prescriptions>();
-  
-        public DateTime CreatedAt { get; set; } = DateTime.Now;
+
+        private MedicalRecords(Guid appointmentId, string medicalRecordNumber, string diagnosis)
+        {
+
+            AppointmentId = appointmentId;
+                Diagnosis = diagnosis;
+                MedicalRecordNumber= medicalRecordNumber;
+        }
+        private Appointment _Appointment;
+        public Appointment Appointment => _Appointment;
+
+        public string MedicalRecordNumber { get;private set; }
+        public Guid AppointmentId { get;private set; }
         
+        public string Diagnosis { get;private set; } = default!;
+
+        private Prescriptions _Prescription ;
+        public Prescriptions Prescription => _Prescription;
+        
+        public static MedicalRecords Create(Guid appointmentId,string medicalRecordSeq ,string diagnosis)
+        {
+            
+            return new MedicalRecords(appointmentId, medicalRecordSeq, diagnosis);
+        }
+
+        public void AddPrescription(Prescriptions prescription)
+        {
+            if (prescription is null)
+                throw new ArgumentNullException(nameof(prescription));
+            if (prescription.MedicalRecordId != Id)
+                throw new InvalidOperationException("Prescription does not belong to this medical record.");
+
+            _Prescription = prescription;
+        }
+
     }
 }

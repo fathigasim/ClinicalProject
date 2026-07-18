@@ -9,6 +9,6 @@ using System.Threading.Tasks;
 
 namespace ClinicProjectApplication.Appointments.Queries
 {
-    public record GetByAppointmentNumberQuery :IRequest<Result<List<AppointmentDto>>>;
+    public record GetByAppointmentNumberQuery(string AppointmentNumber) :IRequest<Result<List<AppointmentDto>>>;
     
 }

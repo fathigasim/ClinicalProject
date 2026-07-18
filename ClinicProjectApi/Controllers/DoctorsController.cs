@@ -20,8 +20,8 @@ namespace DefaultAuthenticationApi.Controllers
             _mediator = mediator;
         }
 
-        [HttpGet]
-        public async Task<IActionResult> Get(CancellationToken ct)
+        [HttpGet("Scheduled-Doctors")]
+        public async Task<IActionResult> GetScheduledDoctors(CancellationToken ct)
         {
           var listedDoctors=  await _mediator.Send(new GetListedDoctorQuery());
             return Ok(listedDoctors);

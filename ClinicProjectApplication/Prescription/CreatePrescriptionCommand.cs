@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace ClinicProjectApplication.Prescription
 {
-    public record CreatePrescriptionCommand(Guid patientId, string MedicationName,string dosage, int frequency) : IRequest<Result<string>>,ITransactionalRequest;
+    public record CreatePrescriptionCommand(Guid patientId, string MedicationName,string dosage, int frequency,int durationInDays) : IRequest<Result<string>>,ITransactionalRequest;
 
    
 }

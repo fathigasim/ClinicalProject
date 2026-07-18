@@ -48,6 +48,7 @@ this IServiceCollection services, IHostEnvironment env)
                 services.AddTransient(typeof(IPipelineBehavior<,>), typeof(DistributedCacheInvalidationBehavior<,>));
             }
             services.AddTransient(typeof(IPipelineBehavior<,>), typeof(TransactionBehavior<,>));
+         //   services.AddHangfireServer();
             return services;
         }
         }

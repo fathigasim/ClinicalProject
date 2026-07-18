@@ -52,7 +52,7 @@ namespace ClinicProjectInfrastructure.Services
         public async Task<List<InvoicesDto>> GetLatestInvoices(CancellationToken cancellationToken)
         {
             var invoices = await _readDbContext.ReadSet<Invoices>()
-                .Include(p => p.Payments)
+                .Include(p => p.Payment)
                 .Where(p => p.status == InvoiceStatus.Pending)
                 .OrderByDescending(p => p.IssueDate)
                 .Take(5).ToListAsync(cancellationToken);
@@ -69,8 +69,8 @@ namespace ClinicProjectInfrastructure.Services
          DoctorName = $"{p.Appointment.Doctor.FirstName} {p.Appointment.Doctor.LastName}",
          PatientName = $"{p.Appointment.Patient.FirstName} {p.Appointment.Patient.LastName}",
          MedicalRecordDate = p.CreatedAt,
-         PrescriptionItems = p.Prescriptions
-              .SelectMany(pr => pr.PrescriptionItems)
+         PrescriptionItems = p.Prescription
+              .PrescriptionItems//.SelectMany(pr => pr.)
              .Select(pi => new InvoicePrescriptionItemsDto
              {
                  Dosage = pi.Dosage,
@@ -96,8 +96,8 @@ namespace ClinicProjectInfrastructure.Services
          DoctorName = $"{p.Appointment.Doctor.FirstName} {p.Appointment.Doctor.LastName}",
          PatientName = $"{p.Appointment.Patient.FirstName} {p.Appointment.Patient.LastName}",
          MedicalRecordDate = p.CreatedAt,
-         PrescriptionItems = p.Prescriptions
-              .SelectMany(pr => pr.PrescriptionItems)
+         PrescriptionItems = p.Prescription.PrescriptionItems
+             // .Select(pr => pr.)
              .Select(pi => new InvoicePrescriptionItemsDto
              {
                  Dosage = pi.Dosage,

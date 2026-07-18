@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace ClinicProjectApplication.Invoice.Notifications
 {
-    public class InvoicePaidNotificationHandler : INotificationHandler<InvoicePaidNotification>
+    public class InvoicePaidNotificationHandler : INotificationHandler<InvoicePaidNotification>,ITransactionalRequest
     {
          private readonly IRepository<Invoices> _repository;
         private readonly ILogger<InvoicePaidNotificationHandler> _logger;
@@ -32,7 +32,8 @@ namespace ClinicProjectApplication.Invoice.Notifications
                 _logger.LogWarning("Invoice {InvoiceId} not found", notification.InvoiceId);
                 return;
             }
-            invoice.status = InvoiceStatus.Paid;
+            //invoice.status = InvoiceStatus.Paid;
+            invoice.UpdateStatus(InvoiceStatus.Paid);
             _repository.Update(invoice);
             _logger.LogInformation("Invoice {InvoiceId} marked as paid and Email{Emaiil}", notification.InvoiceId,notification.Email);
             await _emailSender.SendEmailAsync(notification.Email, "Invoice Paid Successfully", $"Dear Customer {notification.Email} your bill has been paid successfully best regards", true,cancellationToken);

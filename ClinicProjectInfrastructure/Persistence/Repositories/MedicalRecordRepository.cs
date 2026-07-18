@@ -21,7 +21,7 @@ namespace ClinicProjectInfrastructure.Persistence.Repositories
         public async Task<PagedResult<MedicalRecords>?> GetAllPatientsMedicalReocrd(int page,int pageSize,CancellationToken ct)
         {
             var medicalRecord = await _readDbContext.ReadSet<MedicalRecords>()
-                                  .WithIncludes(p => p.Include(pre=>pre.Prescriptions)
+                                  .WithIncludes(p => p.Include(pre=>pre.Prescription)
                                   .ThenInclude(it=>it.PrescriptionItems))
                                   
                                   .OrderByDescending(p => p.CreatedAt)

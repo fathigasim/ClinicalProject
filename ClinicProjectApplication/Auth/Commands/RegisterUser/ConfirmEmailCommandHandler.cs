@@ -39,11 +39,7 @@ namespace ClinicProjectApplication.Auth.Commands.RegisterUser
             {
                 return Result<string>.Failure("Confirmation failed");
             }
-            // Email confirmed — now issue tokens and log them in
-            //var tracked = await userRepository.GetByEmailAsync(req.Email, ct)
-            //    ?? throw new NotFoundException(nameof(ApplicationUser), req.Email);
-
-            //return await tokenIssuer.IssueAsync(tracked, null, ct);
+      
             return Result<string>.Success("Email confirmed successfully");
         }
     }

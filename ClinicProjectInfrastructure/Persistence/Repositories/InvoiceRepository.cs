@@ -34,7 +34,7 @@ namespace ClinicProjectInfrastructure.Persistence.Repositories
 
         public async Task<List<Invoices>> GetAll(CancellationToken cancellationToken)
         {
-             return await _readDbContext.ReadSet<Invoices>().Include(a => a.Payments)
+             return await _readDbContext.ReadSet<Invoices>().Include(a => a.Payment)
                 .ToListAsync(cancellationToken);
         }
 

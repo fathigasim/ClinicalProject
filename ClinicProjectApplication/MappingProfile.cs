@@ -52,9 +52,11 @@ namespace ClinicProjectApplication
                .ForMember(dest => dest.PatientId, opt => opt.MapFrom(src => src.Id))
                .ReverseMap();
 
-       
-          
-      
+            CreateMap<Appointment, NotInvoicedAppointmentDto>()
+                 
+                 .ReverseMap();
+
+
             //CreateMap<OrderItem, OrderItemDto>()
             //    .ForMember(d => d.ProductName, opt => opt.MapFrom(s => s.Product.Name));
 

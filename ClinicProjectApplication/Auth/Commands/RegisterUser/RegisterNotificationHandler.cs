@@ -1,5 +1,6 @@
 ﻿using ClinicProjectApplication.Interfaces;
 using ClinicProjectDomain.Interfaces;
+using Hangfire;
 using MediatR;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Configuration;
@@ -12,18 +13,11 @@ using System.Threading.Tasks;
 
 namespace ClinicProjectApplication.Auth.Commands.RegisterUser
 {
-    public class RegisterNotificationHandler : INotificationHandler<RegisterNotification>
+    public class RegisterNotificationHandler(IEmailSender _emailSender, IBackgroundJobClient _backgroundJobClient
+        , ILogger<RegisterNotificationHandler> _logger
+        , IConfiguration _configuration) : INotificationHandler<RegisterNotification>
     {
-        private readonly IEmailSender _emailSender;
-        private readonly ILogger<RegisterNotificationHandler> _logger;
-        private readonly IConfiguration _configuration;
-        public RegisterNotificationHandler(IEmailSender emailSender,
-            ILogger<RegisterNotificationHandler> logger, IConfiguration configuration)
-        {
-            _emailSender= emailSender;
-            _logger= logger;
-            _configuration= configuration;
-        }
+    
         public async Task Handle(RegisterNotification notification, CancellationToken cancellationToken)
         {
             try
@@ -35,13 +29,17 @@ namespace ClinicProjectApplication.Auth.Commands.RegisterUser
                 var confirmUrl = $"{_configuration["Frontend:BaseUrl"]}/auth/confirm-email" +
                                  $"?email={Uri.EscapeDataString(notification.Email)}" +
                                  $"&token={encodedToken}";
-                await _emailSender.SendEmailAsync(
-                 notification.Email,
-                subject: "Confirm your email",
-                 $"Click to confirm your account: <a href='{confirmUrl}'>Confirm Email</a>"
-);
+//                await _emailSender.SendEmailAsync(
+//                 notification.Email,
+//                subject: "Confirm your email",
+//                 $"Click to confirm your account: <a href='{confirmUrl}'>Confirm Email</a>"
+//);
 
-                _logger.LogInformation("Email sent To {Email} successfully", notification.Email);
+                _backgroundJobClient.Enqueue<IEmailSender>(x => x.SendEmailAsync(notification.Email,
+               "Confirm your email",
+               $"Click to confirm your account: <a href='{confirmUrl}'>Confirm Email</a>",true,CancellationToken.None));
+
+                _logger.LogInformation("Email sent To {Email} successfully", notification.Email,default);
             }
             catch (Exception ex)
             {

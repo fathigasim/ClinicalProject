@@ -36,12 +36,8 @@ namespace ClinicProjectApplication.Invoice.Command
 
             var sequence =await _sequenceService.GenerateInvoiceNumberAsync();
 
-            var invoice = new Invoices
-            {
-                InvoiceNo = sequence,
-                AppointmentId = appointment.Id,
-                TotalAmount=request.TotalAmount,
-            };
+            var invoice =  Invoices.Create(sequence,appointment.Id,request.TotalAmount);
+           
            var invoiceDto=   _mapper.Map<InvoicesDto>(invoice);
             
          

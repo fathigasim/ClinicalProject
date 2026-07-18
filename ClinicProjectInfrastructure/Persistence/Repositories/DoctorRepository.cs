@@ -82,10 +82,10 @@ namespace ClinicProjectInfrastructure.Persistence.Repositories
 
         public async Task<List<Doctor>> GetListedDoctorsAsync(CancellationToken ct)
         {
-            var today = DateTime.UtcNow.Date;
+            var today = DateOnly.FromDateTime( DateTime.UtcNow.Date);
             var weekFromNow = today.AddDays(7);
             return     await _readDbContext.ReadSet<WeeklySchedule>()
-                  .Where(p => p.CreatedAt >= today && p.CreatedAt < weekFromNow)
+                  .Where(p => p.ScheduledDate >= today && p.ScheduledDate < weekFromNow)
                 .GroupBy(p=>p.DoctorId)
                 
                 .Select(p => new Doctor { Id=p.Key,FirstName=p.First().Doctor.FirstName

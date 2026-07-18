@@ -1,13 +1,19 @@
 using ClinicProjectApi;
 using ClinicProjectApplication;
+using ClinicProjectApplication.Auth.Commands.PurgeTokens;
 using ClinicProjectApplication.Interfaces;
+using ClinicProjectDomain.Entities;
 using ClinicProjectDomain.Interfaces;
 using ClinicProjectInfrastructure.Persistence;
 using ClinicProjectInfrastructure.Services;
 using DefaultAuthenticationApi.Middleware;
 using DefaultAuthenticationApplication;
 using DefaultAuthenticationInfrastructure;
+using Hangfire;
+using Hangfire.SqlServer;
+using MediatR;
 using Microsoft.AspNetCore.RateLimiting;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using Serilog;
 using System.Threading.RateLimiting;
@@ -120,21 +126,53 @@ builder.Services.AddAuthorization(options =>
     options.AddPolicy("AdminUser", policy =>
        policy.RequireRole("Admin","User"));
 });
+    builder.Services.AddHangfire(config => config
+    .SetDataCompatibilityLevel(CompatibilityLevel.Version_180)
+    .UseSimpleAssemblyNameTypeSerializer()
+    .UseRecommendedSerializerSettings()
+    .UseSqlServerStorage(builder.Configuration.GetConnectionString("HangfireConnection"), new SqlServerStorageOptions
+    {
+        CommandBatchMaxTimeout = TimeSpan.FromMinutes(5),
+        SlidingInvisibilityTimeout = TimeSpan.FromMinutes(5),
+        QueuePollInterval = TimeSpan.Zero,
+        UseRecommendedIsolationLevel = true,
+        DisableGlobalLocks = true
+    }));
+    builder.Services.AddHangfireServer();
+    
 
-var app = builder.Build();
+    var app = builder.Build();
+    app.UseHangfireDashboard();
+    // Program.cs — register once, on startup
+    RecurringJob.AddOrUpdate<IMediator>(
+        "purge-expired-tokens",
+        mediator => mediator.Send(new PurgeExpiredTokensCommand(), CancellationToken.None),
+        Cron.Daily); // or Cron.Daily(3) for 3 AM UTC
+    var logger = app.Services.GetRequiredService<ILogger<Program>>();
+    using var scope = app.Services.CreateScope();
+    var ctx = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    var entityType = ctx.Model.FindEntityType(typeof(Appointment));
+    var nav = entityType?.FindNavigation(nameof(Appointment.Invoice));
+    Console.WriteLine($"Invoice navigation found: {nav != null}");
+    Console.WriteLine($"Property access mode: {nav?.GetPropertyAccessMode()}");
+    Console.WriteLine($"Assembly: {typeof(AppDbContext).Assembly.Location}");
+    Console.WriteLine($"Assembly last write: {System.IO.File.GetLastWriteTime(typeof(AppDbContext).Assembly.Location)}");
+    var configTypes = typeof(AppDbContext).Assembly.GetTypes()
+    .Where(t => typeof(IEntityTypeConfiguration<>).IsAssignableFrom(t) == false // interface check needs generic handling
+             && t.GetInterfaces().Any(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IEntityTypeConfiguration<>)))
+    .Select(t => t.FullName);
 
-var logger = app.Services.GetRequiredService<ILogger<Program>>();
-
-logger.LogInformation($"Environment: {app.Environment.EnvironmentName}");
-logger.LogInformation($"AllowedOrigins: {string.Join(",", builder.Configuration.GetSection("AllowedOrigins").Get<string[]>() ?? Array.Empty<string>())}");
-Console.WriteLine($"Environment: {app.Environment.EnvironmentName}");
-Console.WriteLine($"AllowedOrigins: {string.Join(",", builder.Configuration.GetSection("AllowedOrigins").Get<string[]>() ?? Array.Empty<string>())}");
-//var sharedKey = Console.ReadLine()!;
-//var key = Base32Encoding.ToBytes(sharedKey); // the SharedKey from step 3
-//var totp = new Totp(key);
-//var code = totp.ComputeTotp(); // current 6-digit code, valid ~30s
-//Console.WriteLine(code);
-await app.SeedAsync();
+    foreach (var t in configTypes) Console.WriteLine(t);
+    //    logger.LogInformation($"Environment: {app.Environment.EnvironmentName}");
+    //logger.LogInformation($"AllowedOrigins: {string.Join(",", builder.Configuration.GetSection("AllowedOrigins").Get<string[]>() ?? Array.Empty<string>())}");
+    //Console.WriteLine($"Environment: {app.Environment.EnvironmentName}");
+    //Console.WriteLine($"AllowedOrigins: {string.Join(",", builder.Configuration.GetSection("AllowedOrigins").Get<string[]>() ?? Array.Empty<string>())}");
+    //var sharedKey = Console.ReadLine()!;
+    //var key = Base32Encoding.ToBytes(sharedKey); // the SharedKey from step 3
+    //var totp = new Totp(key);
+    //var code = totp.ComputeTotp(); // current 6-digit code, valid ~30s
+    //Console.WriteLine(code);
+    await app.SeedAsync();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
@@ -149,7 +187,7 @@ app.UseMiddleware<ExceptionHandlingMiddleware>();
 app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
-
+app.UseHangfireDashboard("/hangfire"); // secure this in prod, see step 6
 app.MapControllers();
 
 app.Run();

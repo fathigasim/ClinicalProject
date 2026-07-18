@@ -39,39 +39,27 @@ namespace ClinicProjectApplication.MedicalRecord.Command
             {
                 return Result<string>.Failure("Patient with this appointment number is not available");
             }
-            var medicalRecord = new MedicalRecordDto
+            var medicalRecordDto = new MedicalRecordDto
             {
 
                 AppointmentId = appointment.Id,
                 Diagnosis = request.Diagnosis,
                 
-                CreatedAt = DateTime.UtcNow,
+              //  CreatedAt = DateTime.UtcNow,
             
 
             };
+            var MedicalRecordNumber = await _sequenceService.GenerateMedicalNumberAsync();
+            var medicalRecored=   MedicalRecords.Create(medicalRecordDto.AppointmentId, MedicalRecordNumber, medicalRecordDto.Diagnosis);
+         var prescriptions=   Prescriptions.CreatePrescription(medicalRecored.Id);
+          //  PrescriptionItems.Create(prescriptions.Id, request.MedicationName, request.Dosage, request.Frequency, request.duration);
             
-            var medicalRecordEntity = _mapper.Map<MedicalRecords>(medicalRecord);
-            medicalRecordEntity.MedicalRecordNumber = await _sequenceService.GenerateMedicalNumberAsync();
-            medicalRecordEntity.Prescriptions = new List<Prescriptions> {
-                   new Prescriptions { MedicalRecordId=medicalRecordEntity.Id,
-                   PrescriptionItems=new List<PrescriptionItems>
-                   {
-                       new PrescriptionItems
-                       {
-                           MedicationName=request.MedicationName,
-                           Dosage=request.Dosage,
-                           Frequency=request.Frequency,
-                           Duration=request.Duration
-                       }
-                   }
-                   
-                      
-                   }
+            prescriptions.AddItem( request.MedicationName, request.Dosage, request.Frequency, request.duration);
+            medicalRecored.AddPrescription(prescriptions);
 
-                };
-            await  _repository.AddAsync(medicalRecordEntity);
+            await  _repository.AddAsync(medicalRecored);
         
-            return Result<string>.Success($"Medical record created with ID: {medicalRecordEntity.AppointmentId}");
+            return Result<string>.Success($"Medical record created with ID: {medicalRecored.AppointmentId}");
         }
     }
 }

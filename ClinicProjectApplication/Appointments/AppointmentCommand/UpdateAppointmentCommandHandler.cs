@@ -57,7 +57,7 @@ namespace ClinicProjectApplication.Appointments.AppointmentCommand
             //    .GetByAppointmentNumberAsync(appointment.DoctorId, appointment.PatientId,request.DayOfWeek,cancellationToken);
 
            
-                appointment.StartTime = request.StartTime;
+            //    appointment.StartTime = request.StartTime;
                 _appointmentsRepository.Update(appointment);
             
 

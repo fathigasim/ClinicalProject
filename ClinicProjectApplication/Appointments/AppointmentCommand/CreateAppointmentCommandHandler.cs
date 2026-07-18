@@ -51,17 +51,19 @@ namespace ClinicProjectApplication.Appointments.AppointmentCommand
                 return Result<string>.Failure("This slot is already booked.");
             var sequence =await _sequenceSerivce.GenerateOrderNumberAsync();
 
-            var appointment = new Appointment
-            {
-                AppointmentNumber = sequence,
-                PatientId = request.PatientId,
-                DoctorId = request.DoctorId,
-                AppointmentDate = request.AppointmentDate,
-                StartTime = request.StartTime,
-                Notes = request.Notes,
-            };
 
-           
+            //var appointment = new Appointment
+            //{
+            //    AppointmentNumber = sequence,
+            //    PatientId = request.PatientId,
+            //    DoctorId = request.DoctorId,
+            //    AppointmentDate = request.AppointmentDate,
+            //    StartTime = request.StartTime,
+            //    Notes = request.Notes,
+            //};
+            var appointment =  Appointment.CreateAppointment(sequence, request.PatientId, request.DoctorId,
+                request.AppointmentDate, request.StartTime, request.Notes);
+
             await _appointmentRepository.AddAsync(appointment);
             return Result<string>.Success($"Appointment Confirmed for "+$"{appointment.AppointmentNumber}");
         }

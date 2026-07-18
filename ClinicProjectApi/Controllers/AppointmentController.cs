@@ -1,5 +1,6 @@
 ﻿using ClinicProjectApplication.Appointments.AppointmentCommand;
 using ClinicProjectApplication.Appointments.Queries;
+using ClinicProjectApplication.Appointments.Queries.GetNotInvoicedAppointments;
 using ClinicProjectApplication.Appointments.Queries.GetTodayAppointments;
 using MediatR;
 using Microsoft.AspNetCore.Http;
@@ -28,7 +29,7 @@ namespace ClinicProjectApi.Controllers
         [HttpGet("NotInvoicedAppointments")]
         public async Task<IActionResult> GetAsync()
         {
-            var result = await _mediator.Send(new GetByAppointmentNumberQuery());
+            var result = await _mediator.Send(new GetNotInvoicedAppointmentsQuery());
 
             return Ok(result);
         }

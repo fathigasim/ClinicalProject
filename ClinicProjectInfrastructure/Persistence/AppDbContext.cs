@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -59,67 +60,21 @@ namespace ClinicProjectInfrastructure.Persistence
         protected override void OnModelCreating(ModelBuilder b)
     {
         base.OnModelCreating(b);
-
-            b.Entity<ApplicationUser>()
-      .OwnsMany(u => u.RefreshTokens, rt =>
-      {
-          rt.WithOwner().HasForeignKey(t => t.UserId);
-          rt.HasKey(t => t.Id);                              // explicit PK
-          rt.Property(t => t.Id).ValueGeneratedNever();      // we set it in Create()
-          rt.Property(t => t.Token).IsRequired().HasMaxLength(128);
-          rt.HasIndex(t => t.Token).IsUnique();
-          rt.Property(t => t.Expires).IsRequired();
-          rt.Ignore(t => t.IsExpired);                       // computed, not mapped
-          rt.Ignore(t => t.IsActive);                        // computed, not mapped
-      });
-            b.Entity<Doctor>(d =>
-            {
-
-                d.HasKey(d => d.Id);
-
-                d.Property(d => d.FirstName).IsRequired().HasMaxLength(50);
-                d.Property(d => d.LastName).IsRequired().HasMaxLength(50);
-                d.Property(d => d.Specialization).IsRequired().HasMaxLength(100);
-                d.Property(d => d.Phone).IsRequired().HasMaxLength(20);
-                d.Property(d => d.Email).IsRequired().HasMaxLength(100);
-                d.HasMany(d => d.WeeklySchedules).WithOne(a => a.Doctor).HasForeignKey(a => a.DoctorId);
-            });
+            b.ApplyConfigurationsFromAssembly(typeof(AppDbContext).Assembly);
+         
+           
             
             //appointment configuration
             
-            b.Entity<Appointment>(p =>
-            {
-                p.HasKey(p => p.Id);
-                p.HasOne(p => p.Patient).WithMany(p => p.Appointments).HasForeignKey(p => p.PatientId);
-                p.HasOne(p => p.Doctor).WithMany(p => p.Appointments).HasForeignKey(p => p.DoctorId);
-            });
+          
+          
+ 
+
+        }
+
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
            
-
-            b.Entity<MedicalRecords>(p =>
-            {
-                p.HasKey(p => p.Id);
-                p.HasOne(a => a.Appointment).WithOne(p => p.MedicalRecord).HasForeignKey<MedicalRecords>(r=>r.AppointmentId);
-                
-            });
-
-            b.Entity<Invoices>(p =>
-            {
-                p.HasKey(p => p.Id);
-                p.HasOne(p => p.Appointment).WithOne(p => p.Invoices).HasForeignKey<Invoices>(i => i.AppointmentId);
-                p.Property(p=>p.TotalAmount).IsRequired().HasColumnType("decimal(18,2)");
-            });
-            b.Entity<Payments>(p =>
-                {
-                    p.HasKey(p => p.Id);
-                    p.HasOne(p => p.Invoice).WithOne(i => i.Payments).HasForeignKey<Payments>(p => p.InvoiceId);
-                });
-
-            b.Entity<Prescriptions>(p =>
-            {
-                p.HasKey(p => p.Id);
-                p.HasOne(p => p.MedicalRecord).WithMany(m => m.Prescriptions).HasForeignKey(p => p.MedicalRecordId);
-                p.HasMany(p => p.PrescriptionItems).WithOne(i => i.Prescription).HasForeignKey(i => i.PrescriptionId);
-            });
         }
         public DbSet<ApplicationUser> users { get; set; }
         public DbSet<RefreshToken> refreshTokens { get; set; }
@@ -134,27 +89,52 @@ namespace ClinicProjectInfrastructure.Persistence
 
         public DbSet<PrescriptionItems> PrescriptionItems { get; set; }
 
-
+        public override int SaveChanges()
+        {
+            ApplyAuditInfo();
+            return base.SaveChanges();
+        }
         public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
         {
-            var userId = _httpContextAccessor?.HttpContext?.User?
-              .FindFirstValue(ClaimTypes.NameIdentifier);
-            foreach (var entry in ChangeTracker.Entries<IAuditableEntity>())
-            {
-                switch (entry.State)
-                {
-                    case EntityState.Added:
-                        entry.Entity.CreatedAt = DateTime.UtcNow;
-                        entry.Entity.CreatedBy = userId;
-                        break;
-                    case EntityState.Modified:
-                        entry.Entity.UpdatedAt = DateTime.UtcNow;
-                        entry.Entity.UpdatedBy = userId;
-                        break;
-                }
-            }
-
+            //var userId = _httpContextAccessor?.HttpContext?.User?
+            //  .FindFirstValue(ClaimTypes.NameIdentifier);
+            //var userId = _httpContextAccessor.HttpContext?.User?.FindFirstValue("sub");
+            //foreach (var entry in ChangeTracker.Entries<IAuditableEntity>())
+            //{
+            //    switch (entry.State)
+            //    {
+            //        case EntityState.Added:
+            //            entry.Entity.CreatedAt = DateTime.UtcNow;
+            //            entry.Entity.CreatedBy = userId;
+            //            break;
+            //        case EntityState.Modified:
+            //            entry.Entity.UpdatedAt = DateTime.UtcNow;
+            //            entry.Entity.UpdatedBy = userId;
+            //            break;
+            //    }
+            //}
+            ApplyAuditInfo();
             return base.SaveChangesAsync(cancellationToken);
         }
+
+        private void ApplyAuditInfo()
+{
+    var userId = _httpContextAccessor?.HttpContext?.User?.FindFirstValue("sub");
+    foreach (var entry in ChangeTracker.Entries<IAuditableEntity>())
+    {
+        switch (entry.State)
+        {
+            case EntityState.Added:
+                entry.Entity.CreatedAt = DateTime.UtcNow;
+                entry.Entity.CreatedBy = userId;
+                break;
+            case EntityState.Modified:
+                entry.Entity.UpdatedAt = DateTime.UtcNow;
+                entry.Entity.UpdatedBy = userId;
+                break;
+        }
+    }
+}
+
     }
 }

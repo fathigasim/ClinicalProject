@@ -24,7 +24,7 @@ namespace ClinicProjectApplication.Appointments.Queries
         public async Task<Result<List<AppointmentDto>>> Handle(GetByAppointmentNumberQuery request, CancellationToken cancellationToken)
         {
 
-         var Appointments=   await _appointmentRepository.GetListOfNotInvoicedAppointmentsAsync(cancellationToken);
+         var Appointments=   await _appointmentRepository.GetByAppointmentNumberAsync(request.AppointmentNumber,cancellationToken);
             if (Appointments == null) {
                 return Result<List<AppointmentDto>>.Failure("Appointment not exist");
             }

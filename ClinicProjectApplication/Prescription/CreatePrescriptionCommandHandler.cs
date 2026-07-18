@@ -35,9 +35,11 @@ namespace ClinicProjectApplication.Prescription
                     CreatedAt = DateTime.UtcNow,
                   
                 };
-
-         var prescription=    _mapper.Map<Prescriptions>(prescriptionDto);
-                prescription.PrescriptionItems.Add(new PrescriptionItems() { PrescriptionId = prescription.Id,MedicationName=request.MedicationName ,Dosage = request.dosage, Duration = DateTime.UtcNow, Frequency = request.frequency });
+            var prescription=    Prescriptions.CreatePrescription(prescriptionDto.MedicalRecordId);
+                PrescriptionItems.Create(prescription.Id, request.MedicationName,request.dosage,request.frequency,request.durationInDays);
+       //  var prescription=    _mapper.Map<Prescriptions>(prescriptionDto);
+                
+            //    prescription.PrescriptionItems.Add(new PrescriptionItems() { PrescriptionId = prescription.Id,MedicationName=request.MedicationName ,Dosage = request.dosage, Duration = DateTime.UtcNow, Frequency = request.frequency });
              await   _prescriptionRepository.AddAsync(prescription);
                 return Result<string>.Success("Prescription added to patient");
             }

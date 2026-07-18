@@ -166,12 +166,13 @@ namespace DefaultAuthenticationInfrastructure
             services.AddSingleton<IMfaChallengeTokenService, MfaChallengeTokenService>();
             services.AddTransient<ScheduleService>();
             //services.AddTransient<IEmailSender, EmailSender>();
-            services.AddHostedService<TokenCleanupService>();
+        //    services.AddHostedService<TokenCleanupService>();
             //services.AddScoped<IDbSeeder,DbSeeder>();
             services.AddHttpContextAccessor();
 
             return services;
         }
+
         static IAsyncPolicy<HttpResponseMessage> GetRetryPolicy() =>
 HttpPolicyExtensions
 .HandleTransientHttpError() // 5xx, 408, network failures
@@ -186,5 +187,7 @@ TimeSpan.FromSeconds(Math.Pow(2, retryAttempt))); //
         .HandleTransientHttpError()
         .CircuitBreakerAsync(5, TimeSpan.FromSeconds(30));
     }
+
+
     }
 

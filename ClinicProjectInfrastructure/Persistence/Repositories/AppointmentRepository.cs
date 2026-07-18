@@ -1,6 +1,7 @@
 ﻿
 
 
+using ClinicProjectApplication.Appointments.Dtos;
 using ClinicProjectApplication.Interfaces;
 using ClinicProjectDomain.Common.Pagination;
 using ClinicProjectDomain.Entities;
@@ -23,7 +24,9 @@ namespace ClinicProjectInfrastructure.Persistence.Repositories
         public async Task<PagedResult<Appointment>> GetTodaysAppointmentsAsync(int page,int pageSize ,CancellationToken cancellationToken)
         {
             var dayOfWeek = DateTime.Now.DayOfWeek;
-            return await _readDbContext.ReadSet<Appointment>().Where(p => p.DayOfWeek == dayOfWeek &&p.CreatedAt.Date>=DateTime.Now.Date)
+            return await _readDbContext.ReadSet<Appointment>()
+                //.Where(p => p.DayOfWeek == dayOfWeek &&p.CreatedAt.Date>=DateTime.Now.Date)
+                .Take(5)
                 .OrderByDescending(p=>p.AppointmentNumber)
                 .ToPagedAsync(page, pageSize, cancellationToken);
         }
@@ -40,66 +43,91 @@ namespace ClinicProjectInfrastructure.Persistence.Repositories
 
         public async Task<IReadOnlyList<Appointment>> GetDatedAppointmentsByDoctorIdAsync(Guid doctorId, DateOnly date, CancellationToken cancellationToken)
         {
+          
 
             return await _readDbContext.ReadSet<Appointment>()
                 .Where(a => a.DoctorId == doctorId &&
                             a.status != AppointmentStatus.Cancelled &&
-                          DateOnly.FromDateTime(  a.CreatedAt) == date)
+
+                            a.AppointmentDate== date)
+                .ToListAsync(cancellationToken);
+        }
+
+        public async Task<IReadOnlyList<Appointment>> GetOverlappingAppointmentsAsync(
+    Guid doctorId,
+    DateOnly date,
+    TimeOnly requestedStartTime,
+    CancellationToken cancellationToken)
+        {
+            // 1. Pre-calculate the requested window in C#
+            TimeOnly requestedEndTime = requestedStartTime.AddMinutes(30);
+
+            // 2. Run the overlap query
+            return await _readDbContext.ReadSet<Appointment>()
+                .Where(a =>
+                    a.DoctorId == doctorId &&
+                    a.status != AppointmentStatus.Cancelled &&
+                    a.AppointmentDate == date &&
+
+                    // Overlap Math logic:
+                    // An existing appointment overlaps with our requested time if:
+                    // Existing Start is BEFORE requested End AND Existing End is AFTER requested Start.
+                    a.StartTime < requestedEndTime &&
+                    a.StartTime.AddMinutes(30) > requestedStartTime
+                )
                 .ToListAsync(cancellationToken);
         }
 
         public async Task<Appointment?> GetByAppointmentNumberAsync(string appointmentNo, CancellationToken cancellationToken)
         {
-          
 
-            return await _readDbContext.ReadSet<Appointment>().Include(p=>p.Patient)
+
+            return await _readDbContext.ReadSet<Appointment>().Include(p => p.Patient)
                 .Where(a => a.AppointmentNumber.Contains(appointmentNo))
-                           // a.status != AppointmentStatus.Cancelled &&
-                            
+                // a.status != AppointmentStatus.Cancelled &&
+
                 .FirstOrDefaultAsync(cancellationToken);
         }
+
+        //    public async Task<AppointmentSearchResultDto> GetByAppointmentNumberAsync(
+        //string appointmentNo,
+        //CancellationToken cancellationToken)
+        //    {
+        //        return await _readDbContext.ReadSet<Appointment>()
+        //            .Where(a => a.AppointmentNumber.Contains(appointmentNo))
+        //            // Explicitly Join the Patient table using the PatientId FK
+        //            .Join(
+        //                _readDbContext.ReadSet<Patient>(), // Target table
+        //                appt => appt.PatientId,            // FK on Appointment
+        //                patient => patient.Id,             // PK on Patient
+        //                (appt, patient) => new AppointmentSearchResultDto // The projected result
+        //                {
+        //                    AppointmentId = appt.Id,
+        //                    AppointmentNumber = appt.AppointmentNumber,
+        //                    AppointmentDate = appt.AppointmentDate,
+        //                    StartTime = appt.StartTime,
+        //                    Notes = appt.Notes,
+
+        //                    // Now you can safely map the Patient details!
+        //                    PatientId = patient.Id,
+        //                    PatientName = string.Concat( patient.FirstName,patient.LastName) // Or whatever property you have
+
+        //                }
+        //            )
+        //            .FirstOrDefaultAsync(cancellationToken);
+        //    }
 
         public async Task<List<Appointment>?> GetListOfNotInvoicedAppointmentsAsync(CancellationToken cancellationToken)
         {
 
 
-            return await _dbSet.Include(p => p.Invoices)
-                .Where(a => a.Id!=a.Invoices.AppointmentId)
+            return await _readDbContext.ReadSet<Appointment>()
+                //.Include(p => p.Invoice)
+                .Where(a => a.Invoice==null)
                 // a.status != AppointmentStatus.Cancelled &&
                 .ToListAsync(cancellationToken);
+           
         }
 
-    
-        //public async Task<Appointment?> GetByAppointmentPatientAsync(string patientName, CancellationToken cancellationToken)
-        //{
-
-
-        //    return await _dbSet.Include(p=>p.Patient)
-        //        .Where(a => a.Patient.FirstName )
-        //        // a.status != AppointmentStatus.Cancelled &&
-
-        //        .FirstOrDefaultAsync(cancellationToken);
-        //}
-
-        //public async Task<bool> IsDoctorAppointmentsBusy(Guid doctorId, DateTime appointmentDate, CancellationToken ct = default)
-        //{
-        //    return await _dbSet
-        //        .AnyAsync(a => a.DoctorId == doctorId && a.AppointmentDate.Hour == appointmentDate.Hour, ct);
-        //}
-
-        //        public async Task<bool> IsSlotOccupied(Guid doctorId, DateTime requestedDate, int durationMinutes, CancellationToken ct = default)
-        //        {
-        //            // Define the start and end of the requested appointment
-        //            var requestedStart = requestedDate;
-        //            var requestedEnd = requestedDate.AddMinutes(durationMinutes);
-        ////            How the Overlap Logic Works
-        ////The formula(StartA < EndB) && (EndA > StartB) is the standard way to detect if two time periods overlap.
-        //            // Check if any existing appointment overlaps with this window
-        //            return await _context.Appointments
-        //                .AnyAsync(a => a.DoctorId == doctorId &&
-        //                               a.status != AppointmentStatus.Cancelled && // Ignore cancelled ones
-        //                               requestedStart < a.AppointmentDate.AddMinutes(durationMinutes) &&
-        //                               a.AppointmentDate < requestedEnd, ct);
-        //        }
     }
 }
