@@ -56,9 +56,11 @@ namespace ClinicProjectApplication.MedicalRecord.Command
             
             prescriptions.AddItem( request.MedicationName, request.Dosage, request.Frequency, request.duration);
             medicalRecored.AddPrescription(prescriptions);
-
-            await  _repository.AddAsync(medicalRecored);
         
+            
+            await  _repository.AddAsync(medicalRecored);
+            medicalRecored.AddAppointment(appointment);
+            medicalRecored.Appointment.ConfirmBooking();
             return Result<string>.Success($"Medical record created with ID: {medicalRecored.AppointmentId}");
         }
     }

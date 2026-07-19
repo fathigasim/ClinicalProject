@@ -142,6 +142,7 @@ namespace DefaultAuthenticationApi.Middleware
                 };
                 statusCode = StatusCodes.Status400BadRequest;
             }
+
             else if (exception is UnauthorizedException unauthorizedException)
             {
                 response = new ProblemDetails
@@ -227,6 +228,19 @@ namespace DefaultAuthenticationApi.Middleware
                 
                 statusCode = StatusCodes.Status409Conflict;
                 _logger.LogError("Conflict Exception error {Error}", apiException.Message);
+            }
+            else if (exception is DomainException domainexception)
+            {
+                response = new ProblemDetails
+                {
+                    Title = domainexception.Message,
+                    Status = StatusCodes.Status422UnprocessableEntity,
+                    Detail = " Invalid Operation"
+                };
+
+
+                statusCode = StatusCodes.Status422UnprocessableEntity;
+                _logger.LogError("Invalid Operation occured {Error}", domainexception.Message);
             }
 
             else if (exception is HttpRequestException httpException)

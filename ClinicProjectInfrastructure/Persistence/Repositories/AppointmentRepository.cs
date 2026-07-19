@@ -17,16 +17,21 @@ namespace ClinicProjectInfrastructure.Persistence.Repositories
     public class AppointmentRepository :Repository<Appointment> ,IAppointmentRepository
     {
         private readonly IReadDbContext _readDbContext;
+        private readonly AppDbContext _context;
         public AppointmentRepository(AppDbContext context, IReadDbContext readDbContext) :base(context)
         {
             _readDbContext = readDbContext;
+            _context = context;
         }
         public async Task<PagedResult<Appointment>> GetTodaysAppointmentsAsync(int page,int pageSize ,CancellationToken cancellationToken)
         {
             var dayOfWeek = DateTime.Now.DayOfWeek;
+            var todayDate = DateOnly.FromDateTime(DateTime.Now.Date);
             return await _readDbContext.ReadSet<Appointment>()
                 //.Where(p => p.DayOfWeek == dayOfWeek &&p.CreatedAt.Date>=DateTime.Now.Date)
-                .Take(5)
+                .Where(p => p.IsBooked == false
+                && p.AppointmentDate==todayDate)
+                .Take(100)
                 .OrderByDescending(p=>p.AppointmentNumber)
                 .ToPagedAsync(page, pageSize, cancellationToken);
         }
@@ -82,7 +87,7 @@ namespace ClinicProjectInfrastructure.Persistence.Repositories
         {
 
 
-            return await _readDbContext.ReadSet<Appointment>().Include(p => p.Patient)
+            return await _context.Appointments.Include(p => p.Patient)
                 .Where(a => a.AppointmentNumber.Contains(appointmentNo))
                 // a.status != AppointmentStatus.Cancelled &&
 

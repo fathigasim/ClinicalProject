@@ -1,4 +1,5 @@
-﻿using ClinicProjectDomain.Interfaces;
+﻿using ClinicProjectDomain.Exceptions;
+using ClinicProjectDomain.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -44,5 +45,13 @@ namespace ClinicProjectDomain.Entities
             _Prescription = prescription;
         }
 
+        public void AddAppointment(Appointment appointment)
+        {
+            if (appointment is null)
+                throw new DomainException("Appointment Cannot be null");
+            if (appointment.Id != this.AppointmentId)
+                throw new DomainException("The provided appointment does not match the assigned ID for this medical record.");
+            _Appointment = appointment;
+        }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using ClinicProjectDomain.Enums;
+using ClinicProjectDomain.Exceptions;
 using ClinicProjectDomain.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -43,8 +44,9 @@ namespace ClinicProjectDomain.Entities
         public  string Notes  { get;private set; }
         public DateTime CreatedAt { get;private set; }=DateTime.Now;
         public AppointmentStatus status { get;private set; } = AppointmentStatus.Scheduled;
-     //   public MedicalRecords MedicalRecord { get; set; }
-     //   public Invoices Invoices { get; set; }
+        public bool IsBooked { get;private set; }
+        //   public MedicalRecords MedicalRecord { get; set; }
+        //   public Invoices Invoices { get; set; }
 
         //AppointmentNumber = sequence,
         //        PatientId = request.PatientId,
@@ -62,6 +64,17 @@ namespace ClinicProjectDomain.Entities
         public static void UpdateStatus(AppointmentStatus status)
         {
             status = AppointmentStatus.Completed;
+        }
+
+        public void  ConfirmBooking()
+        {
+            if (this.IsBooked)
+            {
+            
+                    throw new DomainException("Already Booked appointment");
+            
+            }
+            this.IsBooked = true;
         }
         public static bool beAppointmentValidDate(DateOnly appointmentDate)
         {
