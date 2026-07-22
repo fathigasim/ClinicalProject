@@ -1,6 +1,7 @@
 ﻿
-using ClinicProjectApplication.Patients.Command;
-using ClinicProjectApplication.Patients.Queries;
+using ClinicProjectApplication.PatientsCommandQueries.Command.CreatePatient;
+using ClinicProjectApplication.PatientsCommandQueries.Command.UpdatePatient;
+using ClinicProjectApplication.PatientsCommandQueries.Queries;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -33,6 +34,13 @@ namespace DefaultAuthenticationApi.Controllers
             return Ok(patient);
         }
 
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetPatientById(Guid id)
+        {
+            var patient = await _mediator.Send(new GetPatientByIdQuery(id));
+            return Ok(patient);
+        }
+
         [HttpPost]
         public async Task<IActionResult> PostPatient( CreatePatientCommand cmd , CancellationToken ct)
         {
@@ -40,6 +48,17 @@ namespace DefaultAuthenticationApi.Controllers
 
             return Ok(result);
            
+        }
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdatePatient(Guid id, [FromBody] UpdatePatientCommand cmd, CancellationToken ct)
+        {
+            //if (id != cmd.Id)
+                cmd.Id = id;
+           // return BadRequest("Route id and body id do not match.");
+
+            var result = await _mediator.Send(cmd, ct);
+            return Ok(result);
         }
     }
 }

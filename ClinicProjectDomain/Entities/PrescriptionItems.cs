@@ -1,4 +1,5 @@
-﻿using ClinicProjectDomain.Interfaces;
+﻿using ClinicProjectDomain.Exceptions;
+using ClinicProjectDomain.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,20 +21,20 @@ namespace ClinicProjectDomain.Entities
             Frequency = frequency;
         }
         public Guid PrescriptionId { get;private set; }
-        public string MedicationName { get; set; }
-        public string Dosage { get; set; }
-        public int Frequency { get; set; }
-        public int Duration { get; set; }
+        public string MedicationName { get;private set; }
+        public string Dosage { get;private set; }
+        public int Frequency { get;private set; }
+        public int Duration { get;private set; }
         private Prescriptions _Prescription;
         public Prescriptions Prescription => _Prescription;
         public static PrescriptionItems Create(Guid prescriptionId, string medicationName, string dosage, int frequency, int durationDays)
         {
             if (string.IsNullOrWhiteSpace(medicationName))
-                throw new ArgumentException("Medication name is required.", nameof(medicationName));
+                throw new DomainException("Medication name is required.");
             if (frequency <= 0)
-                throw new ArgumentException("Frequency must be positive.", nameof(frequency));
+                throw new DomainException("Frequency must be positive.");
             if (durationDays <= 0)
-                throw new ArgumentException("Duration must be positive.", nameof(durationDays));
+                throw new DomainException("Duration must be positive.");
 
             return new PrescriptionItems(prescriptionId, medicationName, dosage, frequency, durationDays);
         }

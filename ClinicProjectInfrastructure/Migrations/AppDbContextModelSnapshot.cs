@@ -194,6 +194,52 @@ namespace ClinicProjectInfrastructure.Migrations
                     b.ToTable("Doctors");
                 });
 
+            modelBuilder.Entity("ClinicProjectDomain.Entities.DoctorSchedule", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("DayOfWeek")
+                        .HasColumnType("int");
+
+                    b.Property<Guid>("DoctorId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<TimeOnly>("EndTime")
+                        .HasColumnType("time");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<DateOnly>("ScheduledDate")
+                        .HasColumnType("date");
+
+                    b.Property<int>("SlotDurationMinutes")
+                        .HasColumnType("int");
+
+                    b.Property<TimeOnly>("StartTime")
+                        .HasColumnType("time");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DoctorId");
+
+                    b.ToTable("DoctorSchedules");
+                });
+
             modelBuilder.Entity("ClinicProjectDomain.Entities.Invoices", b =>
                 {
                     b.Property<Guid>("Id")
@@ -443,52 +489,6 @@ namespace ClinicProjectInfrastructure.Migrations
                     b.ToTable("Prescriptions");
                 });
 
-            modelBuilder.Entity("ClinicProjectDomain.Entities.WeeklySchedule", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("DayOfWeek")
-                        .HasColumnType("int");
-
-                    b.Property<Guid>("DoctorId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<TimeOnly>("EndTime")
-                        .HasColumnType("time");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
-
-                    b.Property<DateOnly>("ScheduledDate")
-                        .HasColumnType("date");
-
-                    b.Property<int>("SlotDurationMinutes")
-                        .HasColumnType("int");
-
-                    b.Property<TimeOnly>("StartTime")
-                        .HasColumnType("time");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("UpdatedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("DoctorId");
-
-                    b.ToTable("WeeklySchedule");
-                });
-
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
                 {
                     b.Property<string>("Id")
@@ -685,6 +685,17 @@ namespace ClinicProjectInfrastructure.Migrations
                     b.Navigation("Patient");
                 });
 
+            modelBuilder.Entity("ClinicProjectDomain.Entities.DoctorSchedule", b =>
+                {
+                    b.HasOne("ClinicProjectDomain.Entities.Doctor", "Doctor")
+                        .WithMany("DoctorSchedules")
+                        .HasForeignKey("DoctorId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Doctor");
+                });
+
             modelBuilder.Entity("ClinicProjectDomain.Entities.Invoices", b =>
                 {
                     b.HasOne("ClinicProjectDomain.Entities.Appointment", "Appointment")
@@ -738,17 +749,6 @@ namespace ClinicProjectInfrastructure.Migrations
                         .IsRequired();
 
                     b.Navigation("MedicalRecord");
-                });
-
-            modelBuilder.Entity("ClinicProjectDomain.Entities.WeeklySchedule", b =>
-                {
-                    b.HasOne("ClinicProjectDomain.Entities.Doctor", "Doctor")
-                        .WithMany("WeeklySchedules")
-                        .HasForeignKey("DoctorId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Doctor");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -812,7 +812,7 @@ namespace ClinicProjectInfrastructure.Migrations
                 {
                     b.Navigation("Appointments");
 
-                    b.Navigation("WeeklySchedules");
+                    b.Navigation("DoctorSchedules");
                 });
 
             modelBuilder.Entity("ClinicProjectDomain.Entities.Invoices", b =>

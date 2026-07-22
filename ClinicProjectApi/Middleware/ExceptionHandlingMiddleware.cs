@@ -201,11 +201,12 @@ namespace DefaultAuthenticationApi.Middleware
             {
                 response = new ProblemDetails
                 {
-                    Title = sqlException.Message,
+                    Title = "Error duplicate key found",
                     Status = StatusCodes.Status409Conflict,
-                    Detail = "Error duplicate key found"
+                    Detail = sqlException.Message
                 };
                 statusCode = StatusCodes.Status409Conflict;
+                _logger.LogError("Error duplicate key found {Error}", sqlException.Message);
             }
             else if (exception is UnauthorizedAccessException)
             {
@@ -233,9 +234,9 @@ namespace DefaultAuthenticationApi.Middleware
             {
                 response = new ProblemDetails
                 {
-                    Title = domainexception.Message,
+                    Title = "Business rule violation",
                     Status = StatusCodes.Status422UnprocessableEntity,
-                    Detail = " Invalid Operation"
+                    Detail = domainexception.Message
                 };
 
 

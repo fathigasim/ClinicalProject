@@ -16,7 +16,7 @@ namespace ClinicProjectTest
         [InlineData(DayOfWeek.Monday, false)]
         public void IsHoliday_ReturnsExpectedResult(DayOfWeek dayOfWeek,bool excpected)
         {
-           var result= new WeeklySchedule().IsHoliday(dayOfWeek);
+           var result=  DoctorSchedule.IsHoliday(dayOfWeek);
             //Assert.True(result);
             //Assert.False(result);
 

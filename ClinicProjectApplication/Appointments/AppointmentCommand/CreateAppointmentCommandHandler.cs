@@ -40,7 +40,7 @@ namespace ClinicProjectApplication.Appointments.AppointmentCommand
                 .GetAppointmentsByDoctorIdAsync(request.DoctorId, request.AppointmentDate, cancellationToken);
 
             var isSlotTaken = existingAppointments
-            .Where(a => a.status != AppointmentStatus.Cancelled)
+            .Where(a => a.Status != AppointmentStatus.Cancelled)
             .Any(a => schedule.IsOverlapping(
                 request.StartTime,
                 request.StartTime.AddMinutes(30),

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace ClinicProjectDomain.Interfaces
 {
-    public interface IWeeklyScheduleRepository :IRepository<WeeklySchedule>
+    public interface IWeeklyScheduleRepository :IRepository<DoctorSchedule>
     {
         //Task AddDoctoryWeeklyScheduleAsync(WeeklySchedule weeklySchedule, CancellationToken ct);
         Task<bool> IsDoctorScheduledToday(Guid doctorId, DateOnly scheduleDate, DayOfWeek dayofweek, CancellationToken ct);
@@ -17,7 +17,7 @@ namespace ClinicProjectDomain.Interfaces
         TimeOnly start,
         TimeOnly end,
         CancellationToken ct);
-        Task<List<WeeklySchedule>> DoctorsScheduleDays(CancellationToken ct);
+        Task<List<DoctorSchedule>> DoctorsScheduleDays(CancellationToken ct);
     }
 
     

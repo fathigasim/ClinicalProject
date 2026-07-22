@@ -10,46 +10,43 @@ namespace ClinicProjectDomain.Services
 {
     public class ScheduleService
     {
-        //    public IEnumerable<TimeOnly> GetAvailableSlots(
-        // WeeklySchedule schedule,
-        // IEnumerable<Appointment> appointments)
-        //    {
-        //        var slots = schedule.GenerateSlots();
-
-        //        return slots.Where(slot =>
-        //            !appointments.Any(a =>
-        //                schedule.IsOverlapping(
-        //                    slot,
-        //                    slot.AddMinutes(schedule.SlotDurationMinutes),
-        //                    a.StartTime,
-        //                    a.StartTime.AddMinutes(a.DurationMinutes) // ✅ FIX HERE
-        //                )
-        //            )
-        //        );
-        //    }
         public IEnumerable<TimeOnly> GetAvailableSlots(
-       WeeklySchedule schedule,
-       IEnumerable<Appointment> appointments)
+            DoctorSchedule schedule,
+            IEnumerable<Appointment> appointments)
         {
+            // 1. Generate slots safely (will throw if duration <= 0)
             var slots = schedule.GenerateSlots();
 
-            // Only block slots for active/scheduled appointments
+            if (!slots.Any())
+            {
+                return Enumerable.Empty<TimeOnly>();
+            }
+
+            // 2. Filter active appointments and convert times to TimeSpan for safe overlap checks
             var activeAppointments = appointments
-                .Where(a => a.DayOfWeek == schedule.DayOfWeek
-                         && a.status != AppointmentStatus.Cancelled
-                         && a.status !=AppointmentStatus.Scheduled)
+                .Where(a => a.AppointmentDate == schedule.ScheduledDate
+                         && a.Status != AppointmentStatus.Cancelled)
+                .Select(a => new
+                {
+                    Start = a.StartTime.ToTimeSpan(),
+                    End = a.StartTime.ToTimeSpan().Add(TimeSpan.FromMinutes(a.DurationMinutes))
+                })
                 .ToList();
 
+            var slotDuration = TimeSpan.FromMinutes(schedule.SlotDurationMinutes);
+
+            // 3. Keep slots that do NOT overlap with active appointments
             return slots.Where(slot =>
             {
-                var slotEnd = slot.AddMinutes(schedule.SlotDurationMinutes);
+                TimeSpan slotStart = slot.ToTimeSpan();
+                TimeSpan slotEnd = slotStart + slotDuration;
 
-                return !activeAppointments.Any(a =>
-                {
-                    var apptEnd = a.StartTime.AddMinutes(a.DurationMinutes);
-                    return schedule.IsOverlapping(slot, slotEnd, a.StartTime, apptEnd);
-                });
-            });
+                // Overlap formula: (StartA < EndB) AND (EndA > StartB)
+                bool overlaps = activeAppointments.Any(a =>
+                    slotStart < a.End && slotEnd > a.Start);
+
+                return !overlaps;
+            }).ToList();
         }
     }
-    }
+}

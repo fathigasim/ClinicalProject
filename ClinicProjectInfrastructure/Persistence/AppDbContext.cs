@@ -83,6 +83,7 @@ namespace ClinicProjectInfrastructure.Persistence
         public DbSet<Appointment> Appointments { get; set; }
         public DbSet<MedicalRecords> MedicalRecords { get; set; }
         public DbSet<Invoices> Invoices { get; set; }
+        public DbSet<DoctorSchedule> DoctorSchedules { get; set; }
 
         public DbSet<Payments> Payments { get; set; }
         public DbSet<Prescriptions> Prescriptions { get; set; }

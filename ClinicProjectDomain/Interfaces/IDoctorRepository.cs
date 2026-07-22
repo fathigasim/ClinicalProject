@@ -15,10 +15,10 @@ namespace ClinicProjectDomain.Interfaces
     {
         Task<List<Doctor>> GetListedDoctorsAsync( CancellationToken ct);
         Task<PagedResult<Doctor>> GetAllDoctorsAsync(int page, int pageSize,CancellationToken ct);
-        Task <WeeklySchedule?> DoctorWeeklySchedule(Guid doctorId,DayOfWeek dayofWeek,CancellationToken cancellationToken);
-        Task<WeeklySchedule?> DoctorSchedule(Guid doctorId, DateOnly sheduleDate, CancellationToken cancellationToken);
+        Task <DoctorSchedule?> DoctorWeeklySchedule(Guid doctorId,DayOfWeek dayofWeek,CancellationToken cancellationToken);
+        Task<DoctorSchedule?> DoctorSchedule(Guid doctorId, DateOnly sheduleDate, CancellationToken cancellationToken);
        
         Task<List<Doctor>?> DoctorsTodaySchedule(CancellationToken cancellationToken);
-        Task<WeeklySchedule?> DoctorScheduleDate(Guid doctorId, DateOnly date, CancellationToken cancellationToken);
+        Task<DoctorSchedule?> DoctorScheduleDate(Guid doctorId, DateOnly date, CancellationToken cancellationToken);
     }
 }

@@ -1,4 +1,5 @@
-﻿using ClinicProjectDomain.Interfaces;
+﻿using ClinicProjectDomain.Exceptions;
+using ClinicProjectDomain.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,16 +11,62 @@ namespace ClinicProjectDomain.Entities
 {
     public class Patient :BaseEntity, IAuditableEntity
     {
-        public Guid Id { get; set; }
-        public string FirstName { get; set; }=default!;
-        public string LastName { get; set; }=default!;
-        public string Email { get; set; } = default!;
-        public DateTime DOB { get; set; }
-        public string Phone { get; set; }=default!;
-        public string Gender { get; set; }=default!;
-        public DateTime CreatedAt { get; set; }
-        public ICollection<Appointment?> Appointments { get; set; }
-      
+        private Patient(string firstName,string lastName,string email,DateTime dOB,string phone,string gender)
+        {
+            FirstName= firstName;
+            LastName= lastName;
+            Email= email;
+            DOB = dOB;
+            Phone= phone;
+            Gender= gender;
+        }
+   
+
+        public string FirstName { get;private set; }
+        public string LastName { get; private set; }
+        public string Email { get;private set; }
+        public DateTime DOB { get;private set; }
+        public string Phone { get;private set; }
+        public string Gender { get;private set; }
+
+        private List<Appointment> _Appointments;
+        public IReadOnlyCollection<Appointment> Appointments => _Appointments;
+
+        public static Patient Create(string firstName, string lastName, string email, DateTime dob, string phone, string gender)
+        {
+            if (string.IsNullOrEmpty(firstName)) {
+                throw new DomainException(" firstName  cannot be null");
+            }
+            if (string.IsNullOrEmpty(lastName))
+            {
+                throw new DomainException(" lastName  cannot be null");
+            }
+            if (string.IsNullOrEmpty(email))
+            {
+                throw new DomainException(" email  cannot be null");
+            }
+
+            if (dob.Date < DateTime.UtcNow.Date || (DateTime.UtcNow.Date - dob.Date).TotalDays < 360)
+            {
+                throw new DomainException(" please enter a vaid date");
+            }
+
+            return new Patient(firstName,  lastName,  email,  dob,  phone,  gender);
+        }
+
+        public void Update(string firstName,string lastName, string email,DateTime dob,string phone,string gender)
+        {
+            if (dob.Date > DateTime.UtcNow.Date || (DateTime.UtcNow.Date.Year- dob.Date.Year) < 18)
+            {
+                throw new DomainException(" please enter a vaid date");
+            }
+            FirstName =firstName;
+            LastName=lastName;
+            Email=email;
+            DOB= dob;
+            Phone=phone;
+            Gender=gender;
+        }
 
     }
 }

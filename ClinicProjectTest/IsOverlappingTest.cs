@@ -9,7 +9,7 @@ namespace ClinicProjectTest
 {
     public class IsOverlappingTests
     {
-        private readonly WeeklySchedule _sut = new();
+        private readonly DoctorSchedule _sut = new();
 
         //  True overlaps
         [Theory]

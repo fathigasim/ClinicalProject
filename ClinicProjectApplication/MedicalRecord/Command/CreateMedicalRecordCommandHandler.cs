@@ -54,7 +54,7 @@ namespace ClinicProjectApplication.MedicalRecord.Command
          var prescriptions=   Prescriptions.CreatePrescription(medicalRecored.Id);
           //  PrescriptionItems.Create(prescriptions.Id, request.MedicationName, request.Dosage, request.Frequency, request.duration);
             
-            prescriptions.AddItem( request.MedicationName, request.Dosage, request.Frequency, request.duration);
+            prescriptions.AddItem( request.MedicationName, request.Dosage, request.Frequency, request.Duration);
             medicalRecored.AddPrescription(prescriptions);
         
             

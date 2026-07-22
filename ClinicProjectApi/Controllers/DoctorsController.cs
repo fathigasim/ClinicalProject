@@ -1,6 +1,7 @@
-﻿using ClinicProjectApplication.Doctors.Command.DoctorCommand;
-using ClinicProjectApplication.Doctors.Command.DoctorWeeklySchedule;
-using ClinicProjectApplication.Doctors.Queries;
+﻿
+using ClinicProjectApplication.DoctorsCommandQueries.Command.DoctorCommand;
+using ClinicProjectApplication.DoctorsCommandQueries.Command.DoctorWeeklySchedule;
+using ClinicProjectApplication.DoctorsCommandQueries.Queries;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

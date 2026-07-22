@@ -41,7 +41,7 @@ namespace ClinicProjectInfrastructure.Persistence.Repositories
            
             return await  _readDbContext.ReadSet<Appointment>()
                 .Where(a => a.DoctorId == doctorId &&
-                            a.status != AppointmentStatus.Cancelled &&
+                            a.Status != AppointmentStatus.Cancelled &&
                             a.AppointmentDate == appointmentDate) 
                 .ToListAsync(cancellationToken);
         }
@@ -50,9 +50,11 @@ namespace ClinicProjectInfrastructure.Persistence.Repositories
         {
           
 
-            return await _readDbContext.ReadSet<Appointment>()
+            return await
+                //_readDbContext.ReadSet<Appointment>()
+                _context.Appointments
                 .Where(a => a.DoctorId == doctorId &&
-                            a.status != AppointmentStatus.Cancelled &&
+                            a.Status != AppointmentStatus.Cancelled &&
 
                             a.AppointmentDate== date)
                 .ToListAsync(cancellationToken);
@@ -71,7 +73,7 @@ namespace ClinicProjectInfrastructure.Persistence.Repositories
             return await _readDbContext.ReadSet<Appointment>()
                 .Where(a =>
                     a.DoctorId == doctorId &&
-                    a.status != AppointmentStatus.Cancelled &&
+                    a.Status != AppointmentStatus.Cancelled &&
                     a.AppointmentDate == date &&
 
                     // Overlap Math logic:

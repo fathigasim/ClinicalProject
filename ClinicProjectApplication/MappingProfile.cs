@@ -1,15 +1,15 @@
 ﻿using AutoMapper;
 using ClinicProjectApplication.Appointments.Dtos;
-using ClinicProjectApplication.Doctors.Dto;
-using ClinicProjectApplication.Invoice;
+using ClinicProjectApplication.DoctorsCommandQueries.Dto;
 using ClinicProjectApplication.Invoice.Dtos;
 using ClinicProjectApplication.MedicalRecord.Dtos;
-using ClinicProjectApplication.Patients.Dto;
+using ClinicProjectApplication.PatientsCommandQueries.Dto;
 using ClinicProjectApplication.Payment.Command;
 using ClinicProjectApplication.Payment.Dtos;
 using ClinicProjectApplication.Prescription.Dtos;
 using ClinicProjectApplication.PrescriptionsItems.Dtos;
 using ClinicProjectDomain.Entities;
+using DefaultAuthenticationApplication.PatientsCommandQueries.Dto;
 
 
 
@@ -38,7 +38,7 @@ namespace ClinicProjectApplication
                 .ReverseMap();
             CreateMap<PrescriptionItems, PrescriptionItemsDto>().ReverseMap();
 
-            CreateMap<WeeklySchedule, WeeklyScheduleDto>()
+            CreateMap<DoctorSchedule, WeeklyScheduleDto>()
                 .ForMember(dest => dest.DoctorName, opt => opt.MapFrom(src =>  $"{src.Doctor.FirstName} {src.Doctor.LastName}"))
                 .ForMember(dest=>dest.ScheduleDate,opt=>opt.MapFrom(src=> src.ScheduledDate))
                 .ReverseMap();

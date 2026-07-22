@@ -11,18 +11,18 @@ using System.Threading.Tasks;
 
 namespace ClinicProjectInfrastructure.Persistence.Repositories
 {
-    public class WeeklyScheduleRepository : Repository<WeeklySchedule>, IWeeklyScheduleRepository
+    public class WeeklyScheduleRepository : Repository<DoctorSchedule>, IWeeklyScheduleRepository
     {
         private readonly IReadDbContext _readDbContext;
         public WeeklyScheduleRepository(AppDbContext context, IReadDbContext readDbContext) : base(context)
         {
             _readDbContext = readDbContext;
         }
-        public async Task<List<WeeklySchedule>> DoctorsScheduleDays( CancellationToken ct)
+        public async Task<List<DoctorSchedule>> DoctorsScheduleDays( CancellationToken ct)
         {
      
 
-            return await _readDbContext.ReadSet<WeeklySchedule>().Include(p=>p.Doctor)
+            return await _readDbContext.ReadSet<DoctorSchedule>().Include(p=>p.Doctor)
                   .OrderBy(w=>w.DayOfWeek).ToListAsync(ct);
         }
         public async Task<bool> IsDoctorScheduledToday(Guid doctorId,DateOnly scheduleDate,DayOfWeek dayofweek, CancellationToken ct)
@@ -32,7 +32,7 @@ namespace ClinicProjectInfrastructure.Persistence.Repositories
             var khartoumTime = DateTimeOffset.UtcNow.ToOffset(khartoumOffset);
 
 
-            return await _readDbContext.ReadSet<WeeklySchedule>()
+            return await _readDbContext.ReadSet<DoctorSchedule>()
                  .AnyAsync(ws => ws.DoctorId == doctorId &&
               ws.ScheduledDate == scheduleDate
                 && ws.DayOfWeek == dayofweek, ct);
@@ -47,7 +47,7 @@ namespace ClinicProjectInfrastructure.Persistence.Repositories
     TimeOnly end,
     CancellationToken ct)
         {
-            return await _readDbContext.ReadSet<WeeklySchedule>()
+            return await _readDbContext.ReadSet<DoctorSchedule>()
                 .AnyAsync(ws =>
                     ws.DoctorId == doctorId &&
                     ws.ScheduledDate == scheduleDate &&

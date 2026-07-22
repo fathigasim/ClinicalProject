@@ -6,7 +6,6 @@ using ClinicProjectInfrastructure.Extensions;
 using ClinicProjectInfrastructure.Services;
 using Microsoft.EntityFrameworkCore;
 
-
 namespace ClinicProjectInfrastructure.Persistence.Repositories
 {
     public class PatientRepository : Repository<Patient>, IPatientRepository
@@ -27,14 +26,19 @@ namespace ClinicProjectInfrastructure.Persistence.Repositories
             p.Phone.Contains(search)).ToPagedAsync(page, pageSize, ct);
         }
 
-        public async Task<List<Patient>> GetTodaysPatients( CancellationToken ct)
+        public Task<List<Patient>> GetTodaysPatients(CancellationToken ct)
         {
-            var today=DateTime.Now;
-          var todayPatients= await _readDbContext.ReadSet<Patient>().Where(p => p.CreatedAt.Date == today.Date).Select(p=>new Patient() {Id=p.Id,FirstName=p.FirstName,LastName=p.LastName}).ToListAsync(ct);
-            return todayPatients;
+            throw new NotImplementedException();
         }
 
+        //public async Task<List<Patient>> GetTodaysPatients( CancellationToken ct)
+        //{
+        //    var today=DateTime.Now;
+        //  var todayPatients= await _readDbContext.ReadSet<Patient>().Where(p => p.CreatedAt.Date == today.Date).Select(p=>new Patient() {Id=p.Id,FirstName=p.FirstName,LastName=p.LastName}).ToListAsync(ct);
+        //    return todayPatients;
+        //}
 
-      
+
+
     }
 }
