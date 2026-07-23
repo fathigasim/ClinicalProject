@@ -8,7 +8,7 @@ namespace ClinicProjectDomain.Entities
     public class DoctorSchedule : BaseEntity, IAuditableEntity
     {
         // Required for EF Core materialization
-        private DoctorSchedule() { }
+        public DoctorSchedule() { }
 
         private DoctorSchedule(
             Guid doctorId,

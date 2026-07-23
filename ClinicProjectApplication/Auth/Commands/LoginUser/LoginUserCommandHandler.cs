@@ -27,9 +27,7 @@ namespace ClinicProjectApplication.Auth.Commands.LoginUser
     {
         public async Task<Result<LoginResponse>> Handle(LoginUserCommand req, CancellationToken ct)
         {
-            logger.LogWarning(
-               "Checking user request input with serilog {req}",
-               req);
+          
             var user = await userRepository.GetByEmailAsync(req.Email, ct);
             if (user is null)
                 return Result<LoginResponse>.Failure("Invalid credentials.");

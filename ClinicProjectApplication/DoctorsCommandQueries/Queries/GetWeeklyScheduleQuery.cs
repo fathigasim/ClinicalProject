@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace ClinicProjectApplication.DoctorsCommandQueries.Queries
 {
-    public record GetWeeklyScheduleQuery :IRequest <DoctorsWeeklyScheduleDto>
+    public record GetWeeklyScheduleQuery :IRequest <DoctorsScheduleDto>
     {
 
     }

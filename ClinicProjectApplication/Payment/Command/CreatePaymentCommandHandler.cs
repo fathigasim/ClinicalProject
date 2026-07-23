@@ -41,7 +41,8 @@ namespace ClinicProjectApplication.Payment.Command
 
                 return Result<string>.Failure("Sorry cash payment exceeded pay with card");
             }
-            payments.InvoiceId = invoice.Id;
+         //   payments.InvoiceId = invoice.Id;
+            payments.UpdateInvocie(invoice.Id);
            await _paymentRepository.AddAsync(payments);
             await _publisher.Publish(new InvoicePaidNotification(payments.InvoiceId));
             return Result<string>.Success("Payment recieved successfully");

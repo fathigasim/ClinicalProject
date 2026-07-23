@@ -34,6 +34,17 @@ namespace ClinicProjectDomain.Entities
 
         public static Patient Create(string firstName, string lastName, string email, DateTime dob, string phone, string gender)
         {
+            var today = DateTime.UtcNow.Date;
+
+            if (dob.Date > today)
+            {
+                throw new DomainException("Date of birth cannot be in the future.");
+            }
+
+            if (dob.Date > today.AddYears(-18))
+            {
+                throw new DomainException("Adult members only allowed.");
+            }
             if (string.IsNullOrEmpty(firstName)) {
                 throw new DomainException(" firstName  cannot be null");
             }
@@ -46,10 +57,7 @@ namespace ClinicProjectDomain.Entities
                 throw new DomainException(" email  cannot be null");
             }
 
-            if (dob.Date < DateTime.UtcNow.Date || (DateTime.UtcNow.Date - dob.Date).TotalDays < 360)
-            {
-                throw new DomainException(" please enter a vaid date");
-            }
+         
 
             return new Patient(firstName,  lastName,  email,  dob,  phone,  gender);
         }

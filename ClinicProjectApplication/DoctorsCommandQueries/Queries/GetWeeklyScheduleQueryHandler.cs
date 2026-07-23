@@ -10,30 +10,34 @@ using System.Threading.Tasks;
 
 namespace ClinicProjectApplication.DoctorsCommandQueries.Queries
 {
-    public class GetWeeklyScheduleQueryHandler : IRequestHandler<GetWeeklyScheduleQuery, DoctorsWeeklyScheduleDto>
+    public class GetWeeklyScheduleQueryHandler : IRequestHandler<GetWeeklyScheduleQuery, DoctorsScheduleDto>
     {
         private readonly IWeeklyScheduleRepository _weeklyScheduleRepo;
         private readonly IMapper _mapper;
-        public GetWeeklyScheduleQueryHandler(IWeeklyScheduleRepository weeklyScheduleRepo,
+        public GetWeeklyScheduleQueryHandler(IWeeklyScheduleRepository doctorScheduleRepo,
              IMapper mapper
             )
         {
-            _weeklyScheduleRepo = weeklyScheduleRepo;
+            _weeklyScheduleRepo = doctorScheduleRepo;
             _mapper = mapper;
         }
-        public async Task<DoctorsWeeklyScheduleDto> Handle(GetWeeklyScheduleQuery request, CancellationToken cancellationToken)
+        public async Task<DoctorsScheduleDto> Handle(GetWeeklyScheduleQuery request, CancellationToken cancellationToken)
         {
+            var today = DateOnly.FromDateTime(DateTime.UtcNow);
             var docsWeeklySchedule = await _weeklyScheduleRepo.DoctorsScheduleDays(cancellationToken);
-            var result = new DoctorsWeeklyScheduleDto
+            var result = new DoctorsScheduleDto
             {
                 Schedule = docsWeeklySchedule
-       .GroupBy(p => p.DayOfWeek)
+                .Where(p=>p.ScheduledDate >= today &&
+    p.ScheduledDate <= today.AddDays(14))
+       .GroupBy(p => p.ScheduledDate).OrderBy(p => p.Key)
        .ToDictionary(
            g => g.Key,
            g => g.Select(p => new DaySchedule
            {
                DoctorId = p.DoctorId,
                DoctorName = p.Doctor.FirstName +" "+p.Doctor.LastName,
+               ScheduleDate=p.ScheduledDate,
                StartTime = p.StartTime,
                EndTime = p.EndTime,
                SlotDurationMinutes = p.SlotDurationMinutes,

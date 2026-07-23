@@ -13,6 +13,7 @@ namespace ClinicProjectApplication.PatientsCommandQueries.Dto
         public Guid PatientId { get; set; }
         public string FirstName { get; set; } = default!;
         public string LastName { get; set; } = default!;
+        public string Email { get; set; } = default!;
         public DateTime DOB { get; set; }
         public string Phone { get; set; } = default!;
         public string Gender { get; set; } = default!;

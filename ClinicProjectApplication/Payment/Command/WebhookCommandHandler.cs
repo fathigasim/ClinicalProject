@@ -40,16 +40,17 @@ namespace ClinicProjectApplication.Payment.Command
 
                 if (paymentResult != null)
                 {
-                    var payment = new Payments()
-                    {
-                        Amount = paymentResult.amount,
-                        Status = paymentResult.status,
+                var payment = Payments.Create(Guid.Parse(paymentResult.invoiceId),
+                    paymentResult.amount, paymentResult.currency, paymentResult.patientEmail, paymentResult.intentId, paymentResult.status);
+                   // {
+                        //Amount = paymentResult.amount,
+                        //Status = paymentResult.status,
                         
-                        InvoiceId = Guid.Parse(paymentResult.invoiceId),
-                        PaymentId = paymentResult.intentId,
-                        Currency = paymentResult.currency,
+                        //InvoiceId = Guid.Parse(paymentResult.invoiceId),
+                        //PaymentId = paymentResult.intentId,
+                        //Currency = paymentResult.currency,
                         //paymentResult.patientEmail
-                    };
+                   // };
                     await _paymentRepository.AddAsync(payment, cancellationToken);                    
                await _publisher.Publish(new InvoicePaidNotification(Guid.Parse(paymentResult.invoiceId), paymentResult.patientEmail));
                

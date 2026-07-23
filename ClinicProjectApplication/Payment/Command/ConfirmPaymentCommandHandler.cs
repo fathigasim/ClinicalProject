@@ -27,14 +27,9 @@ namespace ClinicProjectApplication.Payment.Command
             var confirmPayment = await _stripeService.ConfirmPayment(request.PaymentIntentId);
             if (confirmPayment != null)
             {
-                var payment = new Payments
-                {
-                    InvoiceId = Guid.Parse(confirmPayment.invoiceId),
-                     Amount=confirmPayment.amount,
-                     Status=confirmPayment.status,
-                     PaymentId=confirmPayment.intentId,
-                     CustomerId=confirmPayment.customerId,
-                };
+                var payment = Payments.Create(Guid.Parse(confirmPayment.invoiceId),
+                    confirmPayment.amount,confirmPayment.currency, confirmPayment.patientEmail, confirmPayment.intentId, confirmPayment.status);
+              
               await  _paymentRepository.AddAsync(payment);
                 return Result<string>.Success("Payment Confirmed Successfully");
             }

@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 
 namespace ClinicProjectDomain.Entities
 {
-    public class RefreshToken //: BaseEntity,IAuditableEntity
+    public class RefreshToken : BaseEntity,IAuditableEntity
     {
-        public Guid Id { get; private set; } = Guid.NewGuid();
+      //  public Guid Id { get; private set; } = Guid.NewGuid();
         public string UserId { get; private set; } = default!;
         public string Token { get; private set; } = default!;
         public DateTime Expires { get; private set; }
