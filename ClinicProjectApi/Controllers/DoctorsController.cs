@@ -97,7 +97,7 @@ namespace DefaultAuthenticationApi.Controllers
         }
         [HttpPost("schedule")]
 
-        public async Task<IActionResult> CreateDoctorSchedule([FromBody] CreateWeeklyScheduleCommand command)
+        public async Task<IActionResult> CreateDoctorSchedule([FromBody] CreateDoctorScheduleCommand command)
         {
             var result = await _mediator.Send(command);
             if (result.IsSuccess) { 
@@ -115,6 +115,27 @@ namespace DefaultAuthenticationApi.Controllers
                 return Ok(result);
            
       
+        }
+        [HttpPut("updatedoctorsSchedule/{id:guid}")]
+
+        public async Task<IActionResult> CreateDoctorSchedule(Guid id,UpdateDoctorScheduleCommand cmd)
+        {
+            var result = await _mediator.Send(cmd);
+
+            return Ok(result);
+
+
+        }
+
+        [HttpGet("doctorScheduleById/{id:Guid}")]
+
+        public async Task<IActionResult> GetDoctorSchedule(Guid id)
+        {
+            var result = await _mediator.Send(new GetDoctorScheduleByIdQuery(id));
+
+            return Ok(result.Data);
+
+
         }
 
     }

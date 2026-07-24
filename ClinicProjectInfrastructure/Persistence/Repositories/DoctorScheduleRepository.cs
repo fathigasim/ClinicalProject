@@ -11,12 +11,20 @@ using System.Threading.Tasks;
 
 namespace ClinicProjectInfrastructure.Persistence.Repositories
 {
-    public class WeeklyScheduleRepository : Repository<DoctorSchedule>, IWeeklyScheduleRepository
+    public class DoctorScheduleRepository : Repository<DoctorSchedule>, IDoctorScheduleRepository
     {
         private readonly IReadDbContext _readDbContext;
-        public WeeklyScheduleRepository(AppDbContext context, IReadDbContext readDbContext) : base(context)
+        private readonly AppDbContext _appDbContext;
+        public DoctorScheduleRepository(AppDbContext context, IReadDbContext readDbContext) : base(context)
         {
             _readDbContext = readDbContext;
+            _appDbContext = context;
+        }
+
+        public async Task<DoctorSchedule?> DoctorsScheduleById(Guid id,CancellationToken ct)
+        {
+          return  await _appDbContext.DoctorSchedules.Include(p => p.Doctor)
+                .Where(p => p.DoctorId.Equals(id)).FirstOrDefaultAsync(ct);
         }
         public async Task<List<DoctorSchedule>> DoctorsScheduleDays( CancellationToken ct)
         {

@@ -12,9 +12,9 @@ namespace ClinicProjectApplication.DoctorsCommandQueries.Queries
 {
     public class GetWeeklyScheduleQueryHandler : IRequestHandler<GetWeeklyScheduleQuery, DoctorsScheduleDto>
     {
-        private readonly IWeeklyScheduleRepository _weeklyScheduleRepo;
+        private readonly IDoctorScheduleRepository _weeklyScheduleRepo;
         private readonly IMapper _mapper;
-        public GetWeeklyScheduleQueryHandler(IWeeklyScheduleRepository doctorScheduleRepo,
+        public GetWeeklyScheduleQueryHandler(IDoctorScheduleRepository doctorScheduleRepo,
              IMapper mapper
             )
         {

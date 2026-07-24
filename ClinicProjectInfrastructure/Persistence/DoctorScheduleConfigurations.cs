@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace ClinicProjectInfrastructure.Persistence
 {
-    internal class WeeklyScheduleConfigurations : IEntityTypeConfiguration<DoctorSchedule>
+    internal class DoctorScheduleConfigurations : IEntityTypeConfiguration<DoctorSchedule>
     {
         public void Configure(EntityTypeBuilder<DoctorSchedule> builder)
         {

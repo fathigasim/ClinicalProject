@@ -79,7 +79,7 @@ namespace ClinicProjectInfrastructure.Persistence.Repositories
 
         public async Task<DoctorSchedule?> DoctorSchedule(Guid doctorId, DateOnly scheduleDate, CancellationToken cancellationToken)
         {
-         return   await _readDbContext.ReadSet<DoctorSchedule>().Where
+         return   await _readDbContext.ReadSet<DoctorSchedule>().Include(p=>p.Doctor).Where
               (p => p.DoctorId == doctorId && p.ScheduledDate == scheduleDate).FirstOrDefaultAsync(cancellationToken);
 
         }

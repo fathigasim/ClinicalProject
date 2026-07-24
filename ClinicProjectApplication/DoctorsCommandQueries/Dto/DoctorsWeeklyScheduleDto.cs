@@ -14,7 +14,7 @@ namespace ClinicProjectApplication.Doctors.Dto
     public class DaySchedule
     {
         public Guid DoctorId { get; set; }
-        public string DoctorName { get; set; }
+        public string? DoctorName { get; set; }
         public DateOnly ScheduleDate { get; set; }
         public TimeOnly StartTime { get; set; }
         public TimeOnly EndTime { get; set; }

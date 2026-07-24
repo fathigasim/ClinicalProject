@@ -7,9 +7,10 @@ using System.Threading.Tasks;
 
 namespace ClinicProjectDomain.Interfaces
 {
-    public interface IWeeklyScheduleRepository :IRepository<DoctorSchedule>
+    public interface IDoctorScheduleRepository :IRepository<DoctorSchedule>
     {
         //Task AddDoctoryWeeklyScheduleAsync(WeeklySchedule weeklySchedule, CancellationToken ct);
+        Task<DoctorSchedule?> DoctorsScheduleById(Guid id, CancellationToken ct);
         Task<bool> IsDoctorScheduledToday(Guid doctorId, DateOnly scheduleDate, DayOfWeek dayofweek, CancellationToken ct);
         Task<bool> HasOverlappingSchedule(Guid? doctorId,
         DateOnly scheduleTime,

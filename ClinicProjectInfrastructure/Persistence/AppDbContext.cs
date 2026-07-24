@@ -77,7 +77,7 @@ namespace ClinicProjectInfrastructure.Persistence
            
         }
         public DbSet<ApplicationUser> users { get; set; }
-        public DbSet<RefreshToken> refreshTokens { get; set; }
+      //  public DbSet<RefreshToken> refreshTokens { get; set; }
         public DbSet<Doctor> Doctors { get; set; }
         public DbSet<Patient> Patients { get; set; }
         public DbSet<Appointment> Appointments { get; set; }

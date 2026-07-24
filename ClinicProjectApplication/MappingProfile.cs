@@ -38,10 +38,10 @@ namespace ClinicProjectApplication
                 .ReverseMap();
             CreateMap<PrescriptionItems, PrescriptionItemsDto>().ReverseMap();
 
-            CreateMap<DoctorSchedule, WeeklyScheduleDto>()
-                .ForMember(dest => dest.DoctorName, opt => opt.MapFrom(src =>  $"{src.Doctor.FirstName} {src.Doctor.LastName}"))
-                .ForMember(dest=>dest.ScheduleDate,opt=>opt.MapFrom(src=> src.ScheduledDate))
-                .ReverseMap();
+            //CreateMap<DoctorSchedule, DoctorScheduleDto>()
+            //    .ForMember(dest => dest.DoctorName, opt => opt.MapFrom(src =>  $"{src.Doctor.FirstName} {src.Doctor.LastName}"))
+            //    .ForMember(dest=>dest.ScheduleDate,opt=>opt.MapFrom(src=> src.ScheduledDate))
+            //    .ReverseMap();
 
             CreateMap<Payments,CreatePaymentCommand>().ReverseMap();
             CreateMap<Doctor, DoctorDto>()
@@ -56,7 +56,9 @@ namespace ClinicProjectApplication
                  
                  .ReverseMap();
 
-
+            CreateMap<DoctorSchedule, DoctorScheduleDto>()
+                .ForMember(dest => dest.DoctorName, opt => opt.MapFrom(src => $"{src.Doctor.FirstName} {src.Doctor.LastName}"))
+             .ReverseMap();
             //CreateMap<OrderItem, OrderItemDto>()
             //    .ForMember(d => d.ProductName, opt => opt.MapFrom(s => s.Product.Name));
 

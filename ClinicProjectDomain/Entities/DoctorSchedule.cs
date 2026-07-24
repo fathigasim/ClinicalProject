@@ -9,7 +9,17 @@ namespace ClinicProjectDomain.Entities
     {
         // Required for EF Core materialization
         public DoctorSchedule() { }
-
+        private DoctorSchedule(
+           Guid doctorId,
+           TimeOnly startTime,
+           TimeOnly endTime,
+           DateOnly scheduledDate)
+        {
+            //DoctorId = doctorId;
+            StartTime = startTime;
+            EndTime = endTime;
+            ScheduledDate = scheduledDate;
+        }
         private DoctorSchedule(
             Guid doctorId,
             TimeOnly startTime,
@@ -58,6 +68,21 @@ namespace ClinicProjectDomain.Entities
             return new DoctorSchedule(doctorId, startTime, endTime, scheduledDate, slotDurationMinutes);
         }
 
+        public void Update(Guid doctorId,
+           TimeOnly startTime,
+           TimeOnly endTime,
+           DateOnly scheduledDate)
+        {
+            if(doctorId != DoctorId)
+            {
+                throw new DomainException("Doctor Id entered must match entity doctor id");
+            }
+            DoctorId = doctorId;
+            StartTime = startTime;
+            EndTime = endTime;
+            ScheduledDate = scheduledDate;
+
+        }
         public bool IsClinicOpen(Clinic clinic)
         {
             return StartTime >= clinic.OpenTime && EndTime <= clinic.CloseTime;

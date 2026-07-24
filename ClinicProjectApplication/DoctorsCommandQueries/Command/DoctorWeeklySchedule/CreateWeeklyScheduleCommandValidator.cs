@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace ClinicProjectApplication.DoctorsCommandQueries.Command.DoctorWeeklySchedule
 {
-    public class CreateWeeklyScheduleCommandValidator : AbstractValidator<CreateWeeklyScheduleCommand>
+    public class CreateWeeklyScheduleCommandValidator : AbstractValidator<CreateDoctorScheduleCommand>
     {
         public CreateWeeklyScheduleCommandValidator()
         {

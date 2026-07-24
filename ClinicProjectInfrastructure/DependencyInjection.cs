@@ -153,7 +153,7 @@ namespace DefaultAuthenticationInfrastructure
             services.AddScoped<IPrescriptionRepository, PrescriptionRepository>();
             services.AddScoped<IInvoiceRepository, InvoiceRepository>();
             services.AddScoped<IPaymentRepository, PaymentRepository>();
-            services.AddScoped<IWeeklyScheduleRepository, WeeklyScheduleRepository>();
+            services.AddScoped<IDoctorScheduleRepository, DoctorScheduleRepository>();
             services.AddScoped<ITokenService, TokenService>();
             services.AddScoped<IStripeService, StripeService>();
             services.AddScoped<ICurrentUserService, CurrentUserService>();
