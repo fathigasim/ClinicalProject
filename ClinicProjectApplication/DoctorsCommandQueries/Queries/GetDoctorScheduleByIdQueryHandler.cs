@@ -33,10 +33,19 @@ namespace ClinicProjectApplication.DoctorsCommandQueries.Queries
             {
                 return Result<DoctorScheduleDto>.Failure($"Doctor schedule with ID {request.id} was not found.");
             }
+            var doctorScheduleDto=new DoctorScheduleDto
+            {
+                DoctorId= doctorSchedule.DoctorId,
+                DoctorName=doctorSchedule.Doctor.FirstName,
+                ScheduleDate=doctorSchedule.ScheduledDate,
+                StartTime=doctorSchedule.StartTime,
+                EndTime=doctorSchedule.EndTime,
+            };
 
-            // 4. Map & Return
-            var dto = mapper.Map<DoctorScheduleDto>(doctorSchedule);
-            return Result<DoctorScheduleDto>.Success(dto);
+            //doctorSchedule.ScheduledDate=
+            //// 4. Map & Return
+            //var dto = mapper.Map<DoctorScheduleDto>(doctorSchedule);
+            return Result<DoctorScheduleDto>.Success(doctorScheduleDto);
         }
     }
 }

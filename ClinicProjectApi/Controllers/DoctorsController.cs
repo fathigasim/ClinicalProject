@@ -116,13 +116,13 @@ namespace DefaultAuthenticationApi.Controllers
            
       
         }
-        [HttpPut("updatedoctorsSchedule/{id:guid}")]
+        [HttpPut("updatedoctorsSchedule/{id:Guid}")]
 
-        public async Task<IActionResult> CreateDoctorSchedule(Guid id,UpdateDoctorScheduleCommand cmd)
+        public async Task<IActionResult> CreateDoctorSchedule([FromRoute]Guid id,[FromBody]UpdateDoctorScheduleCommand cmd,CancellationToken ct)
         {
-            var result = await _mediator.Send(cmd);
+            var result = await _mediator.Send(cmd,ct);
 
-            return Ok(result);
+            return Ok(result.Data);
 
 
         }

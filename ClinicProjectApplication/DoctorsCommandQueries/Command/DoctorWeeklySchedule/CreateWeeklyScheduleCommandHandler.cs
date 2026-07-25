@@ -42,7 +42,7 @@ namespace ClinicProjectApplication.DoctorsCommandQueries.Command.DoctorWeeklySch
                     DoctorName = doctor.LastName + " " + doctor.FirstName,
                     DayOfWeek = request.ScheduleDate.DayOfWeek,
                     StartTime = request.StartTime,
-                    ScheduledDate=request.ScheduleDate,
+                    ScheduleDate=request.ScheduleDate,
                     EndTime = request.EndTime,
                     SlotDurationMinutes = 30, // Default slot duration
                     IsActive = true
@@ -65,7 +65,7 @@ namespace ClinicProjectApplication.DoctorsCommandQueries.Command.DoctorWeeklySch
 
             // 4. Save
             //var weeklySchedule = _mapper.Map<WeeklySchedule>(weeklyScheduleDto);
-          var doctorSchedule=  DoctorSchedule.Create(doctorScheduleDto.DoctorId, doctorScheduleDto.StartTime, doctorScheduleDto.EndTime, doctorScheduleDto.ScheduledDate);
+          var doctorSchedule=  DoctorSchedule.Create(doctorScheduleDto.DoctorId, doctorScheduleDto.StartTime, doctorScheduleDto.EndTime, doctorScheduleDto.ScheduleDate);
           //  var isHoliday = weeklySchedule.IsHoliday(weeklyScheduleDto.DayOfWeek);
             //if(isHoliday)
             //{

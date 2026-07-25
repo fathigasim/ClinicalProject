@@ -30,8 +30,8 @@ namespace ClinicProjectInfrastructure.Persistence.Repositories
         {
      
 
-            return await _readDbContext.ReadSet<DoctorSchedule>().Include(p=>p.Doctor)
-                  .OrderBy(w=>w.DayOfWeek).ToListAsync(ct);
+            return await _appDbContext.DoctorSchedules.Include(p=>p.Doctor)
+                  .OrderBy(w=>w.ScheduledDate).ToListAsync(ct);
         }
         public async Task<bool> IsDoctorScheduledToday(Guid doctorId,DateOnly scheduleDate,DayOfWeek dayofweek, CancellationToken ct)
         {

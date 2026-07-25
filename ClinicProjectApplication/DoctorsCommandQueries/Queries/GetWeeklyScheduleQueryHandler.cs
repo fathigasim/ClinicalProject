@@ -28,8 +28,8 @@ namespace ClinicProjectApplication.DoctorsCommandQueries.Queries
             var result = new DoctorsScheduleDto
             {
                 Schedule = docsWeeklySchedule
-                .Where(p=>p.ScheduledDate >= today &&
-    p.ScheduledDate <= today.AddDays(14))
+    //            .Where(p=>p.ScheduledDate >= today &&
+    //p.ScheduledDate <= today.AddDays(14))
        .GroupBy(p => p.ScheduledDate).OrderBy(p => p.Key)
        .ToDictionary(
            g => g.Key,
