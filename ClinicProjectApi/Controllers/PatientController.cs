@@ -11,14 +11,15 @@ namespace DefaultAuthenticationApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    //  [Authorize(Roles = "Admin,User")]
-    [Authorize(Policy = "AdminUser")]
+     [Authorize(Roles = "Admin,User")]
+   // [Authorize(Policy = "AdminUser")]
     public class PatientController : ControllerBase
     {
         private readonly IMediator _mediator;
         public PatientController(IMediator mediator) { 
          _mediator = mediator;
         }
+        [AllowAnonymous]
         [HttpGet("TodaysPatients")]
         public async Task<IActionResult> GetTodaysPatients()
         {

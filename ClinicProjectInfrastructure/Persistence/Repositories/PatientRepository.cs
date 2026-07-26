@@ -26,9 +26,10 @@ namespace ClinicProjectInfrastructure.Persistence.Repositories
             p.Phone.Contains(search)).ToPagedAsync(page, pageSize, ct);
         }
 
-        public Task<List<Patient>> GetTodaysPatients(CancellationToken ct)
+        public async Task<List<Patient>> GetTodaysPatients(CancellationToken ct)
         {
-            throw new NotImplementedException();
+         return   await _readDbContext.ReadSet<Patient>().Where(p =>p.CreatedAt.Date
+           == DateTime.UtcNow.Date).ToListAsync(ct);
         }
 
         //public async Task<List<Patient>> GetTodaysPatients( CancellationToken ct)

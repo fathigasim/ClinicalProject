@@ -19,7 +19,15 @@ namespace ClinicProjectInfrastructure.Persistence.Repositories
             _readDbContext = readDbContext;
         }
 
-      
+        public async Task<decimal> DailyPaymentSales(CancellationToken cancellationToken)
+        {
+          return   await _readDbContext.ReadSet<Payments>().SumAsync(p=>p.Amount,cancellationToken);
+        }
 
+        public async Task<List<Payments?>> PaymentsByDate(DateTime date, CancellationToken cancellationToken)
+        {
+            return await _readDbContext.ReadSet<Payments>().Include(p=>p.Invoice).Where(p=>p.PaidAt.Date==date.Date)
+                .ToListAsync(cancellationToken);
+        }
     }
 }

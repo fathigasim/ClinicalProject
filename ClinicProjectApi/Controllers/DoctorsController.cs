@@ -138,5 +138,16 @@ namespace DefaultAuthenticationApi.Controllers
 
         }
 
+        [HttpDelete("doctorsSchedule/{id:guid}")]
+
+        public async Task<IActionResult> DeleteDoctorSchedule([FromRoute]Guid id)
+        {
+            var result = await _mediator.Send( new DeleteDoctorScheduleCommand(id));
+
+            return Ok(result.Data);
+
+
+        }
+
     }
 }

@@ -6,6 +6,7 @@ using ClinicProjectApplication.MedicalRecord.Dtos;
 using ClinicProjectApplication.PatientsCommandQueries.Dto;
 using ClinicProjectApplication.Payment.Command;
 using ClinicProjectApplication.Payment.Dtos;
+using ClinicProjectApplication.PaymentReports.Dto;
 using ClinicProjectApplication.Prescription.Dtos;
 using ClinicProjectApplication.PrescriptionsItems.Dtos;
 using ClinicProjectDomain.Entities;
@@ -60,6 +61,10 @@ namespace ClinicProjectApplication
                 .ForMember(dest => dest.DoctorName, opt => opt.MapFrom(src => $"{src.Doctor.FirstName} {src.Doctor.LastName}"))
                 .ForMember(dest => dest.ScheduleDate, opt => opt.MapFrom(src => src.ScheduledDate))
              .ReverseMap();
+
+            CreateMap<Payments, PaymentReportDto>()
+                 .ForMember(dest => dest.InvoiceNo, opt => opt.MapFrom(src => src.Invoice.InvoiceNo))
+                ;
             //CreateMap<OrderItem, OrderItemDto>()
             //    .ForMember(d => d.ProductName, opt => opt.MapFrom(s => s.Product.Name));
 

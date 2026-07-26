@@ -9,5 +9,9 @@ namespace ClinicProjectDomain.Interfaces
 {
     public interface IPaymentRepository :IRepository<Payments>
     {
+
+        public   Task<decimal> DailyPaymentSales (CancellationToken cancellationToken);
+
+        public Task<List<Payments>> PaymentsByDate(DateTime date,CancellationToken cancellationToken);
     }
 }
