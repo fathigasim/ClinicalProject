@@ -11,8 +11,11 @@ namespace ClinicProjectApplication.Payment.Dtos
     public class PaymentDto
     {
         public Guid InvoiceId { get; set; }
-        
+        public string InvoiceNo { get; set; }
+        public string? CustomerId { get; set; }
         public decimal Amount { get; set; }
+
+        public DateTime PaidAt { get; set; }
         public PaymentType PaymentMethod { get; set; } = PaymentType.Cash;
     }
 }

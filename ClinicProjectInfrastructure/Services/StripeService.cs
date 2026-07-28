@@ -3,9 +3,11 @@ using ClinicProjectApplication.Interfaces;
 using ClinicProjectApplication.Payment.Command;
 using ClinicProjectApplication.Payment.Dtos;
 using ClinicProjectDomain.Entities;
+using ClinicProjectDomain.Settings;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Org.BouncyCastle.Ocsp;
 using Stripe;
 using System;
@@ -22,15 +24,19 @@ namespace ClinicProjectInfrastructure.Services
         private readonly IConfiguration _configuration;
         private readonly IInvoiceService _invoiceService;
         private readonly ILogger<StripeService> _logger;
+        private readonly StripeSettings  _stripeSettings;
+
         public StripeService(IConfiguration configuration, IHttpContextAccessor httpContext,
              IInvoiceService invoiceService,
-              ILogger<StripeService> logger
+              ILogger<StripeService> logger,
+              IOptions<StripeSettings> options
             )
         {
            _configuration = configuration;
             _httpContext = httpContext;
             _invoiceService = invoiceService;
             _logger = logger;
+          _stripeSettings=  options.Value;
         }
         public async Task<string> PaymentIntent(string InvoiceId, decimal TotalAmount,CancellationToken cancellationToken) {
             var patientInfo = await _invoiceService.GetPatientInfoByInvoiceId(Guid.Parse(InvoiceId),cancellationToken);
@@ -44,7 +50,7 @@ namespace ClinicProjectInfrastructure.Services
             {"patientEmail",patientInfo.Appointment.Patient.Email }
         }
             };
-            var client = new StripeClient(_configuration["Stripe:SecretKey"]);
+            var client = new StripeClient(_stripeSettings.SecretKey);
          var    _paymentIntentService = new PaymentIntentService(client);
 
             var intent = await _paymentIntentService.CreateAsync(options);
@@ -82,9 +88,9 @@ namespace ClinicProjectInfrastructure.Services
 
             try
             {
-               // var json = await new StreamReader(_httpContext.HttpContext.Request.Body).ReadToEndAsync();
+                // var json = await new StreamReader(_httpContext.HttpContext.Request.Body).ReadToEndAsync();
 
-                var webhookSecret = _configuration["Stripe:WebhookSecret"];
+                var webhookSecret = _stripeSettings.WebhookSecret;//_configuration[ "Stripe:WebhookSecret"];
 
                 if (string.IsNullOrEmpty(webhookSecret))
                 {

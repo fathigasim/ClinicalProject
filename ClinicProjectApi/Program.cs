@@ -118,7 +118,8 @@ builder.Services.AddSwaggerGen(opt =>
         }
     });
 });
-builder.Services.AddAuthorization(options =>
+    QuestPDF.Settings.License = QuestPDF.Infrastructure.LicenseType.Community;
+    builder.Services.AddAuthorization(options =>
 {
     options.AddPolicy("AdminOnly", policy =>
         policy.RequireRole("Admin"));

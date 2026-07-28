@@ -6,6 +6,7 @@ using ClinicProjectApplication.Interfaces;
 using ClinicProjectDomain.Entities;
 using ClinicProjectDomain.Interfaces;
 using ClinicProjectDomain.Services;
+using ClinicProjectDomain.Settings;
 using ClinicProjectInfrastructure.Identity;
 using ClinicProjectInfrastructure.Persistence;
 using ClinicProjectInfrastructure.Persistence.Repositories;
@@ -41,6 +42,8 @@ namespace DefaultAuthenticationInfrastructure
         {
             services.Configure<SmtpSettings>(
     configuration.GetSection("SmtpSettings"));
+            services.Configure<StripeSettings>(
+    configuration.GetSection(StripeSettings.StripeSetting));
 
             // ── Single SQL Server connection for both reads and writes ─────────────
             services.AddDbContext<AppDbContext>(opts =>

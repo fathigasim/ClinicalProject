@@ -30,7 +30,9 @@ namespace ClinicProjectApplication
                 .ForMember(dest=>dest.DayOfWeek,opt=>opt.MapFrom(str=>str.DayOfWeek.ToString()))
                 .ReverseMap();
             CreateMap<Invoices, InvoicesDto>().ReverseMap();
-            CreateMap<Payments, PaymentDto>().ReverseMap();
+            CreateMap<Payments, PaymentDto>()
+                        .ForMember(dest => dest.InvoiceNo, opt => opt.MapFrom(src => src.Invoice.InvoiceNo))
+                .ReverseMap();
             CreateMap<Invoices, InvoicesDto>().ReverseMap();
             CreateMap<MedicalRecords, MedicalRecordDto>().ReverseMap();
             CreateMap<Prescriptions, PrescriptionsDto>()
