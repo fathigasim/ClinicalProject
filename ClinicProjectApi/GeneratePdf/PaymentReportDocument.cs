@@ -16,12 +16,12 @@ namespace ClinicProjectApi.GeneratePdf
             container.Page(page =>
             {
                 page.Size(PageSizes.A4);
-                page.Margin(30);
+                page.Margin(10);
                 page.DefaultTextStyle(x => x.FontSize(10));
 
                 page.Header().Column(col =>
                 {
-                    col.Item().Text("Payment Report").FontSize(18).Bold();
+                    col.Item().Text("Payment Report").FontSize(16).Bold();
                     col.Item().Text($"Date: {_data.ReportDate:yyyy-MM-dd}").FontSize(10);
                 });
 
@@ -30,6 +30,7 @@ namespace ClinicProjectApi.GeneratePdf
                     table.ColumnsDefinition(columns =>
                     {
                         columns.RelativeColumn(2); // Customer
+                        columns.RelativeColumn(2); // Invoice
                         columns.RelativeColumn();  // Amount
                         columns.RelativeColumn();  // Method
                         columns.RelativeColumn();  // Date

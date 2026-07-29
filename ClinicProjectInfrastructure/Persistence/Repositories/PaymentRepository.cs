@@ -1,7 +1,9 @@
 ﻿using ClinicProjectApplication.Interfaces;
+using ClinicProjectApplication.Payment.Dtos;
 using ClinicProjectDomain.Common.Pagination;
 using ClinicProjectDomain.Entities;
 using ClinicProjectDomain.Interfaces;
+using ClinicProjectDomain.Models;
 using ClinicProjectInfrastructure.Extensions;
 using ClinicProjectInfrastructure.Services;
 using Microsoft.EntityFrameworkCore;
@@ -37,5 +39,20 @@ namespace ClinicProjectInfrastructure.Persistence.Repositories
             return await _readDbContext.ReadSet<Payments>().Include(p => p.Invoice).Where(p => p.PaidAt.Date == date.Date)
                 .ToListAsync(cancellationToken);
         }
+
+
+
+        public async Task<List<MonthlyPaymentSummary>> PaymentsMonthlyTotal( CancellationToken cancellationToken)
+        {
+            var previousMonth = DateTime.UtcNow.AddMonths(-1).Month;
+            var currentYear = DateTime.UtcNow.Year;
+            return await _readDbContext.ReadSet<Payments>()
+                .Where(p =>  p.PaidAt.Year == currentYear)
+                .GroupBy(p => p.PaidAt.Month)
+                .Select(p => new MonthlyPaymentSummary(p.Key,p.Sum(p=>p.Amount)))
+                .ToListAsync(cancellationToken);
+        }
+
+       
     }
 }

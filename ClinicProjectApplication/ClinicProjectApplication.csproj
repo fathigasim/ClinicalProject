@@ -24,6 +24,7 @@
 
   <ItemGroup>
     <Folder Include="Common\Models\" />
+    <Folder Include="ReportServices\" />
   </ItemGroup>
 
 </Project>

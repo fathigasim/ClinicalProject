@@ -1,5 +1,6 @@
 ﻿using ClinicProjectDomain.Common.Pagination;
 using ClinicProjectDomain.Entities;
+using ClinicProjectDomain.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,5 +16,6 @@ namespace ClinicProjectDomain.Interfaces
 
        public Task<PagedResult<Payments?>> PaymentsByDate(DateTime date, int page, int pageSize, CancellationToken cancellationToken);
         Task<List<Payments?>> PaymentsListByDate(DateTime date, CancellationToken cancellationToken);
+         Task<List<MonthlyPaymentSummary>> PaymentsMonthlyTotal( CancellationToken cancellationToken);
     }
 }

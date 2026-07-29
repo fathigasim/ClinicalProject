@@ -10,6 +10,7 @@ using ClinicProjectApplication.PaymentReports.Dto;
 using ClinicProjectApplication.Prescription.Dtos;
 using ClinicProjectApplication.PrescriptionsItems.Dtos;
 using ClinicProjectDomain.Entities;
+using ClinicProjectDomain.Models;
 using DefaultAuthenticationApplication.PatientsCommandQueries.Dto;
 
 
@@ -67,6 +68,9 @@ namespace ClinicProjectApplication
             CreateMap<Payments, PaymentReportDto>()
                  .ForMember(dest => dest.InvoiceNo, opt => opt.MapFrom(src => src.Invoice.InvoiceNo))
                 ;
+            CreateMap<MonthlyPaymentSummary, MonthlyTotalPaymentsDto>()
+                
+               ;
             //CreateMap<OrderItem, OrderItemDto>()
             //    .ForMember(d => d.ProductName, opt => opt.MapFrom(s => s.Product.Name));
 
