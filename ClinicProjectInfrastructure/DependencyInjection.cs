@@ -2,12 +2,16 @@
 
 using ClinicProjectApplication;
 using ClinicProjectApplication.Common;
+using ClinicProjectApplication.Common.Services;
 using ClinicProjectApplication.Interfaces;
+using ClinicProjectApplication.Invoice.Events;
 using ClinicProjectDomain.Entities;
 using ClinicProjectDomain.Interfaces;
 using ClinicProjectDomain.Services;
 using ClinicProjectDomain.Settings;
+using ClinicProjectInfrastructure.Common;
 using ClinicProjectInfrastructure.Identity;
+using ClinicProjectInfrastructure.Messaging;
 using ClinicProjectInfrastructure.Persistence;
 using ClinicProjectInfrastructure.Persistence.Repositories;
 using ClinicProjectInfrastructure.Services;
@@ -25,21 +29,27 @@ using Polly;
 using Polly.Extensions.Http;
 using System.Net;
 using System.Text;
+using static Org.BouncyCastle.Math.EC.ECCurve;
 
 
 
 
 namespace DefaultAuthenticationInfrastructure
 {
-    public static class DependencyInjection
+    public static  class DependencyInjection
     {
        
-        public static IServiceCollection AddInfrastructure(
+        public static async Task<IServiceCollection> AddInfrastructure(
           
     this IServiceCollection services,
      
     IConfiguration configuration)
         {
+
+            var options = configuration.GetSection("RabbitMq").Get<RabbitMqOptions>()!;
+            var publisher = await RabbitMqPublisher.CreateAsync(options);
+            services.AddSingleton<IMessagePublisher>(publisher);
+
             services.Configure<SmtpSettings>(
     configuration.GetSection("SmtpSettings"));
             services.Configure<StripeSettings>(
@@ -168,11 +178,19 @@ namespace DefaultAuthenticationInfrastructure
             services.AddScoped<IPaymentReportService, PaymentReportService>();
             services.AddSingleton<IMfaChallengeTokenService, MfaChallengeTokenService>();
             services.AddTransient<ScheduleService>();
+            services.AddTransient<ICacheService,MemoryCacheService>();
             //services.AddTransient<IEmailSender, EmailSender>();
-        //    services.AddHostedService<TokenCleanupService>();
+            //    services.AddHostedService<TokenCleanupService>();
             //services.AddScoped<IDbSeeder,DbSeeder>();
             services.AddHttpContextAccessor();
+            // register the Application-layer handler
+            services.AddScoped<IEventHandler<PaymentCreatedEvent>, PaymentCreatedEventHandler>();
 
+            // register the consumer as a hosted service, bound to a specific queue
+            services.AddHostedService(sp => new RabbitMqConsumer<PaymentCreatedEvent>(
+                sp.GetRequiredService<IServiceScopeFactory>(),
+                sp.GetRequiredService<IOptions<RabbitMqOptions>>(),
+                queueName: "orders-queue"));
             return services;
         }
 

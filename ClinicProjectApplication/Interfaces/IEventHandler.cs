@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace ClinicProjectApplication.Interfaces
 {
-    public interface ICacheInvalidatorCommand
+    // YourApp.Application/Abstractions/IEventHandler.cs
+    public interface IEventHandler<in TEvent>
     {
-        //string[] CacheKeys { get; }
-        string[] CachePrefixes { get; }
+        Task HandleAsync(TEvent @event, CancellationToken ct = default);
     }
 }

@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
@@ -19,6 +19,7 @@
     </PackageReference>
     <PackageReference Include="Otp.NET" Version="1.4.1" />
     <PackageReference Include="QuestPDF" Version="2026.7.1" />
+    <PackageReference Include="RabbitMQ.Client" Version="7.2.2" />
     <PackageReference Include="Serilog.AspNetCore" Version="10.0.0" />
     <PackageReference Include="Serilog.Enrichers.Environment" Version="3.0.1" />
     <PackageReference Include="Serilog.Enrichers.Thread" Version="4.0.0" />
@@ -32,5 +33,12 @@
   <ItemGroup>
     <ProjectReference Include="..\ClinicProjectApplication\ClinicProjectApplication.csproj" />
     <ProjectReference Include="..\ClinicProjectInfrastructure\ClinicProjectInfrastructure.csproj" />
+  </ItemGroup>
+	<Target Name="BuildReact" BeforeTargets="Publish">
+		<Exec Command="npm install" WorkingDirectory="../Clini-Front-v1" />
+		<Exec Command="npm run build" WorkingDirectory="../Clini-Front-v1" />
+	</Target>
+  <ItemGroup>
+    <Folder Include="wwwroot\" />
   </ItemGroup>
 </Project>

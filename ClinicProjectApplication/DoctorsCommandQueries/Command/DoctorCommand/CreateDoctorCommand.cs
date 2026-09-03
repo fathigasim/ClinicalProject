@@ -14,5 +14,7 @@ namespace ClinicProjectApplication.DoctorsCommandQueries.Command.DoctorCommand
         : IRequest<Result<string>>, ITransactionalRequest, ICacheInvalidatorCommand
     {
         public string[] CacheKeys => ["DoctorsList"];
+
+        public string[] CachePrefixes => ["DoctorsList"];
     }
 }

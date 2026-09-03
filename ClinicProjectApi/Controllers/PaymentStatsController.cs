@@ -1,6 +1,7 @@
 ﻿using ClinicProjectApi.GeneratePdf;
 using ClinicProjectApi.ReportServices;
 using ClinicProjectApplication.Interfaces;
+using ClinicProjectApplication.Payment.PaymentReports;
 using ClinicProjectApplication.Payment.Queries;
 using ClinicProjectApplication.PaymentReports.Queries;
 using MediatR;
@@ -32,10 +33,19 @@ namespace ClinicProjectApi.Controllers
         
 
 
-        [HttpGet("GetMonthlyTotals")]
+        [HttpGet("GetPaymentsMonthlyTotals")]
         public async Task<IActionResult> GetMonthlyTotals(CancellationToken cancellationToken)
         {
             var result = await mediator.Send(new GetMonthlyPaymentsTotalsQuery(), cancellationToken);
+            return Ok(result);
+        }
+
+
+
+        [HttpGet("GetPaymentsWeeklyTotals")]
+        public async Task<IActionResult> GetWeeklyTotals(CancellationToken cancellationToken)
+        {
+            var result = await mediator.Send(new GetWeeklyPaymentReportQuery(), cancellationToken);
             return Ok(result);
         }
 

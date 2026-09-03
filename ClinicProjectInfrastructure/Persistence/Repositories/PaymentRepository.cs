@@ -7,6 +7,7 @@ using ClinicProjectDomain.Models;
 using ClinicProjectInfrastructure.Extensions;
 using ClinicProjectInfrastructure.Services;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -53,6 +54,25 @@ namespace ClinicProjectInfrastructure.Persistence.Repositories
                 .ToListAsync(cancellationToken);
         }
 
-       
+
+        public async Task<List<WeeklyPaymentSummary>> PaymentsWeeklyTotal(CancellationToken cancellationToken)
+        {
+            //var currentMonth = DateTime.UtcNow.Month;
+            //var currentYear = DateTime.UtcNow.Year;
+            var previousWeek = DateTime.UtcNow.AddDays(-7);
+          var raw=   await _readDbContext.ReadSet<Payments>()
+                .Where(p => p.PaidAt>=previousWeek)
+                
+                .Select(p => new { p.PaidAt,p.Amount})
+                .ToListAsync(cancellationToken);
+
+            var result = raw
+    .GroupBy(p => p.PaidAt.DayOfWeek)
+    .Select(g => new WeeklyPaymentSummary(g.Key.ToString(), g.Sum(x => x.Amount)))
+    .ToList();
+
+            return result;
+        }
+
     }
 }

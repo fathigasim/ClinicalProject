@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace ClinicProjectDomain.Entities
 {
-    public class Invoices :BaseEntity, IAuditableEntity
+    public  class Invoices :BaseEntity, IAuditableEntity
     {
 
         private Invoices(string invoiceNo,Guid appointmentId,decimal totalAmount)
@@ -47,7 +47,7 @@ namespace ClinicProjectDomain.Entities
         {
             status = newStatus;
         }
-        public void MarkAsPaid()
+        public  void MarkAsPaid()
         {
             if (status == InvoiceStatus.Paid)
             {

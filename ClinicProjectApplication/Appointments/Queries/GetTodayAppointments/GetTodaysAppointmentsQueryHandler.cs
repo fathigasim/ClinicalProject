@@ -15,11 +15,13 @@ namespace ClinicProjectApplication.Appointments.Queries.GetTodayAppointments
     public class GetTodaysAppointmentsQueryHandler : IRequestHandler<GetTodaysAppointmentsQuery, Result<PagedResult<AppointmentDto>>>
     {
         private readonly IAppointmentRepository _appointmentRepository;
-        private readonly IMapper _mapper;
-        public GetTodaysAppointmentsQueryHandler(IAppointmentRepository appointmentRepository, IMapper mapper)
+      //  private readonly IMapper _mapper;
+        public GetTodaysAppointmentsQueryHandler(IAppointmentRepository appointmentRepository
+            //, IMapper mapper
+            )
         {
             _appointmentRepository = appointmentRepository;
-            _mapper = mapper;
+          //  _mapper = mapper;
         }
         public async Task<Result<PagedResult<AppointmentDto>>> Handle(GetTodaysAppointmentsQuery request, CancellationToken cancellationToken)
         {
@@ -29,7 +31,17 @@ namespace ClinicProjectApplication.Appointments.Queries.GetTodayAppointments
             {
                 return Result<PagedResult<AppointmentDto>>.Success(new PagedResult<AppointmentDto>
                 {
-                    Items= _mapper.Map<List<AppointmentDto>>(result.Items),
+                    Items= result.Items.Select(p=>new AppointmentDto() {
+                        AppointmentNumber=p.AppointmentNumber,
+                        //DayOfWeek=p.DayOfWeek,
+                        DoctorId=p.DoctorId,
+                        Notes=p.Notes,
+                        DurationMinutes=p.DurationMinutes,
+                        PatientId=p.PatientId,
+                        StartTime=p.StartTime,
+                        status=p.Status
+                    
+                    }).ToList(),//_mapper.Map<List<AppointmentDto>>(result.Items),
                     Page=request.page,
                     PageSize=request.pageSize,
                     TotalCount=result.TotalCount,

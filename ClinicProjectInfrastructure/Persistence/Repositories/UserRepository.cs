@@ -24,10 +24,16 @@ public class UserRepository(AppDbContext db,UserManager<ApplicationUser> userMan
     public async Task SaveAsync(CancellationToken ct)
         => await db.SaveChangesAsync(ct);
 
+    //public async Task PurgeExpiredTokensAsync(CancellationToken ct)
+    //    => await db.Set<RefreshToken>()
+    //        .Where(t => t.Revoked != null || t.Expires <= DateTime.UtcNow)
+    //        .ExecuteDeleteAsync(ct);
     public async Task PurgeExpiredTokensAsync(CancellationToken ct)
-        => await db.Set<RefreshToken>()
-            .Where(t => t.Revoked != null || t.Expires <= DateTime.UtcNow)
-            .ExecuteDeleteAsync(ct);
+    {
+        await db.Database.ExecuteSqlInterpolatedAsync(
+            $"DELETE FROM RefreshToken WHERE Revoked IS NOT NULL OR Expires <= {DateTime.UtcNow}",
+            ct);
+    }
 
     public Task UpdateAsync(ApplicationUser user, CancellationToken ct)
     {

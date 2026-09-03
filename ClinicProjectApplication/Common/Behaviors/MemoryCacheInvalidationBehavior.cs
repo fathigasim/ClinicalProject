@@ -21,14 +21,13 @@ namespace ClinicProjectApplication.Common.Behaviors
             _cache = cache;
             _logger = logger;
         }
-
         public async Task<TResponse> Handle(TRequest request, RequestHandlerDelegate<TResponse> next, CancellationToken ct)
         {
             // 1. Let the Command Handler finish first (save to DB)
             var response = await next();
 
             // 2. If we got here without an exception, clear the cache
-            foreach (var key in request.CacheKeys)
+            foreach (var key in request.CachePrefixes)
             {
                 _cache.Remove(key);
                 _logger.LogInformation("Invalidated cache for key: {CacheKey}", key);
@@ -36,6 +35,20 @@ namespace ClinicProjectApplication.Common.Behaviors
 
             return response;
         }
+        //public async Task<TResponse> Handle(TRequest request, RequestHandlerDelegate<TResponse> next, CancellationToken ct)
+        //{
+        //    // 1. Let the Command Handler finish first (save to DB)
+        //    var response = await next();
+
+        //    // 2. If we got here without an exception, clear the cache
+        //    foreach (var key in request.CachePrefixes)
+        //    {
+        //        _cache.Remove(key);
+        //        _logger.LogInformation("Invalidated cache for key: {CacheKey}", key);
+        //    }
+
+        //    return response;
+        //}
     }
 
 }

@@ -9,8 +9,7 @@ using System.Threading.Tasks;
 
 namespace ClinicProjectApplication.Appointments.AppointmentCommand
 {
-    public record CancelAppointmentCommand :IRequest<Result<string>>,ITransactionalRequest
-    {
-        public string AppointmentNo { get; set; }
-    }
+    public record CancelAppointmentCommand(string AppointmentNo) :IRequest<Result<string>>,ITransactionalRequest;
+
+
 }

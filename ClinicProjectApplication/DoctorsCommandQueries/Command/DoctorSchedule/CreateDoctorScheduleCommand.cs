@@ -10,12 +10,6 @@ using System.Threading.Tasks;
 namespace ClinicProjectApplication.DoctorsCommandQueries.Command.DoctorWeeklySchedule
 {
     public record CreateDoctorScheduleCommand  
-        :IRequest<Result<string>>, ITransactionalRequest
-    {
-
-        public Guid? DoctorId { get; init; }
-        public DateOnly ScheduleDate { get; init; }
-        public TimeOnly StartTime { get; init; }
-        public TimeOnly EndTime { get; init; }
-    }
+        (Guid? DoctorId, DateOnly ScheduleDate, TimeOnly StartTime, TimeOnly EndTime) : IRequest<Result<string>>, ITransactionalRequest;
+   
 }

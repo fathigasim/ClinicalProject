@@ -1,18 +1,19 @@
 ﻿using AutoMapper;
 using ClinicProjectApplication.Appointments.AppointmentCommand;
-
+using ClinicProjectApplication.Interfaces;
 using ClinicProjectApplication.PatientsCommandQueries.Command.UpdatePatient;
 using ClinicProjectDomain.Entities;
 using ClinicProjectDomain.Interfaces;
 using MediatR;
+using Microsoft.AspNetCore.Mvc.RazorPages;
 
 
 namespace ClinicProjectApplication.PatientsCommandQueries.Command.UpdatePatient
 {
-    public class UpdatePatientCommandHandler(IRepository<Patient> repository,IMapper mapper) : IRequestHandler<UpdatePatientCommand,string>
+    public class UpdatePatientCommandHandler(IRepository<Patient> repository,IMapper mapper) : IRequestHandler<UpdatePatientCommand,string>, ICacheInvalidatorCommand
     {
+        public string[] CachePrefixes =>new[] { "patient-list" };
 
-      
         public async Task<string> Handle(UpdatePatientCommand request, CancellationToken cancellationToken)
         {
             var patient=await repository.GetByIdAsync(request.Id);
@@ -22,6 +23,7 @@ namespace ClinicProjectApplication.PatientsCommandQueries.Command.UpdatePatient
             }
             patient.Update(request.FirstName, request.LastName, request.Email, request.DOB, request.Phone,request.Gender);
            // repository.Update(patient);
+            
                  return "update successfully";
         }
     }

@@ -13,16 +13,18 @@ using System.Threading.Tasks;
 
 namespace ClinicProjectApplication.DoctorsCommandQueries.Command.DoctorWeeklySchedule
 {
-    public class CreateWeeklyScheduleCommandHandler : IRequestHandler<CreateDoctorScheduleCommand, Result<string>>
+    public class CreateDoctorScheduleCommandHandler : IRequestHandler<CreateDoctorScheduleCommand, Result<string>>
     {  
         private readonly IDoctorRepository _doctorRepository;
-        private readonly IDoctorScheduleRepository _weeklyScheduleRepository;
-        private readonly IMapper _mapper;
-        public CreateWeeklyScheduleCommandHandler(IDoctorRepository doctorRepository, IDoctorScheduleRepository weeklyScheduleRepository, IMapper mapper)
+        private readonly IDoctorScheduleRepository _doctorScheduleRepository;
+       // private readonly IMapper _mapper;
+        public CreateDoctorScheduleCommandHandler(IDoctorRepository doctorRepository, IDoctorScheduleRepository doctorScheduleRepository
+            //, IMapper mapper
+            )
         {
             _doctorRepository = doctorRepository;
-            _weeklyScheduleRepository = weeklyScheduleRepository; 
-            _mapper = mapper;
+            _doctorScheduleRepository = doctorScheduleRepository; 
+       //     _mapper = mapper;
         }
         public async Task<Result<string>> Handle(CreateDoctorScheduleCommand request, CancellationToken cancellationToken)
         {
@@ -52,7 +54,7 @@ namespace ClinicProjectApplication.DoctorsCommandQueries.Command.DoctorWeeklySch
             //    return Result<string>.Failure("Cannot create schedule on a holiday.");
 
             // 3. Overlap check
-            var hasOverlap = await _weeklyScheduleRepository.HasOverlappingSchedule(
+            var hasOverlap = await _doctorScheduleRepository.HasOverlappingSchedule(
                 request.DoctorId,
                 request.ScheduleDate,
                 request.ScheduleDate.DayOfWeek,
@@ -77,16 +79,16 @@ namespace ClinicProjectApplication.DoctorsCommandQueries.Command.DoctorWeeklySch
             //{
             //    return Result<string>.Failure("Clinic is closed at this time");
             //}
-            var doctorhasalreadybooked=   await _weeklyScheduleRepository.IsDoctorScheduledToday(doctorSchedule.DoctorId, doctorSchedule.ScheduledDate, doctorSchedule.DayOfWeek, cancellationToken);
+            var doctorhasalreadybooked=   await _doctorScheduleRepository.IsDoctorScheduledToday(doctorSchedule.DoctorId, doctorSchedule.ScheduledDate, doctorSchedule.DayOfWeek, cancellationToken);
                 if(doctorhasalreadybooked)
                 {
                     return Result<string>.Failure($"Doctor is already scheduled for {doctorSchedule.ScheduledDate}.");
             }
             
-        await  _weeklyScheduleRepository.AddAsync(doctorSchedule);
+        await  _doctorScheduleRepository.AddAsync(doctorSchedule);
             
 
-            return Result<string>.Success("Weekly schedule created successfully.");
+            return Result<string>.Success("Doctor schedule created successfully.");
         }
     }
 }

@@ -9,14 +9,7 @@ using System.Threading.Tasks;
 
 namespace ClinicProjectApplication.DoctorsCommandQueries.Command.DoctorWeeklySchedule
 {
-    public record UpdateDoctorScheduleCommand:IRequest<Result<string>>,ITransactionalRequest
-    {
-        public Guid Id { get; set; }
-
-        public DateOnly ScheduleDate { get; set; }
-
-        public TimeOnly StartTime { get; set; }
-        public TimeOnly EndTime { get; set; }
-
-    }
+        
+    public record UpdateDoctorScheduleCommand(Guid Id, DateOnly ScheduleDate, TimeOnly StartTime, TimeOnly EndTime) : IRequest<Result<string>>,ITransactionalRequest;
+  
 }

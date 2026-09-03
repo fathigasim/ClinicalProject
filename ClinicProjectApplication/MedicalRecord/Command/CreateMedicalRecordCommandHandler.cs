@@ -46,8 +46,7 @@ namespace ClinicProjectApplication.MedicalRecord.Command
                 Diagnosis = request.Diagnosis,
                 
               //  CreatedAt = DateTime.UtcNow,
-            
-
+        
             };
             var MedicalRecordNumber = await _sequenceService.GenerateMedicalNumberAsync();
             var medicalRecored=   MedicalRecords.Create(medicalRecordDto.AppointmentId, MedicalRecordNumber, medicalRecordDto.Diagnosis);
@@ -61,7 +60,8 @@ namespace ClinicProjectApplication.MedicalRecord.Command
             await  _repository.AddAsync(medicalRecored);
             medicalRecored.AddAppointment(appointment);
             medicalRecored.Appointment.ConfirmBooking();
-            return Result<string>.Success($"Medical record created with ID: {medicalRecored.AppointmentId}");
+            return Result<string>.Success($"Medical record created");// +
+               // $" with ID: {medicalRecored.AppointmentId}");
         }
     }
 }

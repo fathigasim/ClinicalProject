@@ -73,7 +73,17 @@ namespace ClinicProjectDomain.Entities
                 notes,
                 durationMinutes);
         }
-
+        public void update(Appointment appointment)
+        {
+            if (Status == AppointmentStatus.Cancelled)
+            {
+                throw new DomainException("Cannot update canceled appointment");
+            }
+             PatientId= appointment.PatientId;
+            DoctorId= appointment.DoctorId;
+            AppointmentDate = appointment.AppointmentDate;
+            StartTime = appointment.StartTime;
+        }
         public void ConfirmBooking()
         {
             if (IsBooked)
@@ -90,6 +100,10 @@ namespace ClinicProjectDomain.Entities
 
         public void Cancel()
         {
+            if (Status == AppointmentStatus.Cancelled)
+            {
+                throw new DomainException("Cannot cancel an already canceled appointment.");
+            }
             if (Status == AppointmentStatus.Completed)
             {
                 throw new DomainException("Cannot cancel an already completed appointment.");

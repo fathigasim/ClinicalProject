@@ -12,6 +12,7 @@ using DefaultAuthenticationInfrastructure;
 using Hangfire;
 using Hangfire.SqlServer;
 using MediatR;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
@@ -40,7 +41,7 @@ try
 
     // Add services to the container.
     builder.Services.AddApplication(builder.Environment);
-builder.Services.AddInfrastructure(builder.Configuration);
+await builder.Services.AddInfrastructure(builder.Configuration);
 
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
@@ -87,8 +88,19 @@ builder.Services.AddRateLimiter(options =>
         o.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
     });
 });
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddEndpointsApiExplorer();
+
+    // Configure Forwarded Headers Options
+    builder.Services.Configure<ForwardedHeadersOptions>(options =>
+    {
+        options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+
+        // Clear known networks if running behind a trusted proxy/load balancer, 
+        // or specify the IP of your trusted proxy (e.g. NGINX container IP)
+        options.KnownNetworks.Clear();
+        options.KnownProxies.Clear();
+    });
+    // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+    builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(opt =>
 {
     opt.SwaggerDoc("v1", new OpenApiInfo { Title = "My API", Version = "v1" });
@@ -143,7 +155,10 @@ builder.Services.AddSwaggerGen(opt =>
     
 
     var app = builder.Build();
+    Console.WriteLine($"ENVIRONMENT IS: {app.Environment.EnvironmentName}");
     app.UseHangfireDashboard();
+    // MUST be called before authentication, CORS, or custom endpoints
+    app.UseForwardedHeaders();
     // Program.cs — register once, on startup
     RecurringJob.AddOrUpdate<IMediator>(
         "purge-expired-tokens",
@@ -174,15 +189,21 @@ builder.Services.AddSwaggerGen(opt =>
     //var code = totp.ComputeTotp(); // current 6-digit code, valid ~30s
     //Console.WriteLine(code);
     await app.SeedAsync();
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-    //app.UseCors("DevCors");
-}
-// One UseCors call, picks policy based on environment
-app.UseCors(app.Environment.IsDevelopment() ? "DevelopmentPolicy" : "ProductionPolicy");
+    // Configure the HTTP request pipeline.
+    if (app.Environment.IsDevelopment())
+    {
+        app.UseSwagger();
+        app.UseSwaggerUI();
+        //app.UseCors("DevCors");
+    }
+    else
+    {
+        app.UseDefaultFiles();
+        app.UseStaticFiles();
+        app.MapFallbackToFile("index.html");
+    }
+    // One UseCors call, picks policy based on environment
+    app.UseCors(app.Environment.IsDevelopment() ? "DevelopmentPolicy" : "ProductionPolicy");
 
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 app.UseHttpsRedirection();

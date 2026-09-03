@@ -26,7 +26,7 @@ namespace ClinicProjectApplication.Common.Behaviors
         public async Task<TResponse> Handle(TRequest request, RequestHandlerDelegate<TResponse> next, CancellationToken ct)
         {
             var response = await next();
-            foreach (var key in request.CacheKeys)
+            foreach (var key in request.CachePrefixes)
             {
                 await _cache.RemoveAsync(key, ct);
                 _logger.LogInformation("Invalidated distributed cache for key: {CacheKey}", key);

@@ -1,5 +1,4 @@
-﻿
-using ClinicProjectApplication.Auth.Commands.RegisterUser;
+﻿using ClinicProjectApplication.Auth.Commands.RegisterUser;
 using ClinicProjectApplication.Common.Behaviors;
 using FluentValidation;
 using MediatR;
@@ -39,14 +38,16 @@ this IServiceCollection services, IHostEnvironment env)
             // swap cache behavior based on environment
             if (env.IsDevelopment())
             {
+                // Caching behaviors commented out to disable Redis/distributed cache usage during development.
+                // If you want to enable in-memory caching later, uncomment the lines below.
                 services.AddTransient(typeof(IPipelineBehavior<,>), typeof(MemoryCachingBehavior<,>));
                 services.AddTransient(typeof(IPipelineBehavior<,>), typeof(MemoryCacheInvalidationBehavior<,>));
             }
-            else
-            {
-                services.AddTransient(typeof(IPipelineBehavior<,>), typeof(DistributedCachingBehavior<,>));
-                services.AddTransient(typeof(IPipelineBehavior<,>), typeof(DistributedCacheInvalidationBehavior<,>));
-            }
+            //else
+            //{
+            //    services.AddTransient(typeof(IPipelineBehavior<,>), typeof(DistributedCachingBehavior<,>));
+            //    services.AddTransient(typeof(IPipelineBehavior<,>), typeof(DistributedCacheInvalidationBehavior<,>));
+            //}
             services.AddTransient(typeof(IPipelineBehavior<,>), typeof(TransactionBehavior<,>));
          //   services.AddHangfireServer();
             return services;

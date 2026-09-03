@@ -9,9 +9,9 @@ using System.Threading.Tasks;
 
 namespace ClinicProjectApplication.DoctorsCommandQueries.Command.DoctorWeeklySchedule
 {
-    public class CreateWeeklyScheduleCommandValidator : AbstractValidator<CreateDoctorScheduleCommand>
+    public class CreateDoctorScheduleCommandValidator : AbstractValidator<CreateDoctorScheduleCommand>
     {
-        public CreateWeeklyScheduleCommandValidator()
+        public CreateDoctorScheduleCommandValidator()
         {
             RuleFor(p => p).Must(cmd => DoctorSchedule.IsTimeSlotValid(cmd.ScheduleDate,cmd.StartTime))
                  .WithMessage("The selected time slot is in the past."); ;
