@@ -23,6 +23,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Auth\Commands\RegisterUser\Notifications\" />
     <Folder Include="Common\Models\" />
     <Folder Include="ReportServices\" />
   </ItemGroup>

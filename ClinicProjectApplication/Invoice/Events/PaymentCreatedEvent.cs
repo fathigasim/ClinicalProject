@@ -6,6 +6,6 @@ using System.Threading.Tasks;
 
 namespace ClinicProjectApplication.Invoice.Events
 {
-    public record PaymentCreatedEvent(Guid Id, Guid CustomerId);
+    public record PaymentCreatedEvent(Guid Id, string CustomerId);
    
 }

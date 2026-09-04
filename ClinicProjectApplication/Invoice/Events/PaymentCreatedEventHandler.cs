@@ -20,7 +20,7 @@ namespace ClinicProjectApplication.Invoice.Events
         public async Task HandleAsync(PaymentCreatedEvent @event, CancellationToken ct = default)
         {
             // pure business logic — fully unit-testable, no RabbitMQ in sight
-            await _inventoryService.ReserveStockAsync(@event.Id, ct);
+           // await _inventoryService.ReserveStockAsync(@event.Id, ct);
         }
     }
 }

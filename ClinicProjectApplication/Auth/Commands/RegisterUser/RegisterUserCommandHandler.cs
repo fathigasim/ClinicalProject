@@ -2,10 +2,12 @@
 using ClinicProjectApplication.Auth.Commands.RegisterUser;
 using ClinicProjectApplication.Common.Exceptions;
 using ClinicProjectApplication.Exceptions;
+using ClinicProjectApplication.Interfaces;
 using ClinicProjectDomain.Entities;
 using ClinicProjectDomain.Interfaces;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Logging;
 
 
 namespace ClinicProjectApplication.RegisterUser
@@ -17,7 +19,7 @@ namespace ClinicProjectApplication.RegisterUser
      UserManager<ApplicationUser> userManager,
      IUserRepository userRepository,
      TokenIssuer tokenIssuer,
-     IPublisher publisher)
+     IPublisher publisher, IMessagePublisher _messagePublisher)
      : IRequestHandler<RegisterUserCommand, string>
         {
 
@@ -39,8 +41,8 @@ namespace ClinicProjectApplication.RegisterUser
             var confirmToken = await userManager.GenerateEmailConfirmationTokenAsync(user);
 
             // Publish notification (your email handler picks this up)
-            await publisher.Publish(new RegisterNotification(req.Email, confirmToken), ct);
-
+           // await publisher.Publish(new RegisterNotification(req.Email, confirmToken), ct);
+            await _messagePublisher.PublishAsync(new RegisterNotification(req.Email, confirmToken), "register.notification", ct);
             // Don't issue auth tokens yet — user must confirm email first
             return "Registration successful. Please check your email to confirm your account.";
         }

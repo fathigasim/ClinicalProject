@@ -1,6 +1,7 @@
 ﻿
 
 using ClinicProjectApplication;
+using ClinicProjectApplication.Auth.Commands.RegisterUser;
 using ClinicProjectApplication.Common;
 using ClinicProjectApplication.Common.Services;
 using ClinicProjectApplication.Interfaces;
@@ -185,12 +186,19 @@ namespace DefaultAuthenticationInfrastructure
             services.AddHttpContextAccessor();
             // register the Application-layer handler
             services.AddScoped<IEventHandler<PaymentCreatedEvent>, PaymentCreatedEventHandler>();
-
+            services.AddScoped<
+    IEventHandler<RegisterNotification>,
+    RegisterNotificationHandler>();
             // register the consumer as a hosted service, bound to a specific queue
             services.AddHostedService(sp => new RabbitMqConsumer<PaymentCreatedEvent>(
                 sp.GetRequiredService<IServiceScopeFactory>(),
                 sp.GetRequiredService<IOptions<RabbitMqOptions>>(),
-                queueName: "orders-queue"));
+                queueName: "invoice.paid"));
+
+            services.AddHostedService(sp => new RabbitMqConsumer<RegisterNotification>(
+               sp.GetRequiredService<IServiceScopeFactory>(),
+               sp.GetRequiredService<IOptions<RabbitMqOptions>>(),
+               queueName: "register.notification"));
             return services;
         }
 
